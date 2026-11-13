@@ -74,10 +74,14 @@
   display: none !important;
 }
 
+/* Hide the button while a dialog is open so it can't cover dialog buttons and fields. */
+body:has(.MuiDialog-root:not(.MuiModal-hidden)) #helpjuice-widget {
+  display: none !important;
+}
+
 /*
  * On phones, use a smaller button tucked into the bottom right corner so it covers less of the
- * page, and hide it while a dialog is open so it can't cover dialog buttons and fields. The
- * trigger hangs below the widget's position, so bottom is the trigger size plus the gap.
+ * page. The trigger hangs below the widget's position, so bottom is the trigger size plus the gap.
  */
 @media (max-width: 599.95px) {
   #helpjuice-widget {
@@ -114,9 +118,5 @@
 
   #helpjuice-widget.bottomRight #helpjuice-widget-expanded:after {
     right: calc(var(--widget-right, var(--right-position)) - 34px) !important;
-  }
-
-  body:has(.MuiDialog-root:not(.MuiModal-hidden)) #helpjuice-widget {
-    display: none !important;
   }
 }
