@@ -23,7 +23,6 @@ const GraphContainer = styled(Box)(({ theme }) => ({
   height: 300,
   marginBottom: theme.spacing(2),
   padding: theme.spacing(1),
-  overflowX: 'scroll',
 }));
 
 interface DonationsGraphProps {
@@ -108,7 +107,7 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
             aria-label={t('Loading donations graph')}
           />
         ) : (
-          <ResponsiveContainer minWidth={600}>
+          <ResponsiveContainer>
             <BarChart margin={{ left: 30 }} data={months}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
