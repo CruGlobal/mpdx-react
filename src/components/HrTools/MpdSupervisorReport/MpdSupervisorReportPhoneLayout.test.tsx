@@ -89,3 +89,20 @@ describe('MpdSupervisorReport header', () => {
     );
   });
 });
+
+// With the filter panel open the header is narrow on desktop, so the title
+// must stay on one line
+describe('MpdSupervisorReport desktop header', () => {
+  it('keeps the title on one line with the summary under it', async () => {
+    const { findByText, getByText, getByTestId } = renderReport();
+    await findByText(/^Showing 1 of 1/);
+    const title = getByText('MPD Supervisor Report');
+    const titleBox = getByTestId('title-box');
+
+    expect(getStyleAtWidth(title, 'white-space', desktopWidth)).toBe('nowrap');
+    expect(getStyleAtWidth(title, 'white-space', phoneWidth)).toBe('');
+    expect(getStyleAtWidth(titleBox, 'flex-direction', desktopWidth)).toBe(
+      'column',
+    );
+  });
+});

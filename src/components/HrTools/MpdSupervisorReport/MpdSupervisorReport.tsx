@@ -20,6 +20,7 @@ import {
   NavListButton,
   NavMenuIcon,
   StickyHeader,
+  multiPageHeaderHeight,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { getHeaderTitleAccess } from 'src/components/Shared/MultiPageLayout/helpers';
 import { NavFilterIcon } from 'src/components/Shared/styledComponents/NavFilterIcon';
@@ -53,6 +54,14 @@ const StyledContainer = styled(Container)(({ theme }) => ({
   overflow: 'hidden',
 }));
 
+// The fixed height only fits one row, so a header whose controls wrap grows
+// instead of covering the list
+const headerSx = {
+  flexShrink: 0,
+  height: 'auto',
+  minHeight: multiPageHeaderHeight,
+};
+
 const StickyHeaderInner = styled(Box)(() => ({
   display: 'flex',
   justifyContent: 'space-between',
@@ -70,6 +79,14 @@ const TitleBox = styled(Box)(() => ({
   // On phones the title and legend button wrap as separate header items
   [theme.breakpoints.down('sm')]: {
     display: 'contents',
+  },
+  // The summary sits under the one-line title, so the title never wraps into
+  // the list beside the filter panel
+  [theme.breakpoints.up('md')]: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    gap: 0,
   },
 }));
 
@@ -153,16 +170,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
 
   return (
     <PageBox>
-      <StickyHeader
-        p={2}
-        data-testid="MultiPageHeader"
-        sx={{
-          flexShrink: 0,
-          // The fixed height only fits one row, so a wrapped header grows
-          // instead of covering the list
-          [theme.breakpoints.down('md')]: { height: 'auto' },
-        }}
-      >
+      <StickyHeader p={2} data-testid="MultiPageHeader" sx={headerSx}>
         <StickyHeaderInner>
           <NavListButton
             panelOpen={panelOpen === Panel.Navigation}
@@ -187,7 +195,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
               <NavFilterIcon data-testid="FilterIcon" />
             </Badge>
           </NavListButton>
-          <TitleBox>
+          <TitleBox data-testid="title-box">
             <Box
               display={{ xs: 'contents', sm: 'flex' }}
               alignItems="center"
@@ -205,6 +213,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
                     flexBasis: '50%',
                     fontSize: theme.typography.h6.fontSize,
                   },
+                  [theme.breakpoints.up('md')]: { whiteSpace: 'nowrap' },
                 }}
               >
                 {title}
