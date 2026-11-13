@@ -12,6 +12,15 @@ export const StyledHeaderBox = styled(Box)({
   justifyContent: 'space-between',
 });
 
+// Shared by the table and its total row so their month columns stay lined up.
+// Month numbers are right-aligned, so only the left padding shrinks. That
+// leaves room for a bold 5-digit total with cents in the narrow month column.
+const monthCellStyles = {
+  '.MuiDataGrid-cell[data-field^="month"]': {
+    paddingLeft: theme.spacing(0.5),
+  },
+};
+
 export const StyledGrid = styled((props: DataGridProps<DataFields>) => (
   <DataGrid<DataFields> {...props} />
 ))(() => ({
@@ -26,6 +35,7 @@ export const StyledGrid = styled((props: DataGridProps<DataFields>) => (
     alignItems: 'center',
     display: 'flex',
   },
+  ...monthCellStyles,
   '.MuiDataGrid-columnHeaderTitle': {
     fontWeight: 'bold',
     fontSize: '12px',
@@ -66,6 +76,7 @@ export const StyledTotalRow = styled(DataGrid)(() => ({
     alignItems: 'center',
     display: 'flex',
   },
+  ...monthCellStyles,
   '.MuiDataGrid-cell *': {
     fontSize: '11px',
     fontWeight: 'bold',

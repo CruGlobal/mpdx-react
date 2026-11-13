@@ -420,6 +420,66 @@ describe('TableCard', () => {
     });
   });
 
+  describe('month column layout', () => {
+    const fieldCell = (cells: HTMLElement[], field: string) =>
+      cells.find(
+        (cell) => cell.getAttribute('data-field') === field,
+      ) as HTMLElement;
+
+    const boxOf = (cell: HTMLElement) => {
+      const { paddingLeft, paddingRight } = getComputedStyle(cell);
+      return {
+        width: cell.style.getPropertyValue('--width'),
+        paddingLeft,
+        paddingRight,
+      };
+    };
+
+    it('lines up each month of the total row with the same month in the table', async () => {
+      const { getAllByRole, findByText } = render(<TestComponent />);
+
+      await findByText('Overall Total');
+      const cells = getAllByRole('gridcell');
+
+      months.forEach((_month, index) => {
+        const tableCell = fieldCell(cells, `month${index}`);
+        const totalCell = fieldCell(cells, `monthlyValue_${index}`);
+        const tableBox = boxOf(tableCell);
+
+        expect(tableBox).toEqual({
+          width: expect.stringMatching(/^\d+(\.\d+)?px$/),
+          paddingLeft: expect.stringMatching(/^\d+(\.\d+)?px$/),
+          paddingRight: expect.stringMatching(/^\d+(\.\d+)?px$/),
+        });
+        expect(boxOf(totalCell)).toEqual(tableBox);
+        expect(tableCell).toHaveClass('MuiDataGrid-cell--textRight');
+        expect(totalCell).toHaveClass('MuiDataGrid-cell--textRight');
+      });
+    });
+
+    it('keeps month numbers flush with their right-aligned month headers', async () => {
+      const { getAllByRole, findByText } = render(<TestComponent />);
+
+      await findByText('Overall Total');
+      const cells = getAllByRole('gridcell');
+      const headers = getAllByRole('columnheader');
+
+      months.forEach((_month, index) => {
+        const header = fieldCell(headers, `month${index}`);
+        const headerBox = boxOf(header);
+
+        expect(headerBox.paddingRight).toMatch(/^\d+(\.\d+)?px$/);
+        expect(header).toHaveClass('MuiDataGrid-columnHeader--alignRight');
+        expect(boxOf(fieldCell(cells, `month${index}`)).paddingRight).toBe(
+          headerBox.paddingRight,
+        );
+        expect(
+          boxOf(fieldCell(cells, `monthlyValue_${index}`)).paddingRight,
+        ).toBe(headerBox.paddingRight);
+      });
+    });
+  });
+
   it('updates the sort order', async () => {
     const { getAllByRole, findByText } = render(<TestComponent />);
 
