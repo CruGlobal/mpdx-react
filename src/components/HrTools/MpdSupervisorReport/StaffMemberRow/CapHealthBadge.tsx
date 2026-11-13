@@ -9,7 +9,7 @@ import {
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { capHealthLabel } from '../Filters/mpdSupervisorReportFilters';
-import { healthColor } from '../helpers';
+import { floorToTenth, healthColor } from '../helpers';
 
 const quarterColor: Record<MpdCapHealthEnum, MpdHealthStatusEnum> = {
   [MpdCapHealthEnum.Healthy]: MpdHealthStatusEnum.Green,
@@ -31,9 +31,6 @@ const BadgeChip = styled(Chip, {
     '& .MuiChip-label': { paddingInline: theme.spacing(1) },
   };
 });
-
-// Floored so a percent just under a cutoff never shows as the next grade's
-const floorToTenth = (percent: number) => Math.floor(percent * 10) / 10;
 
 interface CapHealthBadgeProps {
   capHealth: MpdCapHealthEnum | null | undefined;

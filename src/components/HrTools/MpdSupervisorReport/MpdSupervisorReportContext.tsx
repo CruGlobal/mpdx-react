@@ -92,6 +92,8 @@ export interface MpdSupervisorReportContextValue {
   closeLegend: () => void;
   search: string;
   setSearch: (v: string) => void;
+  /** The search box changed and the debounced query has not caught up yet */
+  searchPending: boolean;
   team: string | null;
   setTeam: (v: string | null) => void;
   department: string | null;
@@ -229,14 +231,7 @@ export const MpdSupervisorReportProvider: React.FC<{
   // must not linger over it.
   useEffect(() => {
     setLoadMoreError(undefined);
-  }, [
-    debouncedSearch,
-    team,
-    department,
-    employmentType,
-    userPersonTypes,
-    activeQuickFilter,
-  ]);
+  }, [queryVariables]);
 
   // The spouse merge needs the whole result, so the rest of
   // it is fetched without waiting for the list to be scrolled. A failed page
@@ -370,6 +365,7 @@ export const MpdSupervisorReportProvider: React.FC<{
       closePanel: () => setSelectedMember(undefined),
       search,
       setSearch,
+      searchPending: search !== debouncedSearch,
       team,
       setTeam,
       department,
@@ -405,6 +401,7 @@ export const MpdSupervisorReportProvider: React.FC<{
       selectedMember,
       legendOpen,
       search,
+      debouncedSearch,
       team,
       department,
       employmentType,
