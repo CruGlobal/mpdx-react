@@ -14,7 +14,11 @@ import { missingValue } from '../../helpers/missingValue';
 export const columnLayout = (columns: number) =>
   columns === 3
     ? { size: { xs: 12, md: 4 }, amountVariant: 'h5' as const }
-    : { size: 6, amountVariant: 'h3' as const };
+    : {
+        size: { xs: 12, sm: 6 },
+        amountVariant: 'h3' as const,
+        phoneAmountVariant: 'h4' as const,
+      };
 
 interface NameDisplayProps {
   names: string;
@@ -49,7 +53,9 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
       ? [{ title: titleThree, amount: amountThree, testId: 'amount-three' }]
       : []),
   ];
-  const { size, amountVariant } = columnLayout(columns.length);
+  const { size, amountVariant, phoneAmountVariant } = columnLayout(
+    columns.length,
+  );
   const title = (
     <Box
       sx={{
@@ -86,7 +92,15 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
                   <Typography
                     variant={amountVariant}
                     fontWeight="bold"
-                    sx={{ color: 'primary.main' }}
+                    sx={{
+                      color: 'primary.main',
+                      ...(phoneAmountVariant && {
+                        [theme.breakpoints.down('sm')]: {
+                          fontSize:
+                            theme.typography[phoneAmountVariant].fontSize,
+                        },
+                      }),
+                    }}
                     data-testid={testId}
                   >
                     {typeof amount === 'number'

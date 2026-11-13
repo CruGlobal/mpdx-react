@@ -2,7 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { render } from '__tests__/util/testingLibraryReactMock';
+import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import useTaskModal from '../../../../hooks/useTaskModal';
@@ -71,6 +71,41 @@ describe('TasksDueThisWeek', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('clicking the complete circle opens Complete Task only', async () => {
+    const dueTasks: GetThisWeekQuery['dueTasks'] = {
+      nodes: [
+        {
+          id: 'task_1',
+          subject: 'Call about support',
+          activityType: ActivityTypeEnum.PartnerCarePrayerRequest,
+          contacts: {
+            nodes: [{ name: 'Smith, Roger', id: '1' }],
+            totalCount: 1,
+          },
+          startAt: null,
+          completedAt: null,
+        },
+      ],
+      totalCount: 1,
+    };
+    const { getByRole } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider>
+          <TasksDueThisWeek dueTasks={dueTasks} accountListId="abc" />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    userEvent.click(getByRole('button', { name: 'No Due Date' }));
+    await waitFor(() => {
+      expect(openTaskModal).toHaveBeenCalledTimes(1);
+      expect(openTaskModal).toHaveBeenCalledWith({
+        taskId: 'task_1',
+        view: TaskModalEnum.Complete,
+      });
+    });
+  });
+
   describe('MockDate', () => {
     it('props', async () => {
       const dueTasks: GetThisWeekQuery['dueTasks'] = {
@@ -130,10 +165,12 @@ describe('TasksDueThisWeek', () => {
         getByText('1 the quick brown fox jumps over the lazy dog'),
       ).toBeInTheDocument();
       userEvent.click(task1Element);
-      expect(openTaskModal).toHaveBeenCalledWith({
-        view: TaskModalEnum.Edit,
-        taskId: 'task_1',
-      });
+      await waitFor(() =>
+        expect(openTaskModal).toHaveBeenCalledWith({
+          view: TaskModalEnum.Edit,
+          taskId: 'task_1',
+        }),
+      );
       expect(
         getByTestId('TasksDueThisWeekListItem-task_2').textContent,
       ).toEqual(

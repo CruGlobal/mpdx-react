@@ -459,7 +459,6 @@ context:
 # Review engine: agent-review (the default) | code-review.
 # code_review keys: effort low|medium|high|xhigh|max, model opus|sonnet|haiku,
 # replaces and always are lists of agent ids; max_findings is optional (an integer >= 1 or all).
-# CI ignores this and runs agent-review's own reviewers, and only a local review can approve.
 engine:
   name: code-review
   code_review:
@@ -468,11 +467,16 @@ engine:
     replaces: [architecture]
     always: [security, testing, standards]
 
-# Advisory rollout: reviews post normally but never block merges. Still
-# label-gated. Move to `enforce` only once these gates pass.
+# Where reviews run: local | local-and-ci (the default). This repo runs reviews only
+# locally, so no CI workflow reviews its PRs.
+reviews_run: local
+
+# Reports approve by default (`advisory`). Set `shadow` to post advice only. This repo is
+# local-only, so there is no CI caller and this key is the only place the mode lives.
+# auto_approve in .github/workflows/agent-review-approve.yml decides whether a passing
+# report approves.
 rollout:
   mode: advisory
-  label: agent-review
   minimum_evaluated_runs: 50
   minimum_dispositions: 30
   thresholds:
