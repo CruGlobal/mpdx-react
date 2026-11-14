@@ -215,11 +215,15 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 
       // Set directInput to the existing value or fall back to totalAmount
       // This preserves user input or defaults to the calculated total
-      updateDirectInput(existingValue || totalAmount);
+      // The mutation's failure is already surfaced via the global Apollo
+      // error link; catch here too so a rejection doesn't also surface as an
+      // unhandled promise rejection, which RUM attaches to this click as a
+      // frustration signal (safety net monitor 312883915).
+      updateDirectInput(existingValue || totalAmount).catch(() => {});
     } else {
       // Switching to "Line Item" mode
       // Set directInput to null to indicate line item mode
-      updateDirectInput(null);
+      updateDirectInput(null).catch(() => {});
     }
 
     // Clear any validation errors when switching modes
@@ -246,9 +250,13 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       categoryType,
     );
 
-    gridData.forEach(async (row) => {
+    gridData.forEach((row) => {
       if (row.category) {
-        await trackMutation(() =>
+        // Not awaited: these mutations run independently of each other and
+        // of the effect itself. Catch rejections so a failure doesn't
+        // surface as an unhandled promise rejection (see the comment on
+        // handleDirectInputToggle above).
+        trackMutation(() =>
           updateSubBudgetCategory({
             variables: {
               input: {
@@ -261,7 +269,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
               },
             },
           }),
-        );
+        ).catch(() => {});
       }
     });
 
@@ -292,6 +300,9 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const addExpense = () => {
     const tempId = `temp-${Date.now()}`;
 
+    // Catch rejections so a failure doesn't surface as an unhandled promise
+    // rejection on top of the error the global Apollo error link already
+    // shows (see the comment on handleDirectInputToggle above).
     trackMutation(() =>
       createSubBudgetCategory({
         variables: {
@@ -338,12 +349,13 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
           }
         },
       }),
-    );
+    ).catch(() => {});
   };
 
   const handleDelete = (id: string | number) => {
     const rowId = id.toString();
 
+    // See the comment on addExpense above.
     trackMutation(() =>
       deleteSubBudgetCategory({
         variables: {
@@ -380,7 +392,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
           }
         },
       }),
-    );
+    ).catch(() => {});
   };
 
   const processRowUpdate = (newRow: GridValidRowModel) => {
@@ -406,6 +418,10 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
         return updated;
       });
 
+      // Not awaited: the grid commits the row optimistically and this runs
+      // in the background. Catch rejections so a failure doesn't surface as
+      // an unhandled promise rejection attached to the cell-edit click (see
+      // the comment on handleDirectInputToggle above).
       trackMutation(() =>
         updateSubBudgetCategory({
           variables: {
@@ -431,7 +447,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
             },
           },
         }),
-      );
+      ).catch(() => {});
     } catch (error) {
       // Handle validation errors from yup schema
       if (error instanceof yup.ValidationError) {
