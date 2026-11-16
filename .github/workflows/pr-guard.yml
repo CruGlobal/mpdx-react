@@ -21,6 +21,8 @@ jobs:
       workflow-ref: v2
       # Specs aren't part of the MPDX workflow yet; turn this on once the team uses /spec.
       require-spec: false
+      # Dependabot and Crowdin PRs have no work item; the job must still run to report the required check.
+      require-work-item: ${{ github.event.pull_request.user.type != 'Bot' }}
       size-ignore: |
         yarn.lock
         .pnp.cjs
