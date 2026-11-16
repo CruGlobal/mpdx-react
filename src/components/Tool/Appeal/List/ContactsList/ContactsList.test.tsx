@@ -3,6 +3,11 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  desktopWidth,
+  getStyleAtWidth,
+  phoneWidth,
+} from '__tests__/util/styleAtWidth';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import theme from 'src/theme';
 import { AppealQuery } from '../../AppealDetails/AppealsMainPanel/AppealInfo.generated';
@@ -164,5 +169,33 @@ describe('ContactsRow', () => {
       );
       expect(queryByText('Reason')).not.toBeInTheDocument();
     });
+
+    // The appeal header can grow with a long name, so the list must take the
+    // space left under it instead of a height that assumes a fixed header
+    it.each([phoneWidth, desktopWidth])(
+      'list fills the space under the appeal header at %ipx',
+      (width) => {
+        const { getByText } = render(<Components />);
+
+        const columnHeader = getByText('Contact').closest('.MuiGrid-container');
+        const column = columnHeader?.parentElement;
+        const list = columnHeader?.nextElementSibling;
+        expect(column).toBeTruthy();
+        expect(list).toBeTruthy();
+
+        expect(column).toContainElement(getByText('Test Appeal'));
+        expect(getStyleAtWidth(column!, 'display', width)).toBe('flex');
+        expect(getStyleAtWidth(column!, 'flex-direction', width)).toBe(
+          'column',
+        );
+        expect(getStyleAtWidth(column!, 'height', width)).toMatch(
+          /^calc\(100vh - /,
+        );
+
+        expect(getStyleAtWidth(list!, 'flex', width)).toMatch(/^1( |$)/);
+        expect(getStyleAtWidth(list!, 'min-height', width)).toBe('0');
+        expect(getStyleAtWidth(list!, 'height', width)).toBe('');
+      },
+    );
   });
 });
