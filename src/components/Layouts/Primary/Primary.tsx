@@ -36,7 +36,7 @@ const Primary = ({ children }: Props): ReactElement => {
   const [isMobileNavOpen, setMobileNavOpen] = useState<boolean>(false);
 
   return (
-    <RootContainer data-testid="PrimaryRoot">
+    <RootContainer>
       <TopBar
         onMobileNavOpen={() => setMobileNavOpen(!isMobileNavOpen)}
         accountListId={accountListId}

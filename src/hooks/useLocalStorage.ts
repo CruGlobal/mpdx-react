@@ -1,23 +1,35 @@
 // Adapted from https://usehooks-ts.com/react-hook/use-local-storage
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
 
 const IS_SERVER = typeof window === 'undefined';
 
+// React uses the server snapshot on the server and while hydrating, and the
+// client snapshot for every other render
+const subscribeNever = () => () => undefined;
+const useIsHydrating = (): boolean =>
+  useSyncExternalStore(
+    subscribeNever,
+    () => false,
+    () => true,
+  );
+
 interface UseLocalStorageOptions {
   /**
-   * Read local storage during the first render (the default). Pass false when
-   * the value changes server-rendered markup: the first render then matches the
-   * server's default, and the stored value is read after mount.
+   * Set when the value changes server-rendered markup. The server can't see
+   * local storage, so while the page hydrates the first render uses the
+   * default, like the server did, and the stored value is read after mount.
+   * A client-only mount still reads the stored value in its first render.
    */
-  initializeWithValue?: boolean;
+  readAfterHydration?: boolean;
 }
 
 export const useLocalStorage = <T>(
   key: string,
   defaultValue: T,
-  { initializeWithValue = true }: UseLocalStorageOptions = {},
+  { readAfterHydration = false }: UseLocalStorageOptions = {},
 ): [T, Dispatch<SetStateAction<T>>] => {
+  const isHydrating = useIsHydrating();
   const deserializer = useCallback<(value: string) => T>(
     (value) => {
       let parsed: unknown;
@@ -49,7 +61,7 @@ export const useLocalStorage = <T>(
   }, [defaultValue, key, deserializer]);
 
   const [storedValue, setStoredValue] = useState(() =>
-    initializeWithValue ? readValue() : defaultValue,
+    readAfterHydration && isHydrating ? defaultValue : readValue(),
   );
 
   // Return a wrapped version of useState's setter function that ...

@@ -162,7 +162,7 @@ const useRowDensity = (): [RowDensityEnum, (v: RowDensityEnum) => void] => {
   const [storedDensity, setRowDensity] = useLocalStorage<RowDensityEnum>(
     rowDensityStorageKey,
     RowDensityEnum.Comfortable,
-    { initializeWithValue: false },
+    { readAfterHydration: true },
   );
   // A value from an older build (or a hand edit) falls back to the default
   const rowDensity = Object.values(RowDensityEnum).includes(storedDensity)

@@ -42,11 +42,9 @@ describe('Primary', () => {
   });
 
   it('only shows a horizontal scrollbar when the page is too wide', () => {
-    const { getByTestId } = renderPrimary();
+    const { container } = renderPrimary();
 
-    // An always-on horizontal scrollbar takes height from the 100vh root, which
-    // lets full-height pages scroll by the scrollbar's height
-    expect(getByTestId('PrimaryRoot')).toHaveStyle({
+    expect(container.firstElementChild).toHaveStyle({
       overflowX: 'auto',
       overflowY: 'scroll',
     });

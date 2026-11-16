@@ -1,4 +1,7 @@
+import { createElement } from 'react';
+import { render } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
+import { renderToString } from 'react-dom/server';
 import { useLocalStorage } from './useLocalStorage';
 
 describe('useLocalStorage', () => {
@@ -8,6 +11,7 @@ describe('useLocalStorage', () => {
   const setItem = jest.fn();
 
   beforeEach(() => {
+    getItem.mockReset();
     window.Storage.prototype.getItem = getItem;
     window.Storage.prototype.setItem = setItem;
   });
@@ -28,19 +32,50 @@ describe('useLocalStorage', () => {
     );
 
     expect(getItem).toHaveBeenCalledWith(storageKey);
+    expect(result.all[0]).toEqual([{ key: 'value' }, expect.any(Function)]);
     expect(result.current[0]).toEqual({ key: 'value' });
   });
 
-  it('reads local storage after mount when initializeWithValue is false', () => {
+  it('reads local storage in the first client-only render when readAfterHydration is set', () => {
     getItem.mockReturnValue('{"key":"value"}');
 
     const { result } = renderHook(() =>
-      useLocalStorage(storageKey, initialValue, { initializeWithValue: false }),
+      useLocalStorage(storageKey, initialValue, { readAfterHydration: true }),
     );
 
-    // The first render matches the server's markup; the stored value follows
-    expect(result.all[0]).toEqual([initialValue, expect.any(Function)]);
-    expect(result.current[0]).toEqual({ key: 'value' });
+    expect(result.all[0]).toEqual([{ key: 'value' }, expect.any(Function)]);
+  });
+
+  it('matches the server markup while hydrating when readAfterHydration is set', () => {
+    const Probe = () => {
+      const [value] = useLocalStorage(storageKey, initialValue, {
+        readAfterHydration: true,
+      });
+      return createElement('span', { 'data-value': value.key });
+    };
+    const consoleError = jest.spyOn(console, 'error').mockImplementation();
+
+    // The server can't see local storage, so it renders the default.
+    // The markup is React's own output, not user input.
+    const container = document.createElement('div');
+    container.insertAdjacentHTML(
+      'afterbegin',
+      renderToString(createElement(Probe)),
+    );
+    document.body.appendChild(container);
+    getItem.mockReturnValue('{"key":"value"}');
+
+    render(createElement(Probe), { container, hydrate: true });
+
+    // The stored value replaces the default after hydration, with no mismatch
+    expect(container.querySelector('span')).toHaveAttribute(
+      'data-value',
+      'value',
+    );
+    expect(consoleError.mock.calls.flat().join(' ')).not.toContain(
+      'did not match',
+    );
+    consoleError.mockRestore();
   });
 
   it('writes the value to local storage', () => {
