@@ -1,0 +1,31 @@
+name: PR guard
+
+# Its own workflow so editing the description or a label re-runs only the guard.
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, edited, synchronize, reopened, labeled, unlabeled]
+
+concurrency:
+  group: pr-guard-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  pr-guard:
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    uses: CruGlobal/.github/.github/workflows/pr-guard.yml@v2
+    with:
+      workflow-ref: v2
+      # Specs aren't part of the MPDX workflow yet; turn this on once the team uses /spec.
+      require-spec: false
+      size-ignore: |
+        yarn.lock
+        .pnp.cjs
+        .pnp.loader.mjs
+        .yarn/
+        public/locales/
+        scripts/jest-shards/timings.json
+        __snapshots__/
