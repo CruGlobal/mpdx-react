@@ -31,6 +31,18 @@ describe('useLocalStorage', () => {
     expect(result.current[0]).toEqual({ key: 'value' });
   });
 
+  it('reads local storage after mount when initializeWithValue is false', () => {
+    getItem.mockReturnValue('{"key":"value"}');
+
+    const { result } = renderHook(() =>
+      useLocalStorage(storageKey, initialValue, { initializeWithValue: false }),
+    );
+
+    // The first render matches the server's markup; the stored value follows
+    expect(result.all[0]).toEqual([initialValue, expect.any(Function)]);
+    expect(result.current[0]).toEqual({ key: 'value' });
+  });
+
   it('writes the value to local storage', () => {
     const { result } = renderHook(() =>
       useLocalStorage(storageKey, initialValue),

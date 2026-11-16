@@ -181,9 +181,12 @@ export const MpdSupervisorReportProvider: React.FC<{
   const [selectedTabKey, setSelectedTabKey] = useState<StaffDetailTabEnum>(() =>
     parseTabFromQuery(query?.tab),
   );
+  // The toggle is server-rendered for developers, so the saved density is read
+  // after hydration; reading it sooner leaves the server's pressed button.
   const [storedDensity, setRowDensity] = useLocalStorage<RowDensityEnum>(
     rowDensityStorageKey,
     RowDensityEnum.Comfortable,
+    { initializeWithValue: false },
   );
   // A value from an older build (or a hand edit) falls back to the default
   const rowDensity = Object.values(RowDensityEnum).includes(storedDensity)

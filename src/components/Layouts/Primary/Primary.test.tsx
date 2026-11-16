@@ -21,8 +21,8 @@ describe('Primary', () => {
     matchMediaMock({ width: '1024px' });
   });
 
-  it('has correct defaults', () => {
-    const { getByTestId } = render(
+  const renderPrimary = () =>
+    render(
       <ThemeProvider theme={theme}>
         <TestWrapper mocks={mocks}>
           <TestRouter router={router}>
@@ -35,6 +35,20 @@ describe('Primary', () => {
         </TestWrapper>
       </ThemeProvider>,
     );
+
+  it('has correct defaults', () => {
+    const { getByTestId } = renderPrimary();
     expect(getByTestId('PrimaryTestChildren')).toBeInTheDocument();
+  });
+
+  it('only shows a horizontal scrollbar when the page is too wide', () => {
+    const { getByTestId } = renderPrimary();
+
+    // An always-on horizontal scrollbar takes height from the 100vh root, which
+    // lets full-height pages scroll by the scrollbar's height
+    expect(getByTestId('PrimaryRoot')).toHaveStyle({
+      overflowX: 'auto',
+      overflowY: 'scroll',
+    });
   });
 });

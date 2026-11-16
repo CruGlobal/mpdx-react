@@ -4,9 +4,19 @@ import type { Dispatch, SetStateAction } from 'react';
 
 const IS_SERVER = typeof window === 'undefined';
 
+interface UseLocalStorageOptions {
+  /**
+   * Read local storage during the first render (the default). Pass false when
+   * the value changes server-rendered markup: the first render then matches the
+   * server's default, and the stored value is read after mount.
+   */
+  initializeWithValue?: boolean;
+}
+
 export const useLocalStorage = <T>(
   key: string,
   defaultValue: T,
+  { initializeWithValue = true }: UseLocalStorageOptions = {},
 ): [T, Dispatch<SetStateAction<T>>] => {
   const deserializer = useCallback<(value: string) => T>(
     (value) => {
@@ -38,7 +48,9 @@ export const useLocalStorage = <T>(
     }
   }, [defaultValue, key, deserializer]);
 
-  const [storedValue, setStoredValue] = useState(readValue());
+  const [storedValue, setStoredValue] = useState(() =>
+    initializeWithValue ? readValue() : defaultValue,
+  );
 
   // Return a wrapped version of useState's setter function that ...
   // ... persists the new value to localStorage.
