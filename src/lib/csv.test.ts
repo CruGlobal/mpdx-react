@@ -22,6 +22,18 @@ describe('escapeCsvCell', () => {
     expect(escapeCsvCell('Jan 26 - Apr 26')).toBe('Jan 26 - Apr 26');
   });
 
+  it.each(['-125.5', '-$50.00', '+1,200', '-12%', '-1 234,56 €', '-'])(
+    'leaves text that is only an amount alone so it stays a number: %p',
+    (cell) => {
+      expect(escapeCsvCell(cell)).toBe(cell);
+    },
+  );
+
+  it('still guards an amount-like start that holds a formula', () => {
+    expect(escapeCsvCell('-1+1')).toBe(`'-1+1`);
+    expect(escapeCsvCell('-$5 cmd|x')).toBe(`'-$5 cmd|x`);
+  });
+
   it('leaves numbers and blanks alone so negative amounts stay numbers', () => {
     expect(escapeCsvCell(-850)).toBe(-850);
     expect(escapeCsvCell(0)).toBe(0);

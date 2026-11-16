@@ -1,3 +1,4 @@
+import { csvFromUri } from '__tests__/util/csvFromUri';
 import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import { ReportType } from '../Helpers/StaffReportEnum';
@@ -267,7 +268,7 @@ describe('downloadReport', () => {
     const hrefValue = setAttributeMock.mock.calls.find(
       ([attribute]) => attribute === 'href',
     )?.[1];
-    const csvContent = decodeURIComponent(hrefValue);
+    const csvContent = csvFromUri(hrefValue);
     expect(csvContent).toContain('"Books, ""Basics""","$2,724"');
     expect(csvContent).toContain(`"'=SUM(A1)","$500"`);
   });
