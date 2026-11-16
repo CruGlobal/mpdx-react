@@ -1,0 +1,17 @@
+name: Pull request checks
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: pr-checks-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # Lint, typecheck and tests stay in ci.yml: the shared node-ci job has no codegen step and can't shard the tests.
+  security:
+    uses: CruGlobal/.github/.github/workflows/node-security.yml@v2
