@@ -196,7 +196,8 @@ describe('DownloadCsvButton', () => {
 
     // Join the rows the way react-csv writes the file
     const { joiner } = jest.requireActual('react-csv/lib/core');
-    const rows = (buildURI as jest.Mock).mock.calls.at(-1)[0];
+    const [rows, withBom] = (buildURI as jest.Mock).mock.calls.at(-1);
+    expect(withBom).toBe(true);
     const [, quoted, formula] = joiner(rows).split('\n');
     expect(quoted).toMatch(
       /^"Robert ""Bob"" Smith","1000000001","The ""A"", B Team",/,

@@ -6,12 +6,18 @@ describe('escapeCsvCell', () => {
     expect(escapeCsvCell('Robert "Bob" Smith')).toBe('Robert ""Bob"" Smith');
   });
 
-  it.each(['=SUM(A1)', '+1+1', '-2+3', '@SUM(A1)', '\t=1', '\r=1'])(
-    'puts a quote mark before text that starts like a formula: %p',
-    (cell) => {
-      expect(escapeCsvCell(cell)).toBe(`'${cell}`);
-    },
-  );
+  it.each([
+    '=SUM(A1)',
+    '+1+1',
+    '-2+3',
+    '@SUM(A1)',
+    '\t=1',
+    '\r=1',
+    '\t5',
+    '\r5',
+  ])('puts a quote mark before text that starts like a formula: %p', (cell) => {
+    expect(escapeCsvCell(cell)).toBe(`'${cell}`);
+  });
 
   it('escapes quotes in a formula-like cell too', () => {
     expect(escapeCsvCell('=HYPERLINK("x")')).toBe(`'=HYPERLINK(""x"")`);
@@ -22,7 +28,15 @@ describe('escapeCsvCell', () => {
     expect(escapeCsvCell('Jan 26 - Apr 26')).toBe('Jan 26 - Apr 26');
   });
 
-  it.each(['-125.5', '-$50.00', '+1,200', '-12%', '-1 234,56 €', '-'])(
+  it.each([
+    '-125.5',
+    '-$50.00',
+    '+1,200',
+    '-12%',
+    '-1 234,56 €',
+    '-1\u202F234,56\u00A0€',
+    '-',
+  ])(
     'leaves text that is only an amount alone so it stays a number: %p',
     (cell) => {
       expect(escapeCsvCell(cell)).toBe(cell);
