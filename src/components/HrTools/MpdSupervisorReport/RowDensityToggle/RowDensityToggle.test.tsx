@@ -8,6 +8,7 @@ import theme from 'src/theme';
 import { ManagedStaffQuery } from '../ManagedStaff.generated';
 import {
   MpdSupervisorReportProvider,
+  RowDensityEnum,
   rowDensityStorageKey,
 } from '../MpdSupervisorReportContext';
 import { managedStaffMock } from '../mpdSupervisorReportMocks';
@@ -51,6 +52,25 @@ describe('RowDensityToggle', () => {
       'true',
     );
     expect(window.localStorage.getItem(rowDensityStorageKey)).toBe('"compact"');
+  });
+
+  it('shows the saved density, and one click changes it', () => {
+    window.localStorage.setItem(
+      rowDensityStorageKey,
+      JSON.stringify(RowDensityEnum.Compact),
+    );
+    const { getByRole } = renderToggle();
+
+    expect(getByRole('button', { name: 'Compact rows' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+
+    userEvent.click(getByRole('button', { name: 'Comfortable rows' }));
+    expect(getByRole('button', { name: 'Comfortable rows' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
   });
 
   it('keeps the current density when its button is clicked again', () => {

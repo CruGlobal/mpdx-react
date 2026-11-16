@@ -11,7 +11,10 @@ const RootContainer = styled('div')(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
   width: '100vw',
   height: '100vh',
-  overflow: 'scroll',
+  // An always-on horizontal scrollbar would take height from this 100vh box and
+  // let full-height pages scroll by the scrollbar's height
+  overflowX: 'auto',
+  overflowY: 'scroll',
 }));
 
 const ContentContainer = styled('div')(() => ({
