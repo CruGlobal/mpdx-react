@@ -21,8 +21,8 @@ describe('Primary', () => {
     matchMediaMock({ width: '1024px' });
   });
 
-  it('has correct defaults', () => {
-    const { getByTestId } = render(
+  const renderPrimary = () =>
+    render(
       <ThemeProvider theme={theme}>
         <TestWrapper mocks={mocks}>
           <TestRouter router={router}>
@@ -35,6 +35,18 @@ describe('Primary', () => {
         </TestWrapper>
       </ThemeProvider>,
     );
+
+  it('has correct defaults', () => {
+    const { getByTestId } = renderPrimary();
     expect(getByTestId('PrimaryTestChildren')).toBeInTheDocument();
+  });
+
+  it('only shows a horizontal scrollbar when the page is too wide', () => {
+    const { container } = renderPrimary();
+
+    expect(container.firstElementChild).toHaveStyle({
+      overflowX: 'auto',
+      overflowY: 'scroll',
+    });
   });
 });

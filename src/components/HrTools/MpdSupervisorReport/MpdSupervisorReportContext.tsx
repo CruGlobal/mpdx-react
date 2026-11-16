@@ -156,6 +156,21 @@ const parseTabFromQuery = (
     : StaffDetailTabEnum.MonthlySummary;
 };
 
+const useRowDensity = (): [RowDensityEnum, (v: RowDensityEnum) => void] => {
+  // The toggle is server-rendered for developers, so the saved density is read
+  // after hydration; reading it sooner leaves the server's pressed button.
+  const [storedDensity, setRowDensity] = useLocalStorage<RowDensityEnum>(
+    rowDensityStorageKey,
+    RowDensityEnum.Comfortable,
+    { readAfterHydration: true },
+  );
+  // A value from an older build (or a hand edit) falls back to the default
+  const rowDensity = Object.values(RowDensityEnum).includes(storedDensity)
+    ? storedDensity
+    : RowDensityEnum.Comfortable;
+  return [rowDensity, setRowDensity];
+};
+
 export const MpdSupervisorReportProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
@@ -181,14 +196,7 @@ export const MpdSupervisorReportProvider: React.FC<{
   const [selectedTabKey, setSelectedTabKey] = useState<StaffDetailTabEnum>(() =>
     parseTabFromQuery(query?.tab),
   );
-  const [storedDensity, setRowDensity] = useLocalStorage<RowDensityEnum>(
-    rowDensityStorageKey,
-    RowDensityEnum.Comfortable,
-  );
-  // A value from an older build (or a hand edit) falls back to the default
-  const rowDensity = Object.values(RowDensityEnum).includes(storedDensity)
-    ? storedDensity
-    : RowDensityEnum.Comfortable;
+  const [rowDensity, setRowDensity] = useRowDensity();
 
   const debouncedSearch = useDebouncedValue(search, searchDebounceMs);
 
