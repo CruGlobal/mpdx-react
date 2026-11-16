@@ -177,6 +177,34 @@ describe('DownloadCsvButton', () => {
     ]);
   });
 
+  it('keeps quotes in one cell and writes formulas as text', async () => {
+    const { findByRole } = renderButton({
+      ManagedStaff: {
+        managedStaff: managedStaffMock([
+          managedStaffMember({
+            firstName: 'Robert "Bob"',
+            teams: {
+              employee: [{ id: 't1', name: 'The "A", B Team' }],
+              spouse: [],
+            },
+          }),
+          { ...alice, firstName: '=SUM(A1)' },
+        ]).managedStaff,
+      },
+    });
+    await findByRole('link', { name: 'Download CSV' });
+
+    // Join the rows the way react-csv writes the file
+    const { joiner } = jest.requireActual('react-csv/lib/core');
+    const [rows, withBom] = (buildURI as jest.Mock).mock.calls.at(-1);
+    expect(withBom).toBe(true);
+    const [, quoted, formula] = joiner(rows).split('\n');
+    expect(quoted).toMatch(
+      /^"Robert ""Bob"" Smith","1000000001","The ""A"", B Team",/,
+    );
+    expect(formula).toMatch(/^"'=SUM\(A1\) Jones",/);
+  });
+
   it('releases each file when the rows change and when it goes away', async () => {
     const { findByRole, getByRole, unmount } = renderButton();
     await findByRole('link', { name: 'Download CSV' });
