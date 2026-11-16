@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon';
+import { csvFromUri } from '__tests__/util/csvFromUri';
 import { ScheduleEnum, StatusEnum, TableTypeEnum, mockData } from '../mockData';
 import { createTable, downloadCSV } from './downloadTable';
 
@@ -54,6 +55,22 @@ describe('DownloadTable', () => {
     expect(mockRemoveChild).toHaveBeenCalledWith(link);
 
     expect(data).toContain('data:text/csv');
+  });
+
+  it('keeps quotes and commas in one cell and writes formulas as text', () => {
+    const data = downloadCSV(
+      mockT,
+      [
+        { ...mockData[1], note: 'Rent, "May"' },
+        { ...mockData[1], note: '=SUM(A1)' },
+      ],
+      TableTypeEnum.History,
+      mockLocale,
+    );
+
+    const [, quoted, formula] = csvFromUri(data).split('\n');
+    expect(quoted).toMatch(/,"Rent, ""May"""$/);
+    expect(formula).toMatch(/,"'=SUM\(A1\)"$/);
   });
 
   it('should contain correct data', () => {

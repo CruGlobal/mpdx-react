@@ -177,6 +177,29 @@ describe('DownloadCsvButton', () => {
     ]);
   });
 
+  it('keeps quotes in one cell and writes formulas as text', async () => {
+    const { findByRole } = renderButton({
+      ManagedStaff: {
+        managedStaff: managedStaffMock([
+          managedStaffMember({
+            firstName: 'Robert "Bob"',
+            teams: { employee: [{ id: 't1', name: 'A, B' }], spouse: [] },
+          }),
+          { ...alice, firstName: '=SUM(A1)' },
+        ]).managedStaff,
+      },
+    });
+    await findByRole('link', { name: 'Download CSV' });
+
+    const rows = (buildURI as jest.Mock).mock.calls.at(-1)[0];
+    expect(rows[1].slice(0, 3)).toEqual([
+      'Robert ""Bob"" Smith',
+      '1000000001',
+      'A, B',
+    ]);
+    expect(rows[2][0]).toBe(`'=SUM(A1) Jones`);
+  });
+
   it('releases each file when the rows change and when it goes away', async () => {
     const { findByRole, getByRole, unmount } = renderButton();
     await findByRole('link', { name: 'Download CSV' });

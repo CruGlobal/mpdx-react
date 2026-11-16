@@ -1,5 +1,5 @@
 import { TFunction } from 'i18next';
-import { buildURI } from 'react-csv/lib/core';
+import { buildCsvUri } from 'src/lib/csv';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { getEndDateLabel } from '../Helper/getEndDateLabel';
 import { getNextPaymentDate } from '../Helper/getNextPaymentDate';
@@ -80,7 +80,7 @@ export const downloadCSV = (
   ];
 
   const csvData = createTable(csvHeader, transfers, locale);
-  const csvBlob = buildURI(csvData, true);
+  const csvBlob = buildCsvUri(csvData);
 
   const link = document.createElement('a');
   link.setAttribute('href', csvBlob);

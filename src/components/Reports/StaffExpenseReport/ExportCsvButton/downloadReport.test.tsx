@@ -250,4 +250,25 @@ describe('downloadReport', () => {
     const csvContent = decodeURIComponent(hrefValue);
     expect(csvContent).toContain('"Donations (1 of 2 Pending)"');
   });
+
+  it('keeps quotes and commas in one cell and writes formulas as text', () => {
+    const realLink = document.createElement('a');
+    jest.spyOn(realLink, 'setAttribute').mockImplementation(setAttributeMock);
+    jest.spyOn(realLink, 'click').mockImplementation(clickMock);
+
+    jest.spyOn(document, 'createElement').mockReturnValue(realLink);
+
+    const transactions: Transaction[] = [
+      { ...mockData[0], description: 'Books, "Basics"' },
+      { ...mockData[2], description: '=SUM(A1)' },
+    ];
+    createCsvReport(ReportType.Expense, transactions, mockT, mockLocale);
+
+    const hrefValue = setAttributeMock.mock.calls.find(
+      ([attribute]) => attribute === 'href',
+    )?.[1];
+    const csvContent = decodeURIComponent(hrefValue);
+    expect(csvContent).toContain('"Books, ""Basics""","$2,724"');
+    expect(csvContent).toContain(`"'=SUM(A1)","$500"`);
+  });
 });

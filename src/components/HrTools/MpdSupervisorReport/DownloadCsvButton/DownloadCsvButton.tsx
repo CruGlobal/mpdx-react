@@ -2,9 +2,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import { Button } from '@mui/material';
 import { DateTime } from 'luxon';
-import { buildURI } from 'react-csv/lib/core';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
+import { buildCsvUri } from 'src/lib/csv';
 import { useMpdSupervisorReport } from '../MpdSupervisorReportContext';
 import {
   SupervisorReportCsv,
@@ -52,7 +52,7 @@ export const DownloadCsvButton: React.FC = () => {
       setFile(null);
       return;
     }
-    const href = buildURI(csv, true);
+    const href = buildCsvUri(csv);
     setFile({ csv, href });
     return () => URL.revokeObjectURL(href);
   }, [csv]);
