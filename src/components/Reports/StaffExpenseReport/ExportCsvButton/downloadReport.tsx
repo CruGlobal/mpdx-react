@@ -1,6 +1,6 @@
 import { TFunction } from 'i18next';
-import { buildURI } from 'react-csv/lib/core';
 import { Transaction } from 'src/components/Reports/StaffExpenseReport/Helpers/filterTransactions';
+import { buildCsvUri } from 'src/lib/csv';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { ReportType } from '../Helpers/StaffReportEnum';
 import { getDescriptionWithPending } from '../Helpers/pendingLabel';
@@ -68,7 +68,7 @@ function createCombinedReport(
 }
 
 const downloadCsvReport = (csvData: string[][], reportTitle: string) => {
-  const csvBlob = buildURI(csvData, true);
+  const csvBlob = buildCsvUri(csvData);
 
   const link = document.createElement('a');
   link.setAttribute('href', csvBlob);
