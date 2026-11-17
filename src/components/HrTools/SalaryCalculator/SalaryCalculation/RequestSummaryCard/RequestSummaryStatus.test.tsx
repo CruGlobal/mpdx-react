@@ -5,6 +5,7 @@ import {
   useAutosaveForm,
 } from 'src/components/Shared/Autosave/AutosaveForm';
 import {
+  HcmLoaded,
   SalaryCalculatorTestWrapper,
   SalaryCalculatorTestWrapperProps,
 } from '../../SalaryCalculatorTestWrapper';
@@ -22,7 +23,11 @@ const blockedMock: SalaryCalculatorTestWrapperProps['salaryRequestMock'] = {
     effectiveCap: 75000,
     combinedCap: 135000,
   },
-  spouseCalculations: { requestedYtdGross: 40000, effectiveCap: 50000 },
+  spouseCalculations: {
+    requestedGross: 40000,
+    requestedYtdGross: 40000,
+    effectiveCap: 50000,
+  },
 };
 
 const notBlockedMock: SalaryCalculatorTestWrapperProps['salaryRequestMock'] = {
@@ -47,6 +52,7 @@ const TestComponent: React.FC<SalaryCalculatorTestWrapperProps> = (props) => (
     hcmUser={{ currentSalary: { grossSalaryAmount: 70000 } }}
     {...props}
   >
+    <HcmLoaded />
     <AutosaveForm>
       <ValidFields>
         <RequestSummaryStatus>Division Head message</RequestSummaryStatus>
@@ -58,38 +64,41 @@ const TestComponent: React.FC<SalaryCalculatorTestWrapperProps> = (props) => (
 
 describe('RequestSummaryStatus', () => {
   it('shows the alert in place of the status message and blocks continuing', async () => {
-    const { findByTestId, findByRole, queryByText } = render(
+    const { findByTestId, getByRole, queryByText } = render(
       <TestComponent salaryRequestMock={blockedMock} />,
     );
 
     expect(await findByTestId('SpouseCapFirstAlert')).toHaveTextContent(
-      "raise Jane's Gross Requested Salary up to their Maximum Allowable Salary of $50,000.00",
+      "raise Jane's Gross Requested Salary to $50,000.00, which brings them up to their Maximum Allowable Salary",
     );
     expect(queryByText('Division Head message')).not.toBeInTheDocument();
-    await waitFor(async () =>
-      expect(await findByRole('button', { name: 'Continue' })).toBeDisabled(),
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Continue' })).toBeDisabled(),
     );
   });
 
   it('shows the status message and allows continuing otherwise', async () => {
-    const { findByTestId, findByRole } = render(
+    const { findByText, getByTestId, getByRole } = render(
       <TestComponent salaryRequestMock={notBlockedMock} />,
     );
 
-    expect(await findByTestId('RequestSummaryCard-status')).toHaveTextContent(
+    // Not blocked is also what shows before the data loads, so wait for it first
+    expect(await findByText('HCM loaded')).toBeInTheDocument();
+    expect(getByTestId('RequestSummaryCard-status')).toHaveTextContent(
       'Division Head message',
     );
-    await waitFor(async () =>
-      expect(await findByRole('button', { name: 'Continue' })).toBeEnabled(),
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Continue' })).toBeEnabled(),
     );
   });
 
   it('shows the status message for a request that is only being viewed', async () => {
-    const { findByTestId, queryByTestId } = render(
+    const { findByText, getByTestId, queryByTestId } = render(
       <TestComponent salaryRequestMock={blockedMock} editing={false} />,
     );
 
-    expect(await findByTestId('RequestSummaryCard-status')).toHaveTextContent(
+    expect(await findByText('HCM loaded')).toBeInTheDocument();
+    expect(getByTestId('RequestSummaryCard-status')).toHaveTextContent(
       'Division Head message',
     );
     expect(queryByTestId('SpouseCapFirstAlert')).not.toBeInTheDocument();

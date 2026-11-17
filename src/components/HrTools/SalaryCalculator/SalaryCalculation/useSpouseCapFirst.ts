@@ -20,7 +20,7 @@ interface UseSpouseCapFirstResult {
   /** The name of the spouse who must reach their cap first */
   otherName: string | null;
 
-  /** The formatted amount the spouse who must reach their cap first needs to reach */
+  /** The formatted gross salary that brings the spouse who must reach their cap first up to it */
   otherCap: string;
 
   /** Whether the couple chose to split their combined cap by hand */
@@ -85,7 +85,7 @@ const findOverAndOther = (
 // An automatic split gives each spouse half of the combined cap still unused, so the other
 // spouse's effective cap rises as they raise their salary. The amount that settles it is the rest
 // of the combined cap, limited by their own caps.
-const getOtherTarget = (
+const getOtherCap = (
   calculation: Calculation,
   manuallySplitCap: boolean,
   over: Person,
@@ -100,6 +100,17 @@ const getOtherTarget = (
     other.hardCap,
     calculation.calculations.combinedCap - over.requestedYtdGross,
   );
+};
+
+// The cap counts this year's ASRs, so the other spouse's gross salary only has to make up the rest
+const getOtherTarget = (
+  calculation: Calculation,
+  manuallySplitCap: boolean,
+  over: Person,
+  other: Person,
+) => {
+  const otherAsrs = other.requestedYtdGross - other.requestedGross;
+  return getOtherCap(calculation, manuallySplitCap, over, other) - otherAsrs;
 };
 
 /**
