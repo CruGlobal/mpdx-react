@@ -3,6 +3,7 @@ import {
   SalaryRequestMock,
   renderUseSpouseCapFirst,
   userOverMock,
+  waitForLoaded,
 } from './spouseCapFirstTestUtils';
 
 // John at $80,000 is over his cap, and Jane at $40,000 is under hers, with the combined cap split
@@ -97,9 +98,9 @@ describe('useSpouseCapFirst otherCap', () => {
     );
   });
 
-  it("stops at John's combined cap when Jane's own combined cap is higher", async () => {
-    // John's request is checked against his $125,000 combined cap, so the block lifts once the
-    // couple passes it, at $125,000 - $80,000, before Jane reaches her own split cap
+  it("asks for the other spouse's own split cap even when John's combined cap is lower", async () => {
+    // The couple passing John's $125,000 combined cap would also lift the block, but the alert names
+    // where Jane reaches her own cap: $135,000 - $80,000
     const { result } = renderUseSpouseCapFirst({
       ...autoSplitMock({
         effectiveCap: 47500,
@@ -113,10 +114,27 @@ describe('useSpouseCapFirst otherCap', () => {
     await waitFor(() =>
       expect(result.current).toMatchObject({
         blocked: true,
-        otherCap: '$45,000.00',
-        otherCapRises: false,
+        otherCap: '$55,000.00',
+        otherCapRises: true,
       }),
     );
+  });
+
+  it('lifts the block once the other spouse reaches the amount it names', async () => {
+    // Jane at $55,000 has a split cap of (135,000 + 55,000 - 80,000) / 2 = $55,000
+    const { result } = renderUseSpouseCapFirst(
+      autoSplitMock({
+        requestedGross: 55000,
+        requestedYtdGross: 55000,
+        effectiveCap: 55000,
+        personalFactorsCap: 70000,
+        hardCap: 80000,
+      }),
+      { spouseCurrentGross: 55000 },
+    );
+
+    await waitForLoaded(result);
+    expect(result.current.blocked).toBe(false);
   });
 
   // The split would give Jane $47,500, so her own cap below that is her effective cap already, and
