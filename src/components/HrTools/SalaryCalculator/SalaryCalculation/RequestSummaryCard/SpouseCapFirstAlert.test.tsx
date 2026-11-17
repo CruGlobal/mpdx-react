@@ -6,6 +6,7 @@ const alertProps = {
   otherName: 'Jane',
   otherCap: '$50,000.00',
   manuallySplitCap: false,
+  autoSplitCap: false,
 };
 
 describe('SpouseCapFirstAlert', () => {
@@ -20,6 +21,18 @@ describe('SpouseCapFirstAlert', () => {
       "raise Jane's Gross Requested Salary to $50,000.00, which brings them up to their Maximum Allowable Salary",
     );
     expect(alert).not.toHaveTextContent('change how you split');
+    expect(alert).not.toHaveTextContent('split automatically');
+  });
+
+  // The cap shown on the page is lower than the amount, since it rises as the salary rises
+  it("explains that an automatic split's cap goes up with the salary", () => {
+    const { getByTestId } = render(
+      <SpouseCapFirstAlert {...alertProps} autoSplitCap />,
+    );
+
+    expect(getByTestId('SpouseCapFirstAlert')).toHaveTextContent(
+      "Since your Combined Maximum Allowable Salary is split automatically, Jane's Maximum Allowable Salary goes up as their salary goes up.",
+    );
   });
 
   it('also suggests moving cap when the couple splits the combined cap by hand', () => {

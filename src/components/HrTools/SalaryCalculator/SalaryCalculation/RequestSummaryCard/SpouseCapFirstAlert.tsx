@@ -8,6 +8,7 @@ interface SpouseCapFirstAlertProps {
   otherName: string | null;
   otherCap: string;
   manuallySplitCap: boolean;
+  autoSplitCap: boolean;
 }
 
 export const SpouseCapFirstAlert: React.FC<SpouseCapFirstAlertProps> = ({
@@ -15,6 +16,7 @@ export const SpouseCapFirstAlert: React.FC<SpouseCapFirstAlertProps> = ({
   otherName,
   otherCap,
   manuallySplitCap,
+  autoSplitCap,
 }) => {
   const { t } = useTranslation();
   const { markValid, markInvalid } = useOptionalAutosaveForm() ?? {};
@@ -37,6 +39,17 @@ export const SpouseCapFirstAlert: React.FC<SpouseCapFirstAlertProps> = ({
         Salary. After you have both reached your Maximum Allowable Salary, a
         higher request will go through our Progressive Approvals process.
       </Trans>
+      {/* The cap shown on the page is lower than the amount, since it rises as the salary rises */}
+      {autoSplitCap && (
+        <>
+          {' '}
+          <Trans t={t}>
+            Since your Combined Maximum Allowable Salary is split automatically,{' '}
+            {{ other: otherName }}&apos;s Maximum Allowable Salary goes up as
+            their salary goes up.
+          </Trans>
+        </>
+      )}
       {manuallySplitCap &&
         ` ${t(
           'You can also change how you split your Combined Maximum Allowable Salary in the Your Information step.',
