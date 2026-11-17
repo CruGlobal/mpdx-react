@@ -2,11 +2,8 @@ import { useMemo } from 'react';
 import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
+import { getSplitAsr } from './Helper/getSplitAsr';
 import { getNonBackpayTotal, getTotal } from './Helper/getTotal';
-
-// Tolerance for considering someone "at cap" — small rounding differences
-// (e.g. $19,998 vs $20,000 cap) are treated as effectively at cap.
-export const AT_CAP_TOLERANCE = 5;
 
 export interface SalaryCalculations {
   total: number;
@@ -127,39 +124,18 @@ export const useSalaryCalculations = ({
       spouseGrossAnnualSalary + spouseTotalThisYear;
 
     // Exceeding cap calculations
-    const spouseCanSplit = !!spouse?.asrEit.asrEligibility;
-    // Backpay does not count against the cap, so a request with nothing else in it
-    // cannot exceed the cap or need splitting, even when the base salary is already over
-    const addsToCap = nonBackpayTotal > 0;
-    const exceedsCap = addsToCap && requestedAnnualSalary > individualCap;
-    const spouseExceedsCap =
-      spouseIndividualCap !== null &&
-      spouseRequestedAnnualSalary > spouseIndividualCap;
-    // Within $5 of cap but not over — treat as "at cap"
-    // e.g. an ASR of $19,998 with a cap of $20,000 is considered at cap
-    const spouseAtCap =
-      spouseIndividualCap !== null &&
-      !spouseExceedsCap &&
-      spouseRequestedAnnualSalary >= spouseIndividualCap - AT_CAP_TOLERANCE;
-    const userAtCap =
-      !exceedsCap && requestedAnnualSalary >= individualCap - AT_CAP_TOLERANCE;
-
-    const userSplitAsr =
-      exceedsCap && spouseCanSplit && !spouseAtCap && !spouseExceedsCap;
-    // Only show spouse split when user has room to increase (not at/over cap)
-    const spouseSplitAsr =
-      addsToCap &&
-      !exceedsCap &&
-      !userAtCap &&
-      spouseCanSplit &&
-      spouseExceedsCap;
-
-    const splitAsr = userSplitAsr || spouseSplitAsr;
-    const splitAsrType: 'user' | 'spouse' | null = userSplitAsr
-      ? 'user'
-      : spouseSplitAsr
-        ? 'spouse'
-        : null;
+    const { exceedsCap, splitAsrType } = getSplitAsr({
+      addsToCap: nonBackpayTotal > 0,
+      requestedAnnualSalary,
+      individualCap,
+      spouseCanSplit: !!spouse?.asrEit.asrEligibility,
+      spouseRequestedAnnualSalary,
+      spouseIndividualCap,
+      combinedCap:
+        requestData?.latestAdditionalSalaryRequest?.calculations.combinedCap ??
+        null,
+    });
+    const splitAsr = splitAsrType !== null;
     const additionalApproval =
       !!requestData?.latestAdditionalSalaryRequest?.progressiveApprovalTier;
 

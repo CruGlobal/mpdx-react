@@ -31,6 +31,7 @@ import { CardTitle } from './CardTitle';
 import { Category } from './Category';
 import { Distribution } from './Distribution';
 import { Legend } from './Legend';
+import { RequestSummaryStatus } from './RequestSummaryStatus';
 import { getSecaNote } from './getSecaNote';
 
 const SummaryTable = styled(Table)(({ theme }) => ({
@@ -195,13 +196,7 @@ export const RequestSummaryCard: React.FC = () => {
         })}
       >
         <Stack spacing={2}>
-          <Typography
-            variant="body1"
-            pb={2}
-            data-testid="RequestSummaryCard-status"
-          >
-            {statusMessage}
-          </Typography>
+          <RequestSummaryStatus>{statusMessage}</RequestSummaryStatus>
 
           <Stack
             direction="row"
