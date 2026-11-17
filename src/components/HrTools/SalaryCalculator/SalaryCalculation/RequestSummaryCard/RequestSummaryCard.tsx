@@ -31,7 +31,7 @@ import { CardTitle } from './CardTitle';
 import { Category } from './Category';
 import { Distribution } from './Distribution';
 import { Legend } from './Legend';
-import { RequestSummaryStatus } from './SpouseCapFirstAlert';
+import { RequestSummaryStatus } from './RequestSummaryStatus';
 import { getSecaNote } from './getSecaNote';
 
 const SummaryTable = styled(Table)(({ theme }) => ({

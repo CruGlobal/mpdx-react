@@ -10,12 +10,14 @@ type SalaryRequestMock = SalaryCalculatorTestWrapperProps['salaryRequestMock'];
 const renderUseSpouseCapFirst = (
   salaryRequestMock: SalaryRequestMock,
   hasSpouse = true,
+  editing = true,
 ) =>
   renderHook(() => useSpouseCapFirst(), {
     wrapper: ({ children }) => (
       <SalaryCalculatorTestWrapper
         salaryRequestMock={salaryRequestMock}
         hasSpouse={hasSpouse}
+        editing={editing}
       >
         {children}
       </SalaryCalculatorTestWrapper>
@@ -104,6 +106,15 @@ describe('useSpouseCapFirst', () => {
     await waitFor(() => expect(result.current.blocked).toBe(false));
   });
 
+  it('blocks when the other spouse is just past $5 under their cap', async () => {
+    const { result } = renderUseSpouseCapFirst({
+      ...userOverMock,
+      spouseCalculations: { requestedYtdGross: 49994.99, effectiveCap: 50000 },
+    });
+
+    await waitFor(() => expect(result.current.blocked).toBe(true));
+  });
+
   it('does not block when both spouses are over their caps', async () => {
     const { result } = renderUseSpouseCapFirst({
       ...userOverMock,
@@ -138,5 +149,74 @@ describe('useSpouseCapFirst', () => {
     const { result } = renderUseSpouseCapFirst(userOverMock, false);
 
     await waitFor(() => expect(result.current.blocked).toBe(false));
+  });
+
+  it('does not block a request that is only being viewed', async () => {
+    const { result } = renderUseSpouseCapFirst(userOverMock, true, false);
+
+    await waitFor(() => expect(result.current.blocked).toBe(false));
+  });
+
+  it('does not block without an effective date, like the server', async () => {
+    const { result } = renderUseSpouseCapFirst({
+      ...userOverMock,
+      effectiveDate: null,
+    });
+
+    await waitFor(() => expect(result.current.blocked).toBe(false));
+  });
+
+  it('does not block a manual split missing a chosen cap, like the server', async () => {
+    const { result } = renderUseSpouseCapFirst({
+      ...userOverMock,
+      splitCapRequired: true,
+      manuallySplitCap: true,
+      salaryCap: 75000,
+      spouseSalaryCap: null,
+    });
+
+    await waitFor(() => expect(result.current.blocked).toBe(false));
+  });
+
+  it('asks an automatic split to reach the rest of the combined cap', async () => {
+    // Half the unused combined cap makes Jane's effective cap $57,500, but that moves as she
+    // raises her salary. The couple is settled once she reaches $135,000 - $80,000.
+    const { result } = renderUseSpouseCapFirst({
+      ...userOverMock,
+      splitCapRequired: true,
+      spouseCalculations: {
+        requestedYtdGross: 40000,
+        effectiveCap: 57500,
+        personalFactorsCap: 70000,
+        hardCap: 80000,
+      },
+    });
+
+    await waitFor(() =>
+      expect(result.current).toMatchObject({
+        blocked: true,
+        otherCap: '$55,000.00',
+      }),
+    );
+  });
+
+  it("limits an automatic split's amount to the other spouse's own cap", async () => {
+    const { result } = renderUseSpouseCapFirst({
+      ...userOverMock,
+      splitCapRequired: true,
+      spouseCalculations: {
+        requestedYtdGross: 40000,
+        effectiveCap: 50000,
+        personalFactorsCap: 50000,
+        hardCap: 80000,
+      },
+    });
+
+    await waitFor(() =>
+      expect(result.current).toMatchObject({
+        blocked: true,
+        otherCap: '$50,000.00',
+      }),
+    );
   });
 });

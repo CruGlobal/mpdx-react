@@ -4,10 +4,8 @@ import { Formik } from 'formik';
 import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
-import {
-  AT_CAP_TOLERANCE,
-  useSalaryCalculations,
-} from './useSalaryCalculations';
+import { AT_CAP_TOLERANCE } from './Helper/getSplitAsr';
+import { useSalaryCalculations } from './useSalaryCalculations';
 
 jest.mock('./AdditionalSalaryRequestContext');
 

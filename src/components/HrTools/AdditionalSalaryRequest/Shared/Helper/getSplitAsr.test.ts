@@ -81,4 +81,23 @@ describe('getSplitAsr', () => {
       splitAsrType: null,
     });
   });
+
+  it('compares the combined cap in cents', () => {
+    expect(getSplitAsr({ ...overCapInput, combinedCap: 94999.996 })).toEqual({
+      exceedsCap: true,
+      splitAsrType: 'user',
+    });
+  });
+
+  it('asks for a split when the spouse has no cap of their own', () => {
+    expect(getSplitAsr({ ...overCapInput, spouseIndividualCap: null })).toEqual(
+      { exceedsCap: true, splitAsrType: 'user' },
+    );
+  });
+
+  it('asks for a split when the spouse is just past $5 under their cap', () => {
+    expect(
+      getSplitAsr({ ...overCapInput, spouseRequestedAnnualSalary: 49994.99 }),
+    ).toEqual({ exceedsCap: true, splitAsrType: 'user' });
+  });
 });

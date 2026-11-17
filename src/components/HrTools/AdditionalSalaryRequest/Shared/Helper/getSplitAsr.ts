@@ -1,3 +1,5 @@
+import { toCents } from 'src/components/HrTools/SavingsFundTransfer/Helper/availableBalance';
+
 // Tolerance for considering someone "at cap" — small rounding differences
 // (e.g. $19,998 vs $20,000 cap) are treated as effectively at cap.
 export const AT_CAP_TOLERANCE = 5;
@@ -60,9 +62,10 @@ const getSplitAsrType = (
   if (!spouseCanSplit) {
     return null;
   }
-  // A couple over the combined cap goes to the normal approval levels instead
+  // A couple over the combined cap goes to the normal approval levels instead. Compare in cents,
+  // as the server does.
   const combinedTotal = requestedAnnualSalary + spouseRequestedAnnualSalary;
-  if (combinedCap !== null && combinedTotal > combinedCap) {
+  if (combinedCap !== null && toCents(combinedTotal) > toCents(combinedCap)) {
     return null;
   }
 

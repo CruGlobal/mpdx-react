@@ -1,13 +1,22 @@
 import React, { useEffect } from 'react';
-import { Alert, Typography } from '@mui/material';
+import { Alert } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { useOptionalAutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
-import { useSpouseCapFirst } from '../useSpouseCapFirst';
 
-export const SpouseCapFirstAlert: React.FC = () => {
+interface SpouseCapFirstAlertProps {
+  overName: string | null;
+  otherName: string | null;
+  otherCap: string;
+  manuallySplitCap: boolean;
+}
+
+export const SpouseCapFirstAlert: React.FC<SpouseCapFirstAlertProps> = ({
+  overName,
+  otherName,
+  otherCap,
+  manuallySplitCap,
+}) => {
   const { t } = useTranslation();
-  const { overName, otherName, otherCap, manuallySplitCap } =
-    useSpouseCapFirst();
   const { markValid, markInvalid } = useOptionalAutosaveForm() ?? {};
 
   // Disable Continue and Submit while this shows, since the server refuses the request.
@@ -23,7 +32,7 @@ export const SpouseCapFirstAlert: React.FC = () => {
         Allowable Salary, but {{ over: overName }}&apos;s Gross Requested Salary
         exceeds their individual Maximum Allowable Salary. Before either of you
         can request more than your own Maximum Allowable Salary, please raise{' '}
-        {{ other: otherName }}&apos;s Requested Salary up to their Maximum
+        {{ other: otherName }}&apos;s Gross Requested Salary up to their Maximum
         Allowable Salary of {{ cap: otherCap }}. After you have both reached
         your Maximum Allowable Salary, a higher request will go through our
         Progressive Approvals process.
@@ -33,25 +42,5 @@ export const SpouseCapFirstAlert: React.FC = () => {
           'You can also change how you split your Combined Maximum Allowable Salary in the Your Information step.',
         )}`}
     </Alert>
-  );
-};
-
-interface RequestSummaryStatusProps {
-  children: React.ReactNode;
-}
-
-/** The summary's status message, or the spouse-first alert in its place while that applies */
-export const RequestSummaryStatus: React.FC<RequestSummaryStatusProps> = ({
-  children,
-}) => {
-  const { blocked } = useSpouseCapFirst();
-
-  if (blocked) {
-    return <SpouseCapFirstAlert />;
-  }
-  return (
-    <Typography variant="body1" pb={2} data-testid="RequestSummaryCard-status">
-      {children}
-    </Typography>
   );
 };

@@ -5,8 +5,6 @@ import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import { getSplitAsr } from './Helper/getSplitAsr';
 import { getNonBackpayTotal, getTotal } from './Helper/getTotal';
 
-export { AT_CAP_TOLERANCE } from './Helper/getSplitAsr';
-
 export interface SalaryCalculations {
   total: number;
   /** `total` minus current-year backpay, which does not count against the cap. */
