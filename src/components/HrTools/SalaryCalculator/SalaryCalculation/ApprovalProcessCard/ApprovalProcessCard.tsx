@@ -10,12 +10,14 @@ import { StepCard } from '../../Shared/StepCard';
 import { StyledCardHeader } from '../StyledCardHeader';
 import { useCaps } from '../useCaps';
 import { useSosaBlockOverCap } from '../useSosaBlockOverCap';
+import { useSpouseCapFirst } from '../useSpouseCapFirst';
 
 export const ApprovalProcessCard: React.FC = () => {
   const { t } = useTranslation();
   const { calculation, hcmSpouse } = useSalaryCalculator();
   const { overCapPerson } = useCaps();
   const { blockOnCap } = useSosaBlockOverCap();
+  const { blocked: spouseCapFirst } = useSpouseCapFirst();
 
   const schema = useMemo(
     () =>
@@ -28,7 +30,9 @@ export const ApprovalProcessCard: React.FC = () => {
   const spouseName = hcmSpouse?.staffInfo.preferredName;
 
   const tier = calculation?.progressiveApprovalTier?.tier;
-  if (!tier || blockOnCap) {
+  // A request the server refuses has nothing to approve yet
+  const refused = blockOnCap || spouseCapFirst;
+  if (!tier || refused) {
     return null;
   }
 
