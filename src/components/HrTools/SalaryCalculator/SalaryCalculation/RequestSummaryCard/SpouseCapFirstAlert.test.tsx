@@ -3,7 +3,10 @@ import {
   SalaryCalculatorTestWrapper,
   SalaryCalculatorTestWrapperProps,
 } from '../../SalaryCalculatorTestWrapper';
-import { SpouseCapFirstAlert } from './SpouseCapFirstAlert';
+import {
+  RequestSummaryStatus,
+  SpouseCapFirstAlert,
+} from './SpouseCapFirstAlert';
 
 const markValid = jest.fn();
 const markInvalid = jest.fn();
@@ -77,5 +80,35 @@ describe('SpouseCapFirstAlert', () => {
     );
     unmount();
     expect(markValid).toHaveBeenCalledWith('spouse-cap-first');
+  });
+});
+
+describe('RequestSummaryStatus', () => {
+  it('shows the alert in place of the status message while blocked', async () => {
+    const { findByTestId, queryByText } = render(
+      <SalaryCalculatorTestWrapper salaryRequestMock={blockedMock}>
+        <RequestSummaryStatus>Division Head message</RequestSummaryStatus>
+      </SalaryCalculatorTestWrapper>,
+    );
+
+    expect(await findByTestId('SpouseCapFirstAlert')).toBeInTheDocument();
+    expect(queryByText('Division Head message')).not.toBeInTheDocument();
+  });
+
+  it('shows the status message otherwise', async () => {
+    const { findByTestId } = render(
+      <SalaryCalculatorTestWrapper
+        salaryRequestMock={{
+          ...blockedMock,
+          spouseCalculations: { requestedYtdGross: 50000, effectiveCap: 50000 },
+        }}
+      >
+        <RequestSummaryStatus>Division Head message</RequestSummaryStatus>
+      </SalaryCalculatorTestWrapper>,
+    );
+
+    expect(await findByTestId('RequestSummaryCard-status')).toHaveTextContent(
+      'Division Head message',
+    );
   });
 });

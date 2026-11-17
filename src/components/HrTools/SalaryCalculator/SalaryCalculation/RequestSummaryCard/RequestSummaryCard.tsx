@@ -27,12 +27,11 @@ import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalcula
 import { StepCard } from '../../Shared/StepCard';
 import { StyledCardHeader } from '../StyledCardHeader';
 import { useCaps } from '../useCaps';
-import { useSpouseCapFirst } from '../useSpouseCapFirst';
 import { CardTitle } from './CardTitle';
 import { Category } from './Category';
 import { Distribution } from './Distribution';
 import { Legend } from './Legend';
-import { SpouseCapFirstAlert } from './SpouseCapFirstAlert';
+import { RequestSummaryStatus } from './SpouseCapFirstAlert';
 import { getSecaNote } from './getSecaNote';
 
 const SummaryTable = styled(Table)(({ theme }) => ({
@@ -74,7 +73,6 @@ export const RequestSummaryCard: React.FC = () => {
     combinedEffectiveCap: combinedCap,
     overCapPerson,
   } = useCaps();
-  const { blocked: spouseCapFirst } = useSpouseCapFirst();
 
   const { formatCurrency } = useFormatters();
 
@@ -198,17 +196,7 @@ export const RequestSummaryCard: React.FC = () => {
         })}
       >
         <Stack spacing={2}>
-          {spouseCapFirst ? (
-            <SpouseCapFirstAlert />
-          ) : (
-            <Typography
-              variant="body1"
-              pb={2}
-              data-testid="RequestSummaryCard-status"
-            >
-              {statusMessage}
-            </Typography>
-          )}
+          <RequestSummaryStatus>{statusMessage}</RequestSummaryStatus>
 
           <Stack
             direction="row"

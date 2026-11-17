@@ -25,45 +25,72 @@ export interface SplitAsrResult {
   splitAsrType: 'user' | 'spouse' | null;
 }
 
+type SpouseCapStatus = 'under' | 'at' | 'over';
+
+// Within $5 of cap but not over — treat as "at cap"
+// e.g. an ASR of $19,998 with a cap of $20,000 is considered at cap
+const getSpouseCapStatus = (
+  spouseRequestedAnnualSalary: number,
+  spouseIndividualCap: number | null,
+): SpouseCapStatus => {
+  if (spouseIndividualCap === null) {
+    return 'under';
+  }
+  if (spouseRequestedAnnualSalary > spouseIndividualCap) {
+    return 'over';
+  }
+  return spouseRequestedAnnualSalary >= spouseIndividualCap - AT_CAP_TOLERANCE
+    ? 'at'
+    : 'under';
+};
+
+const getSplitAsrType = (
+  input: SplitAsrInput,
+  exceedsCap: boolean,
+): SplitAsrResult['splitAsrType'] => {
+  const {
+    addsToCap,
+    requestedAnnualSalary,
+    individualCap,
+    spouseCanSplit,
+    spouseRequestedAnnualSalary,
+    spouseIndividualCap,
+    combinedCap,
+  } = input;
+  if (!spouseCanSplit) {
+    return null;
+  }
+  // A couple over the combined cap goes to the normal approval levels instead
+  const combinedTotal = requestedAnnualSalary + spouseRequestedAnnualSalary;
+  if (combinedCap !== null && combinedTotal > combinedCap) {
+    return null;
+  }
+
+  const spouseStatus = getSpouseCapStatus(
+    spouseRequestedAnnualSalary,
+    spouseIndividualCap,
+  );
+  if (exceedsCap) {
+    return spouseStatus === 'under' ? 'user' : null;
+  }
+
+  // Only show spouse split when user has room to increase (not at/over cap)
+  const userHasRoom = requestedAnnualSalary < individualCap - AT_CAP_TOLERANCE;
+  if (!addsToCap || !userHasRoom) {
+    return null;
+  }
+  return spouseStatus === 'over' ? 'spouse' : null;
+};
+
 /**
  * While the couple is under their combined cap, a spouse may go over their own cap only once the
  * other spouse has reached theirs. A couple over the combined cap goes to the normal approval
  * levels instead.
  */
-export const getSplitAsr = ({
-  addsToCap,
-  requestedAnnualSalary,
-  individualCap,
-  spouseCanSplit,
-  spouseRequestedAnnualSalary,
-  spouseIndividualCap,
-  combinedCap,
-}: SplitAsrInput): SplitAsrResult => {
+export const getSplitAsr = (input: SplitAsrInput): SplitAsrResult => {
   // Backpay does not count against the cap, so a request with nothing else in it
   // cannot exceed the cap or need splitting, even when the base salary is already over
-  const exceedsCap = addsToCap && requestedAnnualSalary > individualCap;
-  const spouseExceedsCap =
-    spouseIndividualCap !== null &&
-    spouseRequestedAnnualSalary > spouseIndividualCap;
-  // Within $5 of cap but not over — treat as "at cap"
-  // e.g. an ASR of $19,998 with a cap of $20,000 is considered at cap
-  const spouseAtCap =
-    spouseIndividualCap !== null &&
-    !spouseExceedsCap &&
-    spouseRequestedAnnualSalary >= spouseIndividualCap - AT_CAP_TOLERANCE;
-  const userAtCap =
-    !exceedsCap && requestedAnnualSalary >= individualCap - AT_CAP_TOLERANCE;
-  const underCombinedCap =
-    combinedCap === null ||
-    requestedAnnualSalary + spouseRequestedAnnualSalary <= combinedCap;
-  const canSplit = spouseCanSplit && underCombinedCap;
-
-  const userSplitAsr =
-    exceedsCap && canSplit && !spouseAtCap && !spouseExceedsCap;
-  // Only show spouse split when user has room to increase (not at/over cap)
-  const spouseSplitAsr =
-    addsToCap && !exceedsCap && !userAtCap && canSplit && spouseExceedsCap;
-
-  const splitAsrType = userSplitAsr ? 'user' : spouseSplitAsr ? 'spouse' : null;
-  return { exceedsCap, splitAsrType };
+  const exceedsCap =
+    input.addsToCap && input.requestedAnnualSalary > input.individualCap;
+  return { exceedsCap, splitAsrType: getSplitAsrType(input, exceedsCap) };
 };

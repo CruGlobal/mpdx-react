@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Alert } from '@mui/material';
+import { Alert, Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { useOptionalAutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import { useSpouseCapFirst } from '../useSpouseCapFirst';
@@ -33,5 +33,25 @@ export const SpouseCapFirstAlert: React.FC = () => {
           'You can also change how you split your Combined Maximum Allowable Salary in the Your Information step.',
         )}`}
     </Alert>
+  );
+};
+
+interface RequestSummaryStatusProps {
+  children: React.ReactNode;
+}
+
+/** The summary's status message, or the spouse-first alert in its place while that applies */
+export const RequestSummaryStatus: React.FC<RequestSummaryStatusProps> = ({
+  children,
+}) => {
+  const { blocked } = useSpouseCapFirst();
+
+  if (blocked) {
+    return <SpouseCapFirstAlert />;
+  }
+  return (
+    <Typography variant="body1" pb={2} data-testid="RequestSummaryCard-status">
+      {children}
+    </Typography>
   );
 };
