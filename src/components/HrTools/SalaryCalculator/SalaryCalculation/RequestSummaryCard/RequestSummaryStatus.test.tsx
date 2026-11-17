@@ -11,11 +11,13 @@ import {
 import { StepNavigation } from '../../StepNavigation/StepNavigation';
 import { RequestSummaryStatus } from './RequestSummaryStatus';
 
-// John is over his cap while Jane still has room, and the couple is under the combined cap
+// John asks for a raise that takes him over his cap while Jane still has room, and the couple is
+// under the combined cap
 const blockedMock: SalaryCalculatorTestWrapperProps['salaryRequestMock'] = {
   splitCapRequired: false,
   manuallySplitCap: false,
   calculations: {
+    requestedGross: 80000,
     requestedYtdGross: 80000,
     effectiveCap: 75000,
     combinedCap: 135000,
@@ -41,7 +43,10 @@ const ValidFields: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 const TestComponent: React.FC<SalaryCalculatorTestWrapperProps> = (props) => (
-  <SalaryCalculatorTestWrapper {...props}>
+  <SalaryCalculatorTestWrapper
+    hcmUser={{ currentSalary: { grossSalaryAmount: 70000 } }}
+    {...props}
+  >
     <AutosaveForm>
       <ValidFields>
         <RequestSummaryStatus>Division Head message</RequestSummaryStatus>

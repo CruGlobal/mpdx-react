@@ -33,10 +33,19 @@ const isOverCap = ({ requestedYtdGross, effectiveCap }: PersonCaps) =>
 const isUnderCap = ({ requestedYtdGross, effectiveCap }: PersonCaps) =>
   toCents(requestedYtdGross) < toCents(effectiveCap - AT_CAP_TOLERANCE);
 
+// More than $5 over what HCM pays today, so rounding an unchanged salary is not a raise
+const isRaise = ({
+  requestedGross,
+  currentGross,
+}: {
+  requestedGross: number;
+  currentGross: number;
+}) => toCents(requestedGross) > toCents(currentGross + AT_CAP_TOLERANCE);
+
 /**
- * While the couple is under their combined cap, a spouse may go over their own cap only once the
- * other spouse has reached theirs. A couple over the combined cap goes to progressive approval
- * instead. The server refuses these requests, so they may not be submitted.
+ * While the couple is under their combined cap, a raise may take a spouse over their own cap only
+ * once the other spouse has reached theirs. A couple over the combined cap goes to progressive
+ * approval instead. The server refuses these requests, so they may not be submitted.
  */
 export const useSpouseCapFirst = (): UseSpouseCapFirstResult => {
   const { calculation, hcmUser, hcmSpouse, editing } = useSalaryCalculator();
@@ -80,13 +89,23 @@ export const useSpouseCapFirst = (): UseSpouseCapFirstResult => {
     return notBlocked;
   }
 
-  const user = { ...calcs, name: hcmUser.staffInfo.preferredName ?? null };
+  const user = {
+    ...calcs,
+    name: hcmUser.staffInfo.preferredName ?? null,
+    currentGross: hcmUser.currentSalary.grossSalaryAmount ?? 0,
+  };
   const spouse = {
     ...spouseCalcs,
     name: hcmSpouse.staffInfo.preferredName ?? null,
+    currentGross: hcmSpouse.currentSalary.grossSalaryAmount ?? 0,
   };
   const [over, other] = isOverCap(user) ? [user, spouse] : [spouse, user];
   if (!isOverCap(over) || !isUnderCap(other)) {
+    return notBlocked;
+  }
+  // Keeping or cutting a salary that is already over the cap, such as from earlier ASRs, is not
+  // asking for more, so it follows the normal approval levels
+  if (!isRaise(over)) {
     return notBlocked;
   }
 

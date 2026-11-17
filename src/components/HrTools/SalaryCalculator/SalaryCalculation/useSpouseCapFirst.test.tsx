@@ -7,10 +7,23 @@ import { useSpouseCapFirst } from './useSpouseCapFirst';
 
 type SalaryRequestMock = SalaryCalculatorTestWrapperProps['salaryRequestMock'];
 
+interface RenderOptions {
+  hasSpouse?: boolean;
+  editing?: boolean;
+  /** What HCM pays John today */
+  userCurrentGross?: number;
+  /** What HCM pays Jane today */
+  spouseCurrentGross?: number;
+}
+
 const renderUseSpouseCapFirst = (
   salaryRequestMock: SalaryRequestMock,
-  hasSpouse = true,
-  editing = true,
+  {
+    hasSpouse = true,
+    editing = true,
+    userCurrentGross = 70000,
+    spouseCurrentGross = 40000,
+  }: RenderOptions = {},
 ) =>
   renderHook(() => useSpouseCapFirst(), {
     wrapper: ({ children }) => (
@@ -18,17 +31,23 @@ const renderUseSpouseCapFirst = (
         salaryRequestMock={salaryRequestMock}
         hasSpouse={hasSpouse}
         editing={editing}
+        hcmUser={{ currentSalary: { grossSalaryAmount: userCurrentGross } }}
+        hcmSpouse={{
+          currentSalary: { grossSalaryAmount: spouseCurrentGross },
+        }}
       >
         {children}
       </SalaryCalculatorTestWrapper>
     ),
   });
 
-// John is over his cap while Jane still has room, and the couple is under the combined cap
+// John asks for a raise that takes him over his cap while Jane still has room, and the couple is
+// under the combined cap
 const userOverMock = {
   splitCapRequired: false,
   manuallySplitCap: false,
   calculations: {
+    requestedGross: 80000,
     requestedYtdGross: 80000,
     effectiveCap: 75000,
     combinedCap: 135000,
@@ -55,7 +74,11 @@ describe('useSpouseCapFirst', () => {
     const { result } = renderUseSpouseCapFirst({
       ...userOverMock,
       calculations: { ...userOverMock.calculations, requestedYtdGross: 60000 },
-      spouseCalculations: { requestedYtdGross: 55000, effectiveCap: 50000 },
+      spouseCalculations: {
+        requestedGross: 55000,
+        requestedYtdGross: 55000,
+        effectiveCap: 50000,
+      },
     });
 
     await waitFor(() =>
@@ -146,13 +169,17 @@ describe('useSpouseCapFirst', () => {
   });
 
   it('does not block without a spouse', async () => {
-    const { result } = renderUseSpouseCapFirst(userOverMock, false);
+    const { result } = renderUseSpouseCapFirst(userOverMock, {
+      hasSpouse: false,
+    });
 
     await waitFor(() => expect(result.current.blocked).toBe(false));
   });
 
   it('does not block a request that is only being viewed', async () => {
-    const { result } = renderUseSpouseCapFirst(userOverMock, true, false);
+    const { result } = renderUseSpouseCapFirst(userOverMock, {
+      editing: false,
+    });
 
     await waitFor(() => expect(result.current.blocked).toBe(false));
   });
@@ -218,5 +245,56 @@ describe('useSpouseCapFirst', () => {
         otherCap: '$50,000.00',
       }),
     );
+  });
+
+  // MPDX-10360: only a raise that takes a spouse over their cap must wait for the other spouse
+  describe('when the spouse over their cap is not asking for a raise', () => {
+    it('does not block an unchanged salary', async () => {
+      const { result } = renderUseSpouseCapFirst(userOverMock, {
+        userCurrentGross: 80000,
+      });
+
+      await waitFor(() => expect(result.current.blocked).toBe(false));
+    });
+
+    it('does not block a pay cut', async () => {
+      const { result } = renderUseSpouseCapFirst(userOverMock, {
+        userCurrentGross: 85000,
+      });
+
+      await waitFor(() => expect(result.current.blocked).toBe(false));
+    });
+
+    it('does not block a change of $5 or less, which can be rounding', async () => {
+      const { result } = renderUseSpouseCapFirst(userOverMock, {
+        userCurrentGross: 79995,
+      });
+
+      await waitFor(() => expect(result.current.blocked).toBe(false));
+    });
+
+    it('does not block an unchanged salary that is over cap from earlier ASRs', async () => {
+      const { result } = renderUseSpouseCapFirst(
+        {
+          ...userOverMock,
+          calculations: {
+            ...userOverMock.calculations,
+            requestedGross: 70000,
+            requestedYtdGross: 80000,
+          },
+        },
+        { userCurrentGross: 70000 },
+      );
+
+      await waitFor(() => expect(result.current.blocked).toBe(false));
+    });
+  });
+
+  it('blocks a raise of more than $5', async () => {
+    const { result } = renderUseSpouseCapFirst(userOverMock, {
+      userCurrentGross: 79994.99,
+    });
+
+    await waitFor(() => expect(result.current.blocked).toBe(true));
   });
 });

@@ -62,6 +62,7 @@ If this is correct, please provide reasoning for why John's Salary should exceed
       <SalaryCalculatorTestWrapper
         salaryRequestMock={{
           calculations: {
+            requestedGross: 80000,
             requestedYtdGross: 80000,
             effectiveCap: 75000,
             combinedCap: 135000,
@@ -73,6 +74,8 @@ If this is correct, please provide reasoning for why John's Salary should exceed
           progressiveApprovalTierReason:
             ProgressiveApprovalTierReasonEnum.OverUserCap,
         }}
+        // John asks for a raise
+        hcmUser={{ currentSalary: { grossSalaryAmount: 70000 } }}
       >
         <HcmLoaded />
         <ApprovalProcessCard />
