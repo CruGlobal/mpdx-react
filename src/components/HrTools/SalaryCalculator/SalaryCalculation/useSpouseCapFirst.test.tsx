@@ -249,25 +249,13 @@ describe('useSpouseCapFirst', () => {
 
   // MPDX-10360: only a raise that takes a spouse over their cap must wait for the other spouse
   describe('when the spouse over their cap is not asking for a raise', () => {
-    it('does not block an unchanged salary', async () => {
+    it.each([
+      ['an unchanged salary', 80000],
+      ['a pay cut', 85000],
+      ['a change of $5 or less, which can be rounding', 79995],
+    ])('does not block %s', async (_, userCurrentGross) => {
       const { result } = renderUseSpouseCapFirst(userOverMock, {
-        userCurrentGross: 80000,
-      });
-
-      await waitFor(() => expect(result.current.blocked).toBe(false));
-    });
-
-    it('does not block a pay cut', async () => {
-      const { result } = renderUseSpouseCapFirst(userOverMock, {
-        userCurrentGross: 85000,
-      });
-
-      await waitFor(() => expect(result.current.blocked).toBe(false));
-    });
-
-    it('does not block a change of $5 or less, which can be rounding', async () => {
-      const { result } = renderUseSpouseCapFirst(userOverMock, {
-        userCurrentGross: 79995,
+        userCurrentGross,
       });
 
       await waitFor(() => expect(result.current.blocked).toBe(false));

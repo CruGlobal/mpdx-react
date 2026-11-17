@@ -42,6 +42,66 @@ const isRaise = ({
   currentGross: number;
 }) => toCents(requestedGross) > toCents(currentGross + AT_CAP_TOLERANCE);
 
+type Calculation = NonNullable<
+  ReturnType<typeof useSalaryCalculator>['calculation']
+>;
+type HcmPerson = NonNullable<ReturnType<typeof useSalaryCalculator>['hcmUser']>;
+type Person = ReturnType<typeof toPerson>;
+
+const toPerson = (calcs: Calculation['calculations'], hcm: HcmPerson) => ({
+  ...calcs,
+  name: hcm.staffInfo.preferredName ?? null,
+  currentGross: hcm.currentSalary.grossSalaryAmount ?? 0,
+});
+
+// Like the server, skip the rule when it has no effective date or chosen caps to check against
+const missingServerInputs = (
+  calculation: Calculation,
+  manuallySplitCap: boolean,
+) => {
+  if (!calculation.effectiveDate) {
+    return true;
+  }
+  const missingChosenCap =
+    typeof calculation.salaryCap !== 'number' ||
+    typeof calculation.spouseSalaryCap !== 'number';
+  return manuallySplitCap && missingChosenCap;
+};
+
+/** The spouse asking to go over their cap and the spouse who must reach theirs first, if any */
+const findOverAndOther = (
+  user: Person,
+  spouse: Person,
+): [Person, Person] | null => {
+  const [over, other] = isOverCap(user) ? [user, spouse] : [spouse, user];
+  if (!isOverCap(over) || !isUnderCap(other)) {
+    return null;
+  }
+  // Keeping or cutting a salary that is already over the cap, such as from earlier ASRs, is not
+  // asking for more, so it follows the normal approval levels
+  return isRaise(over) ? [over, other] : null;
+};
+
+// An automatic split gives each spouse half of the combined cap still unused, so the other
+// spouse's effective cap rises as they raise their salary. The amount that settles it is the rest
+// of the combined cap, limited by their own caps.
+const getOtherTarget = (
+  calculation: Calculation,
+  manuallySplitCap: boolean,
+  over: Person,
+  other: Person,
+) => {
+  const autoSplitCap = !!calculation.splitCapRequired && !manuallySplitCap;
+  if (!autoSplitCap) {
+    return other.effectiveCap;
+  }
+  return Math.min(
+    other.personalFactorsCap,
+    other.hardCap,
+    calculation.calculations.combinedCap - over.requestedYtdGross,
+  );
+};
+
 /**
  * While the couple is under their combined cap, a raise may take a spouse over their own cap only
  * once the other spouse has reached theirs. A couple over the combined cap goes to progressive
@@ -52,8 +112,6 @@ export const useSpouseCapFirst = (): UseSpouseCapFirstResult => {
   const { combinedYtdGross } = useCaps();
   const { formatCurrency } = useFormatters();
 
-  const calcs = calculation?.calculations;
-  const spouseCalcs = calculation?.spouseCalculations;
   const manuallySplitCap =
     !!calculation?.splitCapRequired && !!calculation.manuallySplitCap;
   const notBlocked = {
@@ -65,67 +123,37 @@ export const useSpouseCapFirst = (): UseSpouseCapFirstResult => {
   };
 
   // Submitted requests are only shown, so there is nothing to block
-  if (!editing) {
-    return notBlocked;
-  }
-  if (!calcs || !spouseCalcs) {
+  if (!editing || !calculation?.spouseCalculations) {
     return notBlocked;
   }
   // Wait for the names the message needs
   if (!hcmUser || !hcmSpouse) {
     return notBlocked;
   }
-  // Like the server, skip the rule when it has no effective date or chosen caps to check against
-  if (!calculation.effectiveDate) {
+  if (missingServerInputs(calculation, manuallySplitCap)) {
     return notBlocked;
   }
-  const missingChosenCap =
-    typeof calculation.salaryCap !== 'number' ||
-    typeof calculation.spouseSalaryCap !== 'number';
-  if (manuallySplitCap && missingChosenCap) {
-    return notBlocked;
-  }
-  if (toCents(combinedYtdGross) > toCents(calcs.combinedCap)) {
+  const { combinedCap } = calculation.calculations;
+  if (toCents(combinedYtdGross) > toCents(combinedCap)) {
     return notBlocked;
   }
 
-  const user = {
-    ...calcs,
-    name: hcmUser.staffInfo.preferredName ?? null,
-    currentGross: hcmUser.currentSalary.grossSalaryAmount ?? 0,
-  };
-  const spouse = {
-    ...spouseCalcs,
-    name: hcmSpouse.staffInfo.preferredName ?? null,
-    currentGross: hcmSpouse.currentSalary.grossSalaryAmount ?? 0,
-  };
-  const [over, other] = isOverCap(user) ? [user, spouse] : [spouse, user];
-  if (!isOverCap(over) || !isUnderCap(other)) {
+  const overAndOther = findOverAndOther(
+    toPerson(calculation.calculations, hcmUser),
+    toPerson(calculation.spouseCalculations, hcmSpouse),
+  );
+  if (!overAndOther) {
     return notBlocked;
   }
-  // Keeping or cutting a salary that is already over the cap, such as from earlier ASRs, is not
-  // asking for more, so it follows the normal approval levels
-  if (!isRaise(over)) {
-    return notBlocked;
-  }
-
-  // An automatic split gives each spouse half of the combined cap still unused, so the other
-  // spouse's effective cap rises as they raise their salary. The amount that settles it is the
-  // rest of the combined cap, limited by their own caps.
-  const autoSplitCap = !!calculation.splitCapRequired && !manuallySplitCap;
-  const otherTarget = autoSplitCap
-    ? Math.min(
-        other.personalFactorsCap,
-        other.hardCap,
-        calcs.combinedCap - over.requestedYtdGross,
-      )
-    : other.effectiveCap;
+  const [over, other] = overAndOther;
 
   return {
     blocked: true,
     overName: over.name,
     otherName: other.name,
-    otherCap: formatCurrency(otherTarget),
+    otherCap: formatCurrency(
+      getOtherTarget(calculation, manuallySplitCap, over, other),
+    ),
     manuallySplitCap,
   };
 };
