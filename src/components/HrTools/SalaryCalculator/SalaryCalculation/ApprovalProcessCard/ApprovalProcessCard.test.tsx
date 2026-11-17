@@ -30,6 +30,11 @@ describe('ApprovalProcessCard', () => {
         <TestComponent
           salaryRequestMock={{
             calculations: { effectiveCap: 30000 },
+            // Jane has reached her cap, so John may go over his
+            spouseCalculations: {
+              requestedYtdGross: 50000,
+              effectiveCap: 50000,
+            },
             progressiveApprovalTier: {
               tier: ProgressiveApprovalTierEnum.DivisionHead,
             },
@@ -51,11 +56,43 @@ If this is correct, please provide reasoning for why John's Salary should exceed
     });
   });
 
+  // MPDX-10360: the other spouse must reach their cap first, so there is nothing to approve yet
+  it('renders nothing while the other spouse is under their cap', async () => {
+    const { findByText, queryByRole } = render(
+      <SalaryCalculatorTestWrapper
+        salaryRequestMock={{
+          calculations: {
+            requestedGross: 80000,
+            requestedYtdGross: 80000,
+            effectiveCap: 75000,
+            combinedCap: 135000,
+          },
+          spouseCalculations: { requestedYtdGross: 40000, effectiveCap: 50000 },
+          progressiveApprovalTier: {
+            tier: ProgressiveApprovalTierEnum.DivisionHead,
+          },
+          progressiveApprovalTierReason:
+            ProgressiveApprovalTierReasonEnum.OverUserCap,
+        }}
+        // John asks for a raise
+        hcmUser={{ currentSalary: { grossSalaryAmount: 70000 } }}
+      >
+        <HcmLoaded />
+        <ApprovalProcessCard />
+      </SalaryCalculatorTestWrapper>,
+    );
+
+    expect(await findByText('HCM loaded')).toBeInTheDocument();
+    expect(queryByRole('textbox')).not.toBeInTheDocument();
+  });
+
   describe('spouse over cap', () => {
     it('renders status message and textfield', async () => {
       const { getByRole, getByTestId } = render(
         <TestComponent
           salaryRequestMock={{
+            // John has reached his cap, so Jane may go over hers
+            calculations: { requestedYtdGross: 50000, effectiveCap: 50000 },
             spouseCalculations: { effectiveCap: 30000 },
             progressiveApprovalTier: {
               tier: ProgressiveApprovalTierEnum.DivisionHead,
