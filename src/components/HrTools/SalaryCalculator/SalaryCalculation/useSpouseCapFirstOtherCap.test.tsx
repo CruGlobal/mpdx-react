@@ -1,25 +1,37 @@
 import { waitFor } from '@testing-library/react';
 import {
+  SalaryRequestMock,
   renderUseSpouseCapFirst,
   userOverMock,
 } from './spouseCapFirstTestUtils';
+
+// John at $80,000 is over his cap, and Jane at $40,000 is under hers, with the combined cap split
+// automatically. Each case sets Jane's own caps.
+const autoSplitMock = (
+  spouseCalculations: NonNullable<SalaryRequestMock>['spouseCalculations'],
+): SalaryRequestMock => ({
+  ...userOverMock,
+  splitCapRequired: true,
+  spouseCalculations: {
+    requestedGross: 40000,
+    requestedYtdGross: 40000,
+    combinedCap: 135000,
+    ...spouseCalculations,
+  },
+});
 
 // The amount the alert asks the other spouse to reach
 describe('useSpouseCapFirst otherCap', () => {
   it('asks an automatic split to reach the rest of the combined cap', async () => {
     // Half the unused combined cap makes Jane's effective cap $47,500, but that moves as she
     // raises her salary. The couple is settled once she reaches $135,000 - $80,000.
-    const { result } = renderUseSpouseCapFirst({
-      ...userOverMock,
-      splitCapRequired: true,
-      spouseCalculations: {
-        requestedGross: 40000,
-        requestedYtdGross: 40000,
+    const { result } = renderUseSpouseCapFirst(
+      autoSplitMock({
         effectiveCap: 47500,
         personalFactorsCap: 70000,
         hardCap: 80000,
-      },
-    });
+      }),
+    );
 
     await waitFor(() =>
       expect(result.current).toMatchObject({
@@ -49,6 +61,7 @@ describe('useSpouseCapFirst otherCap', () => {
           effectiveCap: 42871.66,
           personalFactorsCap: 70000,
           hardCap: 80000,
+          combinedCap: 135000,
         },
       },
       { userCurrentGross: 78415.5, spouseCurrentGross: 37159.98 },
@@ -63,28 +76,49 @@ describe('useSpouseCapFirst otherCap', () => {
     );
   });
 
-  it("limits an automatic split's amount to the other spouse's own cap", async () => {
-    const { result } = renderUseSpouseCapFirst({
-      ...userOverMock,
-      splitCapRequired: true,
-      spouseCalculations: {
-        requestedGross: 40000,
-        requestedYtdGross: 40000,
-        effectiveCap: 50000,
-        personalFactorsCap: 50000,
+  it("splits by the other spouse's own combined cap, like the server", async () => {
+    // Jane's combined cap is $125,000, so her split is (125,000 + 40,000 - 80,000) / 2 = $42,500
+    // and she settles at $125,000 - $80,000, not at John's $135,000 - $80,000
+    const { result } = renderUseSpouseCapFirst(
+      autoSplitMock({
+        effectiveCap: 42500,
+        personalFactorsCap: 70000,
         hardCap: 80000,
-      },
-    });
+        combinedCap: 125000,
+      }),
+    );
 
     await waitFor(() =>
       expect(result.current).toMatchObject({
         blocked: true,
-        otherCap: '$50,000.00',
-        // Her cap is already held at her own cap, so it will not go up as she raises her salary
-        otherCapRises: false,
+        otherCap: '$45,000.00',
+        otherCapRises: true,
       }),
     );
   });
+
+  // The split would give Jane $47,500, so her own cap below that is her effective cap already, and
+  // it will not go up as she raises her salary
+  it.each([
+    ['personal factors cap', { personalFactorsCap: 45000, hardCap: 80000 }],
+    ['hard cap', { personalFactorsCap: 70000, hardCap: 46000 }],
+  ])(
+    "limits an automatic split's amount to the other spouse's %s",
+    async (_, caps) => {
+      const ownCap = Math.min(caps.personalFactorsCap, caps.hardCap);
+      const { result } = renderUseSpouseCapFirst(
+        autoSplitMock({ effectiveCap: ownCap, ...caps }),
+      );
+
+      await waitFor(() =>
+        expect(result.current).toMatchObject({
+          blocked: true,
+          otherCap: `$${ownCap.toLocaleString('en-US')}.00`,
+          otherCapRises: false,
+        }),
+      );
+    },
+  );
 
   it("leaves this year's ASRs out of the other spouse's target", async () => {
     // Jane's $10,000 of ASRs already count toward her $50,000 cap

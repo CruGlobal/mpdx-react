@@ -65,6 +65,7 @@ describe('useSpouseCapFirst', () => {
 
     await waitFor(() =>
       expect(result.current).toMatchObject({
+        blocked: true,
         manuallySplitCap: true,
         otherCapRises: false,
       }),
