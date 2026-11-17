@@ -88,17 +88,23 @@ const findOverAndOther = (
   return isRaise(over) ? [over, other] : null;
 };
 
-// An automatic split gives each spouse half of their combined cap still unused, so the other
-// spouse's effective cap rises as they raise their salary. The amount that settles it is the rest
-// of their combined cap, limited by their own caps, as the server's chosen_cap works it out.
-const getOtherCap = (autoSplitCap: boolean, over: Person, other: Person) => {
+// An automatic split gives each spouse half of their combined cap still unused (the server's
+// chosen_cap), so the other spouse's effective cap rises as they raise their salary, up to their own
+// caps (effective_cap). It settles at the rest of their combined cap. The block also lifts once the
+// couple passes the request owner's combined cap, so the smaller of the two is the amount to reach.
+const getOtherCap = (
+  autoSplitCap: boolean,
+  ownerCombinedCap: number,
+  over: Person,
+  other: Person,
+) => {
   if (!autoSplitCap) {
     return other.effectiveCap;
   }
   return Math.min(
     other.personalFactorsCap,
     other.hardCap,
-    other.combinedCap - over.requestedYtdGross,
+    Math.min(other.combinedCap, ownerCombinedCap) - over.requestedYtdGross,
   );
 };
 
@@ -153,7 +159,7 @@ export const useSpouseCapFirst = (): UseSpouseCapFirstResult => {
     return notBlocked;
   }
   const [over, other] = overAndOther;
-  const otherCap = getOtherCap(autoSplitCap, over, other);
+  const otherCap = getOtherCap(autoSplitCap, combinedCap, over, other);
 
   return {
     blocked: true,

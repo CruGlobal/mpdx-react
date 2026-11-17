@@ -97,23 +97,50 @@ describe('useSpouseCapFirst otherCap', () => {
     );
   });
 
+  it("stops at John's combined cap when Jane's own combined cap is higher", async () => {
+    // John's request is checked against his $125,000 combined cap, so the block lifts once the
+    // couple passes it, at $125,000 - $80,000, before Jane reaches her own split cap
+    const { result } = renderUseSpouseCapFirst({
+      ...autoSplitMock({
+        effectiveCap: 47500,
+        personalFactorsCap: 70000,
+        hardCap: 80000,
+        combinedCap: 135000,
+      }),
+      calculations: { ...userOverMock.calculations, combinedCap: 125000 },
+    });
+
+    await waitFor(() =>
+      expect(result.current).toMatchObject({
+        blocked: true,
+        otherCap: '$45,000.00',
+        otherCapRises: false,
+      }),
+    );
+  });
+
   // The split would give Jane $47,500, so her own cap below that is her effective cap already, and
   // it will not go up as she raises her salary
   it.each([
-    ['personal factors cap', { personalFactorsCap: 45000, hardCap: 80000 }],
-    ['hard cap', { personalFactorsCap: 70000, hardCap: 46000 }],
+    [
+      'personal factors cap',
+      { personalFactorsCap: 45000, hardCap: 80000, effectiveCap: 45000 },
+      '$45,000.00',
+    ],
+    [
+      'hard cap',
+      { personalFactorsCap: 70000, hardCap: 46000, effectiveCap: 46000 },
+      '$46,000.00',
+    ],
   ])(
     "limits an automatic split's amount to the other spouse's %s",
-    async (_, caps) => {
-      const ownCap = Math.min(caps.personalFactorsCap, caps.hardCap);
-      const { result } = renderUseSpouseCapFirst(
-        autoSplitMock({ effectiveCap: ownCap, ...caps }),
-      );
+    async (_, caps, otherCap) => {
+      const { result } = renderUseSpouseCapFirst(autoSplitMock(caps));
 
       await waitFor(() =>
         expect(result.current).toMatchObject({
           blocked: true,
-          otherCap: `$${ownCap.toLocaleString('en-US')}.00`,
+          otherCap,
           otherCapRises: false,
         }),
       );

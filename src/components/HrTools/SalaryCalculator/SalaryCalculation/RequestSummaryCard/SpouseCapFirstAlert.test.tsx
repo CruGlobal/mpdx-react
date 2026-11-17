@@ -24,7 +24,7 @@ describe('SpouseCapFirstAlert', () => {
     expect(alert).not.toHaveTextContent('split automatically');
   });
 
-  // The cap shown on the page is lower than the amount, since it rises as the salary rises
+  // With an automatic split, the cap shown on the page goes up with each raise
   it("explains that an automatic split's cap goes up with the salary", () => {
     const { getByTestId } = render(
       <SpouseCapFirstAlert {...alertProps} otherCapRises />,
