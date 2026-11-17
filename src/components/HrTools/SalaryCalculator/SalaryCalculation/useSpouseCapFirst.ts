@@ -25,6 +25,9 @@ interface UseSpouseCapFirstResult {
 
   /** Whether the couple chose to split their combined cap by hand */
   manuallySplitCap: boolean;
+
+  /** Whether the couple's combined cap is split evenly for them, so each cap rises with the salary */
+  autoSplitCap: boolean;
 }
 
 const isOverCap = ({ requestedYtdGross, effectiveCap }: PersonCaps) =>
@@ -87,11 +90,10 @@ const findOverAndOther = (
 // of the combined cap, limited by their own caps.
 const getOtherCap = (
   calculation: Calculation,
-  manuallySplitCap: boolean,
+  autoSplitCap: boolean,
   over: Person,
   other: Person,
 ) => {
-  const autoSplitCap = !!calculation.splitCapRequired && !manuallySplitCap;
   if (!autoSplitCap) {
     return other.effectiveCap;
   }
@@ -105,12 +107,12 @@ const getOtherCap = (
 // The cap counts this year's ASRs, so the other spouse's gross salary only has to make up the rest
 const getOtherTarget = (
   calculation: Calculation,
-  manuallySplitCap: boolean,
+  autoSplitCap: boolean,
   over: Person,
   other: Person,
 ) => {
   const otherAsrs = other.requestedYtdGross - other.requestedGross;
-  return getOtherCap(calculation, manuallySplitCap, over, other) - otherAsrs;
+  return getOtherCap(calculation, autoSplitCap, over, other) - otherAsrs;
 };
 
 /**
@@ -125,12 +127,15 @@ export const useSpouseCapFirst = (): UseSpouseCapFirstResult => {
 
   const manuallySplitCap =
     !!calculation?.splitCapRequired && !!calculation.manuallySplitCap;
+  const autoSplitCap =
+    !!calculation?.splitCapRequired && !calculation.manuallySplitCap;
   const notBlocked = {
     blocked: false,
     overName: null,
     otherName: null,
     otherCap: '',
     manuallySplitCap,
+    autoSplitCap,
   };
 
   // Submitted requests are only shown, so there is nothing to block
@@ -163,8 +168,9 @@ export const useSpouseCapFirst = (): UseSpouseCapFirstResult => {
     overName: over.name,
     otherName: other.name,
     otherCap: formatCurrency(
-      getOtherTarget(calculation, manuallySplitCap, over, other),
+      getOtherTarget(calculation, autoSplitCap, over, other),
     ),
     manuallySplitCap,
+    autoSplitCap,
   };
 };

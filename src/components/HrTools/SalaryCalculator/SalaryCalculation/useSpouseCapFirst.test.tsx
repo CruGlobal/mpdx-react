@@ -17,6 +17,7 @@ describe('useSpouseCapFirst', () => {
         otherName: 'Jane',
         otherCap: '$50,000.00',
         manuallySplitCap: false,
+        autoSplitCap: false,
       }),
     );
   });
@@ -62,7 +63,12 @@ describe('useSpouseCapFirst', () => {
       manuallySplitCap: true,
     });
 
-    await waitFor(() => expect(result.current.manuallySplitCap).toBe(true));
+    await waitFor(() =>
+      expect(result.current).toMatchObject({
+        manuallySplitCap: true,
+        autoSplitCap: false,
+      }),
+    );
   });
 
   // MPDX-10360: a couple over the combined cap goes to the normal approval levels
