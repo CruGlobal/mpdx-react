@@ -1,5 +1,4 @@
 import { render } from '@testing-library/react';
-import TestWrapper from '__tests__/util/TestWrapper';
 import { SpouseCapFirstAlert } from './SpouseCapFirstAlert';
 
 const alertProps = {
@@ -11,27 +10,21 @@ const alertProps = {
 
 describe('SpouseCapFirstAlert', () => {
   it('asks to raise the other spouse up to their cap first', () => {
-    const { getByTestId } = render(
-      <TestWrapper>
-        <SpouseCapFirstAlert {...alertProps} />
-      </TestWrapper>,
-    );
+    const { getByTestId } = render(<SpouseCapFirstAlert {...alertProps} />);
 
     const alert = getByTestId('SpouseCapFirstAlert');
     expect(alert).toHaveTextContent(
       "John's Gross Requested Salary exceeds their individual Maximum Allowable Salary",
     );
     expect(alert).toHaveTextContent(
-      "raise Jane's Gross Requested Salary up to their Maximum Allowable Salary of $50,000.00",
+      "raise Jane's Gross Requested Salary to $50,000.00, which brings them up to their Maximum Allowable Salary",
     );
     expect(alert).not.toHaveTextContent('change how you split');
   });
 
   it('also suggests moving cap when the couple splits the combined cap by hand', () => {
     const { getByTestId } = render(
-      <TestWrapper>
-        <SpouseCapFirstAlert {...alertProps} manuallySplitCap />
-      </TestWrapper>,
+      <SpouseCapFirstAlert {...alertProps} manuallySplitCap />,
     );
 
     expect(getByTestId('SpouseCapFirstAlert')).toHaveTextContent(

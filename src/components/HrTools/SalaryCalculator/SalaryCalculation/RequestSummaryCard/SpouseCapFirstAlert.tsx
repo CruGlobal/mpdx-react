@@ -32,10 +32,10 @@ export const SpouseCapFirstAlert: React.FC<SpouseCapFirstAlertProps> = ({
         Allowable Salary, but {{ over: overName }}&apos;s Gross Requested Salary
         exceeds their individual Maximum Allowable Salary. Before either of you
         can request more than your own Maximum Allowable Salary, please raise{' '}
-        {{ other: otherName }}&apos;s Gross Requested Salary up to their Maximum
-        Allowable Salary of {{ cap: otherCap }}. After you have both reached
-        your Maximum Allowable Salary, a higher request will go through our
-        Progressive Approvals process.
+        {{ other: otherName }}&apos;s Gross Requested Salary to{' '}
+        {{ cap: otherCap }}, which brings them up to their Maximum Allowable
+        Salary. After you have both reached your Maximum Allowable Salary, a
+        higher request will go through our Progressive Approvals process.
       </Trans>
       {manuallySplitCap &&
         ` ${t(
