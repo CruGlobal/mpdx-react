@@ -42,8 +42,10 @@ describe('SpouseCapFirstAlert', () => {
       <SpouseCapFirstAlert {...alertProps} manuallySplitCap />,
     );
 
-    expect(getByTestId('SpouseCapFirstAlert')).toHaveTextContent(
+    const alert = getByTestId('SpouseCapFirstAlert');
+    expect(alert).toHaveTextContent(
       'change how you split your Combined Maximum Allowable Salary',
     );
+    expect(alert).not.toHaveTextContent('split automatically');
   });
 });

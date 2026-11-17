@@ -39,7 +39,7 @@ export const SpouseCapFirstAlert: React.FC<SpouseCapFirstAlertProps> = ({
         Salary. After you have both reached your Maximum Allowable Salary, a
         higher request will go through our Progressive Approvals process.
       </Trans>
-      {/* The cap shown on the page is lower than the amount, since it rises as the salary rises */}
+      {/* With an automatic split, the cap shown on the page rises with each raise until it meets the salary */}
       {otherCapRises && (
         <>
           {' '}
