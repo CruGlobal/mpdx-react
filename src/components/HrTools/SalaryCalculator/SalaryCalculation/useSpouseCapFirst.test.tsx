@@ -17,7 +17,7 @@ describe('useSpouseCapFirst', () => {
         otherName: 'Jane',
         otherCap: '$50,000.00',
         manuallySplitCap: false,
-        autoSplitCap: false,
+        otherCapRises: false,
       }),
     );
   });
@@ -66,7 +66,7 @@ describe('useSpouseCapFirst', () => {
     await waitFor(() =>
       expect(result.current).toMatchObject({
         manuallySplitCap: true,
-        autoSplitCap: false,
+        otherCapRises: false,
       }),
     );
   });

@@ -8,7 +8,7 @@ interface SpouseCapFirstAlertProps {
   otherName: string | null;
   otherCap: string;
   manuallySplitCap: boolean;
-  autoSplitCap: boolean;
+  otherCapRises: boolean;
 }
 
 export const SpouseCapFirstAlert: React.FC<SpouseCapFirstAlertProps> = ({
@@ -16,7 +16,7 @@ export const SpouseCapFirstAlert: React.FC<SpouseCapFirstAlertProps> = ({
   otherName,
   otherCap,
   manuallySplitCap,
-  autoSplitCap,
+  otherCapRises,
 }) => {
   const { t } = useTranslation();
   const { markValid, markInvalid } = useOptionalAutosaveForm() ?? {};
@@ -29,7 +29,7 @@ export const SpouseCapFirstAlert: React.FC<SpouseCapFirstAlertProps> = ({
 
   return (
     <Alert severity="error" data-testid="SpouseCapFirstAlert">
-      <Trans t={t}>
+      <Trans t={t} values={{ over: overName, other: otherName, cap: otherCap }}>
         Your Combined Gross Requested Salary is within your Combined Maximum
         Allowable Salary, but {{ over: overName }}&apos;s Gross Requested Salary
         exceeds their individual Maximum Allowable Salary. Before either of you
@@ -40,10 +40,10 @@ export const SpouseCapFirstAlert: React.FC<SpouseCapFirstAlertProps> = ({
         higher request will go through our Progressive Approvals process.
       </Trans>
       {/* The cap shown on the page is lower than the amount, since it rises as the salary rises */}
-      {autoSplitCap && (
+      {otherCapRises && (
         <>
           {' '}
-          <Trans t={t}>
+          <Trans t={t} values={{ other: otherName }}>
             Since your Combined Maximum Allowable Salary is split automatically,{' '}
             {{ other: otherName }}&apos;s Maximum Allowable Salary goes up as
             their salary goes up.

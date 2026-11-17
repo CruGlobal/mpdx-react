@@ -7,7 +7,7 @@ import {
 // The amount the alert asks the other spouse to reach
 describe('useSpouseCapFirst otherCap', () => {
   it('asks an automatic split to reach the rest of the combined cap', async () => {
-    // Half the unused combined cap makes Jane's effective cap $57,500, but that moves as she
+    // Half the unused combined cap makes Jane's effective cap $47,500, but that moves as she
     // raises her salary. The couple is settled once she reaches $135,000 - $80,000.
     const { result } = renderUseSpouseCapFirst({
       ...userOverMock,
@@ -15,7 +15,7 @@ describe('useSpouseCapFirst otherCap', () => {
       spouseCalculations: {
         requestedGross: 40000,
         requestedYtdGross: 40000,
-        effectiveCap: 57500,
+        effectiveCap: 47500,
         personalFactorsCap: 70000,
         hardCap: 80000,
       },
@@ -25,7 +25,7 @@ describe('useSpouseCapFirst otherCap', () => {
       expect(result.current).toMatchObject({
         blocked: true,
         otherCap: '$55,000.00',
-        autoSplitCap: true,
+        otherCapRises: true,
       }),
     );
   });
@@ -58,7 +58,7 @@ describe('useSpouseCapFirst otherCap', () => {
       expect(result.current).toMatchObject({
         blocked: true,
         otherCap: '$48,583.33',
-        autoSplitCap: true,
+        otherCapRises: true,
       }),
     );
   });
@@ -80,6 +80,8 @@ describe('useSpouseCapFirst otherCap', () => {
       expect(result.current).toMatchObject({
         blocked: true,
         otherCap: '$50,000.00',
+        // Her cap is already held at her own cap, so it will not go up as she raises her salary
+        otherCapRises: false,
       }),
     );
   });

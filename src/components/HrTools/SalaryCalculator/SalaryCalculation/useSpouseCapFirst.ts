@@ -26,8 +26,11 @@ interface UseSpouseCapFirstResult {
   /** Whether the couple chose to split their combined cap by hand */
   manuallySplitCap: boolean;
 
-  /** Whether the couple's combined cap is split evenly for them, so each cap rises with the salary */
-  autoSplitCap: boolean;
+  /**
+   * Whether the other spouse's effective cap goes up as they raise their salary, because an
+   * automatic split gives them half of each raise until they reach their own cap
+   */
+  otherCapRises: boolean;
 }
 
 const isOverCap = ({ requestedYtdGross, effectiveCap }: PersonCaps) =>
@@ -105,15 +108,8 @@ const getOtherCap = (
 };
 
 // The cap counts this year's ASRs, so the other spouse's gross salary only has to make up the rest
-const getOtherTarget = (
-  calculation: Calculation,
-  autoSplitCap: boolean,
-  over: Person,
-  other: Person,
-) => {
-  const otherAsrs = other.requestedYtdGross - other.requestedGross;
-  return getOtherCap(calculation, autoSplitCap, over, other) - otherAsrs;
-};
+const getOtherTarget = (otherCap: number, other: Person) =>
+  otherCap - (other.requestedYtdGross - other.requestedGross);
 
 /**
  * While the couple is under their combined cap, a raise may take a spouse over their own cap only
@@ -135,7 +131,7 @@ export const useSpouseCapFirst = (): UseSpouseCapFirstResult => {
     otherName: null,
     otherCap: '',
     manuallySplitCap,
-    autoSplitCap,
+    otherCapRises: false,
   };
 
   // Submitted requests are only shown, so there is nothing to block
@@ -162,15 +158,14 @@ export const useSpouseCapFirst = (): UseSpouseCapFirstResult => {
     return notBlocked;
   }
   const [over, other] = overAndOther;
+  const otherCap = getOtherCap(calculation, autoSplitCap, over, other);
 
   return {
     blocked: true,
     overName: over.name,
     otherName: other.name,
-    otherCap: formatCurrency(
-      getOtherTarget(calculation, autoSplitCap, over, other),
-    ),
+    otherCap: formatCurrency(getOtherTarget(otherCap, other)),
     manuallySplitCap,
-    autoSplitCap,
+    otherCapRises: toCents(other.effectiveCap) < toCents(otherCap),
   };
 };
