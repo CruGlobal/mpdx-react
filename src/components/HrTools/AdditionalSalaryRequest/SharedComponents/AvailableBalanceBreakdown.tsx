@@ -21,12 +21,13 @@ const statusLabel = (status: AsrStatusEnum, t: TFunction): string => {
   }
 };
 
-// Explains the "Available for This Request" amount with the same numbers SAA checks the request against
+// Explains the "Available for This Request" amount with the same numbers SAA checks the request against, and the
+// amount past which the request needs approval
 export const AvailableBalanceBreakdown: React.FC = () => {
   const { t } = useTranslation();
   const { formatCurrency: format } = useFormatters();
   const { hcmLoading } = useAdditionalSalaryRequest();
-  const { balanceBreakdown } = useFormUserInfo();
+  const { balanceBreakdown, remainingCap } = useFormUserInfo();
 
   if (hcmLoading || !balanceBreakdown) {
     return null;
@@ -69,6 +70,15 @@ export const AvailableBalanceBreakdown: React.FC = () => {
             </ListItem>
           ))}
         </List>
+      )}
+      {remainingCap !== null && (
+        // SAA sends a request for approval once its non-backpay amount goes past the remaining allowable salary
+        <Typography variant="body2" color="text.secondary">
+          {t(
+            "Requests over {{amount}} (your remaining allowable salary) need approval. Current year's salary not received doesn't count toward this amount.",
+            { amount: format(remainingCap) },
+          )}
+        </Typography>
       )}
     </Stack>
   );

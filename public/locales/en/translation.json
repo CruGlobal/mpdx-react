@@ -2834,6 +2834,7 @@
     "Requested salary is the same as net salary or take-home pay. {{spouseName}}'s pre-filled amount is estimated from their current salary. Round to the nearest dollar.": "Requested salary is the same as net salary or take-home pay. {{spouseName}}'s pre-filled amount is estimated from their current salary. Round to the nearest dollar.",
     "Requested salary must be at least {{min}}": "Requested salary must be at least {{min}}",
     "Requests exceeding your Maximum Allowable Salary require additional review.": "Requests exceeding your Maximum Allowable Salary require additional review.",
+    "Requests over {{amount}} (your remaining allowable salary) need approval. Current year's salary not received doesn't count toward this amount.": "Requests over {{amount}} (your remaining allowable salary) need approval. Current year's salary not received doesn't count toward this amount.",
     "Required": "Required",
     "Research Abandoned": "Research Abandoned",
     "Research Contact Info": "Research Contact Info",

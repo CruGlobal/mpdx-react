@@ -97,6 +97,38 @@ describe('AvailableBalanceBreakdown', () => {
     expect(queryByRole('list')).not.toBeInTheDocument();
   });
 
+  it.each([
+    { person: 'at their cap', remaining: 0, amount: '$0.00' },
+    { person: 'with room left', remaining: 26750, amount: '$26,750.00' },
+  ])(
+    'names the amount that needs approval for a person $person',
+    ({ remaining, amount }) => {
+      mockCalculations({
+        staffAccountBalance: 1500,
+        remainingAllowableSalary: remaining,
+      });
+
+      const { getByText } = render(<AvailableBalanceBreakdown />);
+
+      expect(
+        getByText(
+          `Requests over ${amount} (your remaining allowable salary) need approval. Current year's salary not received doesn't count toward this amount.`,
+        ),
+      ).toBeInTheDocument();
+    },
+  );
+
+  it('leaves out the approval note without a cap', () => {
+    mockCalculations({
+      staffAccountBalance: 1500,
+      remainingAllowableSalary: null,
+    });
+
+    const { queryByText } = render(<AvailableBalanceBreakdown />);
+
+    expect(queryByText(/need approval/)).not.toBeInTheDocument();
+  });
+
   it('renders nothing without calculations', () => {
     mockCalculations(undefined);
 
