@@ -5,6 +5,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { NameDisplay } from 'src/components/HrTools/Shared/CalculationReports/NameDisplay/NameDisplay';
 import { NameDisplaySkeleton } from 'src/components/HrTools/Shared/CalculationReports/NameDisplay/NameDisplaySkeleton';
 import { PageEnum } from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
+import { AsrStatusEnum } from 'src/graphql/types.generated';
 import {
   CompleteFormValues,
   mainContentWidth,
@@ -25,6 +26,7 @@ export const ViewForm: React.FC = () => {
   const { t } = useTranslation();
   const {
     calculations,
+    requestData,
     setPageType,
     pendingPrint,
     setPendingPrint,
@@ -92,7 +94,13 @@ export const ViewForm: React.FC = () => {
             showContent
           />
         )}
-        <AvailableBalanceBreakdown showApprovalNote={false} />
+        {/* A submitted request already counts toward the cap; one sent back for changes does not */}
+        <AvailableBalanceBreakdown
+          showApprovalNote={
+            requestData?.latestAdditionalSalaryRequest?.status ===
+            AsrStatusEnum.ActionRequired
+          }
+        />
       </Stack>
       <Typography variant="body1" paragraph>
         <Trans t={t}>

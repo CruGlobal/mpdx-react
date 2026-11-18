@@ -29,7 +29,7 @@ const approvalNote = (
         "Requests over {{amount}} (what's left under your combined cap with your spouse) need approval. Current year's salary not received doesn't count toward this amount.",
         { amount: format(amount) },
       );
-    default:
+    case ProgressiveApprovalTierReasonEnum.OverUserCap:
       return t(
         "Requests over {{amount}} (your remaining allowable salary) need approval. Current year's salary not received doesn't count toward this amount.",
         { amount: format(amount) },
@@ -48,13 +48,13 @@ const statusLabel = (status: AsrStatusEnum, t: TFunction): string => {
   }
 };
 
-// Explains the "Available for This Request" amount with the same numbers SAA checks the request against, and the
-// amount past which the request needs approval
 interface AvailableBalanceBreakdownProps {
   // A submitted request already counts toward the cap, so the note would not describe it
   showApprovalNote?: boolean;
 }
 
+// Explains the "Available for This Request" amount with the same numbers SAA checks the request against, and the
+// amount past which the request needs approval
 export const AvailableBalanceBreakdown: React.FC<
   AvailableBalanceBreakdownProps
 > = ({ showApprovalNote = true }) => {

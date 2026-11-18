@@ -1,7 +1,11 @@
 import { AsrStatusEnum } from 'src/graphql/types.generated';
 import { missingValue } from '../../../Shared/helpers/missingValue';
 import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
-import { createRenderFormComponent, setupMockContext } from '../testUtils';
+import {
+  createRenderFormComponent,
+  defaultMockContextValue,
+  setupMockContext,
+} from '../testUtils';
 import { ViewForm } from './ViewForm';
 
 jest.mock('../../Shared/AdditionalSalaryRequestContext', () => {
@@ -67,6 +71,28 @@ describe('ViewForm', () => {
 
     expect(getByTestId('amount-three')).toHaveTextContent('$15,000.00');
   });
+
+  it.each([
+    { status: AsrStatusEnum.Pending, shown: false },
+    { status: AsrStatusEnum.ActionRequired, shown: true },
+  ])(
+    'with status $status shows the approval note: $shown',
+    ({ status, shown }) => {
+      const { queryByText } = renderComponent({
+        contextOverrides: {
+          requestData: {
+            latestAdditionalSalaryRequest: {
+              ...defaultMockContextValue.requestData
+                .latestAdditionalSalaryRequest,
+              status,
+            },
+          },
+        },
+      });
+
+      expect(!!queryByText(/need approval/)).toBe(shown);
+    },
+  );
 
   it('handles missing calculations gracefully', () => {
     const { getByTestId } = renderComponent({

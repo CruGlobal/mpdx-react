@@ -57,10 +57,26 @@ describe('approvalThreshold', () => {
     });
   });
 
-  it('keeps the remaining allowable salary when the combined room is equal', () => {
+  it('names the combined cap when its room is equal, as TierLookup checks it first', () => {
     expect(
       approvalThreshold({ ...own, combinedCap: 90000 }, spouse)?.reason,
-    ).toBe(ProgressiveApprovalTierReasonEnum.OverUserCap);
+    ).toBe(ProgressiveApprovalTierReasonEnum.OverCombinedCap);
+  });
+
+  it('rounds the combined room down to the cent', () => {
+    expect(
+      approvalThreshold(
+        { ...own, combinedCap: 85000.29 },
+        { ...spouse, grossAnnualSalary: 30000 },
+      )?.amount,
+    ).toBe(10000.29);
+  });
+
+  it('never shows a negative amount', () => {
+    expect(
+      approvalThreshold({ ...own, remainingAllowableSalary: -500 }, null)
+        ?.amount,
+    ).toBe(0);
   });
 
   it('is the room under the combined cap when that is smaller', () => {

@@ -20,7 +20,7 @@ export interface ApprovalThreshold {
 }
 
 // Rounded down so a request of exactly the amount shown never needs approval
-const toCents = (amount: number) => Math.floor(amount * 100 + 1e-6) / 100;
+const floorToCents = (amount: number) => Math.floor(amount * 100 + 1e-6) / 100;
 
 // The non-backpay amount past which a new request needs approval, by the same rule as the API's
 // RequestForms::TierLookup: over the person's own cap, over the couple's combined cap, or a spouse
@@ -33,10 +33,11 @@ export const approvalThreshold = (
   if (!own) {
     return null;
   }
-  const { currentSalaryCap: cap, remainingAllowableSalary: ownRoom } = own;
-  if (typeof cap !== 'number' || typeof ownRoom !== 'number') {
+  const { currentSalaryCap: cap, remainingAllowableSalary } = own;
+  if (typeof cap !== 'number' || typeof remainingAllowableSalary !== 'number') {
     return null;
   }
+  const ownRoom = Math.max(remainingAllowableSalary, 0);
 
   const ownCounted = Math.max(
     own.grossAnnualSalary + own.ytdAsrAmount,
@@ -60,16 +61,17 @@ export const approvalThreshold = (
       own.combinedCap - ownCounted - spouseCounted,
       0,
     );
-    if (combinedRoom < ownRoom) {
+    // TierLookup checks the combined cap first, so it names that cap when both are hit at once
+    if (combinedRoom <= ownRoom) {
       return {
-        amount: toCents(combinedRoom),
+        amount: floorToCents(combinedRoom),
         reason: ProgressiveApprovalTierReasonEnum.OverCombinedCap,
       };
     }
   }
 
   return {
-    amount: toCents(ownRoom),
+    amount: floorToCents(ownRoom),
     reason: ProgressiveApprovalTierReasonEnum.OverUserCap,
   };
 };
