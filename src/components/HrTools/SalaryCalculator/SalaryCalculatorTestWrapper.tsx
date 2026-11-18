@@ -33,6 +33,8 @@ import {
   SalaryCalculatorProvider,
   useSalaryCalculator,
 } from './SalaryCalculatorContext/SalaryCalculatorContext';
+import { GoalSalaryQuery } from './Shared/GoalSalary.generated';
+import { GoalMock } from './Shared/goalSalaryMock';
 import {
   SubmitSalaryCalculationMutation,
   SubmitSalaryCalculationMutationVariables,
@@ -44,6 +46,7 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
       {
         salaryRequestEligible: true,
         staffInfo: {
+          firstName: 'John',
           preferredName: 'John',
           lastName: 'Doe',
           personNumber: '000123456',
@@ -88,6 +91,7 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
       {
         salaryRequestEligible: true,
         staffInfo: {
+          firstName: 'Jane',
           preferredName: 'Jane',
           lastName: 'Doe',
           personNumber: '000789123',
@@ -159,6 +163,8 @@ export interface SalaryCalculatorTestWrapperProps {
   calculationError?: boolean;
   /** Makes SubmitSalaryCalculation fail with this error unless its input sets `confirmMhaEnd` */
   submitError?: GraphQLError;
+  /** The account list's MPD Goals */
+  goals?: GoalMock[];
 }
 
 export const SalaryCalculatorTestWrapper: React.FC<
@@ -180,6 +186,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
   calculationUnavailableCalls = 0,
   calculationError = false,
   submitError,
+  goals = [],
 }) => {
   const hcmUserMerged = merge({}, hcmUserMock, hcmUser);
   const hcmSpouseMerged = merge({}, hcmSpouseMock, hcmSpouse);
@@ -205,6 +212,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
             GetUser: GetUserQuery;
             AccountGeographicLocation: AccountGeographicLocationQuery;
             SubmitSalaryCalculation: SubmitSalaryCalculationMutation;
+            GoalSalary: GoalSalaryQuery;
           }>
             mocks={{
               StaffAccount: {
@@ -228,6 +236,12 @@ export const SalaryCalculatorTestWrapper: React.FC<
               },
               PayrollDates: {
                 payrollDates,
+              },
+              GoalSalary: {
+                goalCalculations: {
+                  nodes: goals,
+                  pageInfo: { hasNextPage: false },
+                },
               },
               EffectiveSalaryCalculation: {
                 salaryRequest: effectiveSalaryRequestMock,

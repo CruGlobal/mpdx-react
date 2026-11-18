@@ -31,6 +31,7 @@ import { StepCard, StepTableHead } from '../../Shared/StepCard';
 import { estimateRequestedSalary } from '../../Shared/estimateRequestedSalary';
 import { orientSalaryRequest } from '../../Shared/orientSalaryRequest';
 import { useSosaBlockOverCap } from '../useSosaBlockOverCap';
+import { GoalSalaryRow } from './GoalSalaryRow';
 
 const SosaHardCapAlert: React.FC = () => {
   const { t } = useTranslation();
@@ -231,6 +232,8 @@ export const RequestedSalaryCard: React.FC = () => {
                 </TableCell>
               )}
             </TableRow>
+
+            <GoalSalaryRow />
 
             <TableRow>
               <TableCell component="th" scope="row">
