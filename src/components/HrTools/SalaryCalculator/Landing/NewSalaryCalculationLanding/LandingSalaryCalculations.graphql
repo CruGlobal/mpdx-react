@@ -40,6 +40,14 @@ mutation CreateSalaryCalculation($input: SalaryRequestCreateMutationInput!) {
   createSalaryRequest(input: $input) {
     salaryRequest {
       id
+      calculations {
+        non403bFraction
+        secaEstimatedFraction
+      }
+      spouseCalculations {
+        non403bFraction
+        secaEstimatedFraction
+      }
     }
   }
 }

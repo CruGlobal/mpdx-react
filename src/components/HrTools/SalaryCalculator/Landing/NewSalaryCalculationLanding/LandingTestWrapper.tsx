@@ -18,8 +18,13 @@ import {
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { StaffAccountIdQuery } from '../../../Shared/StaffAccountId.generated';
+import { GoalSalaryQuery } from '../../Shared/GoalSalary.generated';
+import { GoalMock, goalSalaryCalculations } from '../../Shared/goalSalaryMock';
 import { AccountBalanceQuery } from '../AccountBalance.generated';
-import { LandingSalaryCalculationsQuery } from './LandingSalaryCalculations.generated';
+import {
+  CreateSalaryCalculationMutation,
+  LandingSalaryCalculationsQuery,
+} from './LandingSalaryCalculations.generated';
 
 export interface LandingTestWrapperProps {
   onCall?: MockLinkCallHandler;
@@ -39,6 +44,8 @@ export interface LandingTestWrapperProps {
   balanceError?: boolean;
   /** Leaves the Primary fund out of the AccountBalance response */
   noPrimaryFund?: boolean;
+  /** The account list's MPD Goals */
+  goals?: GoalMock[];
 }
 
 export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
@@ -55,16 +62,19 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
   calculationError = false,
   balanceError = false,
   noPrimaryFund = false,
+  goals = [],
 }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
-      <TestRouter>
+      <TestRouter router={{ query: { accountListId: 'account-list-1' } }}>
         <GqlMockedProvider<{
           Hcm: HcmQuery;
           StaffAccountId: StaffAccountIdQuery;
           AccountBalance: AccountBalanceQuery;
           LandingSalaryCalculations: LandingSalaryCalculationsQuery;
           GetUser: GetUserQuery;
+          GoalSalary: GoalSalaryQuery;
+          CreateSalaryCalculation: CreateSalaryCalculationMutation;
         }>
           mocks={{
             Hcm: {
@@ -72,6 +82,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
                 [
                   {
                     staffInfo: {
+                      firstName: 'John',
                       preferredName: 'John',
                       lastName: 'Doe',
                       personNumber: '000123456',
@@ -99,6 +110,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
                   },
                   {
                     staffInfo: {
+                      firstName: 'Jane',
                       preferredName: 'Jane',
                       lastName: 'Doe',
                       personNumber: '000123457',
@@ -180,6 +192,21 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
               user: {
                 userType: UserTypeEnum.UsStaff,
                 usStaffGroup: UsStaffGroupEnum.SeniorStaff,
+              },
+            },
+            GoalSalary: {
+              goalCalculations: {
+                nodes: goals,
+                pageInfo: { hasNextPage: false },
+              },
+            },
+            CreateSalaryCalculation: {
+              createSalaryRequest: {
+                salaryRequest: {
+                  id: 'new-calculation',
+                  calculations: goalSalaryCalculations,
+                  spouseCalculations: goalSalaryCalculations,
+                },
               },
             },
           }}
