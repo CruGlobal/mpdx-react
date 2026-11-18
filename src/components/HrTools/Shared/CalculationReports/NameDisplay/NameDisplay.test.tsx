@@ -17,12 +17,14 @@ interface TestComponentProps {
   names: string;
   showContent?: boolean;
   spouseComponent?: React.ReactNode;
+  titleOneAdornment?: React.ReactNode;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   names,
   showContent,
   spouseComponent,
+  titleOneAdornment,
 }) => {
   return (
     <ThemeProvider theme={theme}>
@@ -30,6 +32,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
         names={names}
         showContent={showContent}
         titleOne={titleOne}
+        titleOneAdornment={titleOneAdornment}
         titleTwo={titleTwo}
         amountOne={1000}
         amountTwo={20000}
@@ -77,11 +80,9 @@ describe('NameDisplay', () => {
     expect(getByTestId('amount-three')).toHaveTextContent('$5,000.00');
   });
 
-  const renderAmounts = (amounts: {
-    amountOne?: number | null;
-    amountTwo?: number | null;
-    amountThree?: number | null;
-  }) =>
+  const renderThreeColumns = (
+    props: Partial<React.ComponentProps<typeof NameDisplay>>,
+  ) =>
     render(
       <ThemeProvider theme={theme}>
         <NameDisplay
@@ -93,7 +94,7 @@ describe('NameDisplay', () => {
           amountOne={1000}
           amountTwo={20000}
           amountThree={5000}
-          {...amounts}
+          {...props}
         />
       </ThemeProvider>,
     );
@@ -105,7 +106,7 @@ describe('NameDisplay', () => {
   ])(
     'shows the missing-value dash, not $0.00, for a null %s',
     (prop, testId) => {
-      const { getByTestId } = renderAmounts({ [prop]: null });
+      const { getByTestId } = renderThreeColumns({ [prop]: null });
 
       expect(getByTestId(testId)).toHaveTextContent(missingValue);
       expect(getByTestId(testId)).not.toHaveTextContent('$');
@@ -113,7 +114,7 @@ describe('NameDisplay', () => {
   );
 
   it('still shows $0.00 for a real zero', () => {
-    const { getByTestId } = renderAmounts({ amountThree: 0 });
+    const { getByTestId } = renderThreeColumns({ amountThree: 0 });
 
     expect(getByTestId('amount-three')).toHaveTextContent('$0.00');
   });
@@ -127,21 +128,9 @@ describe('NameDisplay', () => {
   });
 
   it('renders the note as a full-width caption under the amounts', () => {
-    const { getByText } = render(
-      <ThemeProvider theme={theme}>
-        <NameDisplay
-          names="Doe, John"
-          showContent
-          titleOne={titleOne}
-          titleTwo={titleTwo}
-          titleThree="Title Three"
-          amountOne={1000}
-          amountTwo={20000}
-          amountThree={5000}
-          note="Requests over $5,000.00 need approval."
-        />
-      </ThemeProvider>,
-    );
+    const { getByText } = renderThreeColumns({
+      note: 'Requests over $5,000.00 need approval.',
+    });
 
     const note = getByText('Requests over $5,000.00 need approval.');
     expect(note).toHaveClass('MuiTypography-caption');
@@ -156,6 +145,21 @@ describe('NameDisplay', () => {
     );
 
     expect(container.querySelector('.MuiTypography-caption')).toBeNull();
+  });
+
+  it('renders the first title adornment next to that title only', () => {
+    const { getByText, getByTestId } = render(
+      <TestComponent
+        names="Doe, John"
+        showContent
+        titleOneAdornment={<span data-testid="adornment" />}
+      />,
+    );
+
+    expect(getByText('TITLE ONE')).toContainElement(getByTestId('adornment'));
+    expect(getByText('TITLE TWO')).not.toContainElement(
+      getByTestId('adornment'),
+    );
   });
 
   it('renders spouseComponent when provided', () => {

@@ -1,7 +1,7 @@
 import { TFunction } from 'i18next';
 import { currencyFormat } from 'src/lib/intlFormat';
 
-// The breakdown under the balance card names the numbers behind the available amount
+// The info tooltip beside the available amount names the numbers behind it
 export const overBalanceMessage = (
   t: TFunction,
   locale: string,

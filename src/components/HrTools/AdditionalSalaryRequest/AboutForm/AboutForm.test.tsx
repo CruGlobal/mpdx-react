@@ -12,6 +12,7 @@ import { AsrStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { HcmQuery } from '../../Shared/HcmData/Hcm.generated';
 import { AdditionalSalaryRequestQuery } from '../AdditionalSalaryRequest.generated';
+import { openAvailableBalanceTooltip } from '../FormVersions/testUtils';
 import { AdditionalSalaryRequestProvider } from '../Shared/AdditionalSalaryRequestContext';
 import { defaultCompleteFormValues } from '../Shared/CompleteForm.mock';
 import { AboutForm } from './AboutForm';
@@ -128,7 +129,9 @@ describe('AboutForm', () => {
   it('should display financial data when a request exists', async () => {
     const { findByText, queryByText } = render(<TestWrapper />);
 
-    expect(await findByText(/Available for This Request/i)).toBeInTheDocument();
+    expect(
+      await findByText(/^Available for This Request$/i),
+    ).toBeInTheDocument();
     expect(queryByText(/Primary Account Balance/i)).not.toBeInTheDocument();
     expect(
       await findByText(/Your Maximum Allowable Salary \(CAP\)/i),
@@ -157,6 +160,42 @@ describe('AboutForm', () => {
     );
 
     expect(await findByTestId('amount-three')).toHaveTextContent('$30,000.00');
+  });
+
+  it('explains the available amount in a tooltip beside its label', async () => {
+    const utils = render(
+      <TestWrapper
+        asrMocks={{
+          AdditionalSalaryRequest: {
+            latestAdditionalSalaryRequest: {
+              calculations: {
+                staffAccountBalance: 1500,
+                staffAccountDeficitLimit: 500,
+                unpaidHouseholdAsrAmount: 800,
+                unpaidHouseholdAsrs: [
+                  {
+                    amount: 800,
+                    status: AsrStatusEnum.Pending,
+                    submittedAt: null,
+                    spouse: true,
+                  },
+                ],
+              },
+            },
+          },
+        }}
+      />,
+    );
+
+    await utils.findByTestId('amount-one');
+    expect(utils.queryByText(/Primary balance/)).not.toBeInTheDocument();
+    const tooltip = await openAvailableBalanceTooltip(utils);
+    expect(tooltip).toHaveTextContent(
+      'Primary balance of $1,500.00, plus deficit limit of $500.00, minus $800.00 in other unpaid requests',
+    );
+    expect(tooltip).toHaveTextContent(
+      "Your spouse's request, waiting for approval: $800.00",
+    );
   });
 
   it('shows the approval note inside the card, under the amounts', async () => {

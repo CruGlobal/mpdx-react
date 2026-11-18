@@ -16,7 +16,7 @@ import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequest
 import { useApprovalNote } from '../../Shared/useApprovalNote';
 import { useFormUserInfo } from '../../Shared/useFormUserInfo';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
-import { AvailableBalanceBreakdown } from '../../SharedComponents/AvailableBalanceBreakdown';
+import { AvailableBalanceTooltip } from '../../SharedComponents/AvailableBalanceTooltip';
 import { MissingLocationAlert } from '../../SharedComponents/MissingLocationAlert';
 import { SpouseComponent } from '../../SharedComponents/SpouseComponent';
 import { ValidationAlert } from '../../SharedComponents/ValidationAlert';
@@ -51,6 +51,7 @@ export const NewForm: React.FC = () => {
           <NameDisplay
             names={name ?? ''}
             titleOne={t('Available for This Request')}
+            titleOneAdornment={<AvailableBalanceTooltip />}
             amountOne={availableAccountBalance}
             titleTwo={t('Your Maximum Allowable Salary (CAP)')}
             amountTwo={individualCap}
@@ -61,7 +62,6 @@ export const NewForm: React.FC = () => {
             showContent
           />
         )}
-        <AvailableBalanceBreakdown />
         <MissingLocationAlert />
       </Stack>
 

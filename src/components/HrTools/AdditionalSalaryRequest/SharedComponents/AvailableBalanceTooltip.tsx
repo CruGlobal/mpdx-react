@@ -1,7 +1,14 @@
-import React from 'react';
-import { List, ListItem, Stack, Typography } from '@mui/material';
+import React, { useState } from 'react';
+import {
+  ClickAwayListener,
+  List,
+  ListItem,
+  Tooltip,
+  useMediaQuery,
+} from '@mui/material';
 import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { InfoTooltipIcon } from 'src/components/HrTools/Shared/InfoTooltipIcon';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
@@ -22,11 +29,15 @@ const statusLabel = (status: AsrStatusEnum, t: TFunction): string => {
 };
 
 // Explains the "Available for This Request" amount with the same numbers SAA checks the request against
-export const AvailableBalanceBreakdown: React.FC = () => {
+export const AvailableBalanceTooltip: React.FC = () => {
   const { t } = useTranslation();
   const { formatCurrency: format } = useFormatters();
   const { hcmLoading } = useAdditionalSalaryRequest();
   const { balanceBreakdown } = useFormUserInfo();
+  // A touch screen has no hover, and its browser sends a mouseleave right after a tap, which
+  // would close a hover tooltip at once. There a tap opens or closes it, and a tap elsewhere closes it.
+  const touchScreen = useMediaQuery('(hover: none)');
+  const [touchOpen, setTouchOpen] = useState(false);
 
   if (hcmLoading || !balanceBreakdown) {
     return null;
@@ -50,26 +61,54 @@ export const AvailableBalanceBreakdown: React.FC = () => {
     );
   }
 
-  return (
-    <Stack>
-      <Typography variant="body2" color="text.secondary">
-        {parts.join(', ')}
-      </Typography>
+  const breakdown = (
+    <>
+      {parts.join(', ')}
       {unpaidRequests.length > 0 && (
-        <List dense disablePadding>
+        <List dense disablePadding sx={{ marginTop: 0.5 }}>
           {unpaidRequests.map((request, index) => (
             <ListItem key={index} disableGutters disablePadding>
-              <Typography variant="body2" color="text.secondary">
-                {t('{{request}}, {{status}}: {{amount}}', {
-                  request: requestLabel(request.spouse, t),
-                  status: statusLabel(request.status, t),
-                  amount: format(request.amount),
-                })}
-              </Typography>
+              {t('{{request}}, {{status}}: {{amount}}', {
+                request: requestLabel(request.spouse, t),
+                status: statusLabel(request.status, t),
+                amount: format(request.amount),
+              })}
             </ListItem>
           ))}
         </List>
       )}
-    </Stack>
+    </>
+  );
+
+  // describeChild announces the breakdown as the icon's description while titleAccess stays its
+  // accessible name
+  const tooltip = (
+    <Tooltip
+      title={breakdown}
+      describeChild
+      {...(touchScreen && {
+        open: touchOpen,
+        onOpen: () => setTouchOpen(true),
+        onClose: () => setTouchOpen(false),
+        disableHoverListener: true,
+        disableTouchListener: true,
+      })}
+    >
+      <InfoTooltipIcon
+        tabIndex={0}
+        titleAccess={t(
+          'How the amount available for this request is calculated',
+        )}
+        onClick={() => setTouchOpen((open) => !open)}
+      />
+    </Tooltip>
+  );
+
+  return touchScreen ? (
+    <ClickAwayListener onClickAway={() => setTouchOpen(false)}>
+      {tooltip}
+    </ClickAwayListener>
+  ) : (
+    tooltip
   );
 };

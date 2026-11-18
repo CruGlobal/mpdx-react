@@ -10,7 +10,7 @@ import { paperVersionLink, progressiveApprovalsLink } from '../Shared/pdfLinks';
 import { useApprovalNote } from '../Shared/useApprovalNote';
 import { useFormUserInfo } from '../Shared/useFormUserInfo';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
-import { AvailableBalanceBreakdown } from '../SharedComponents/AvailableBalanceBreakdown';
+import { AvailableBalanceTooltip } from '../SharedComponents/AvailableBalanceTooltip';
 import { MissingLocationAlert } from '../SharedComponents/MissingLocationAlert';
 import { SpouseComponent } from '../SharedComponents/SpouseComponent';
 
@@ -96,6 +96,7 @@ export const AboutForm: React.FC = () => {
         <NameDisplay
           names={name ?? ''}
           titleOne={t('Available for This Request')}
+          titleOneAdornment={<AvailableBalanceTooltip />}
           amountOne={availableAccountBalance}
           titleTwo={t('Your Maximum Allowable Salary (CAP)')}
           amountTwo={individualCap}
@@ -106,7 +107,6 @@ export const AboutForm: React.FC = () => {
           showContent={!!latestRequest}
         />
       )}
-      <AvailableBalanceBreakdown />
       <MissingLocationAlert />
     </AdditionalSalaryRequestSection>
   );

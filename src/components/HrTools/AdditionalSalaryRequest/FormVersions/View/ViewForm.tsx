@@ -17,7 +17,7 @@ import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequest
 import { useApprovalNote } from '../../Shared/useApprovalNote';
 import { useFormUserInfo } from '../../Shared/useFormUserInfo';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
-import { AvailableBalanceBreakdown } from '../../SharedComponents/AvailableBalanceBreakdown';
+import { AvailableBalanceTooltip } from '../../SharedComponents/AvailableBalanceTooltip';
 import { ContactInformationSummaryCard } from '../../SharedComponents/ContactInformationSummaryCard';
 import { SpouseComponent } from '../../SharedComponents/SpouseComponent';
 import { ApprovalProcess } from '../../SubmitModalAccordions/ApprovalProcess/ApprovalProcess';
@@ -84,25 +84,23 @@ export const ViewForm: React.FC = () => {
       maxWidth={mainContentWidth}
     >
       <Typography variant="h4">{t('View Your Request')}</Typography>
-      <Stack gap={0.5}>
-        {hcmLoading ? (
-          <NameDisplaySkeleton showContent columns={3} />
-        ) : (
-          <NameDisplay
-            names={name ?? ''}
-            titleOne={t('Available for This Request')}
-            amountOne={availableAccountBalance}
-            titleTwo={t('Your Maximum Allowable Salary (CAP)')}
-            amountTwo={individualCap}
-            titleThree={t('Remaining Allowable Salary')}
-            amountThree={remainingCap}
-            spouseComponent={<SpouseComponent />}
-            note={approvalNote}
-            showContent
-          />
-        )}
-        <AvailableBalanceBreakdown />
-      </Stack>
+      {hcmLoading ? (
+        <NameDisplaySkeleton showContent columns={3} />
+      ) : (
+        <NameDisplay
+          names={name ?? ''}
+          titleOne={t('Available for This Request')}
+          titleOneAdornment={<AvailableBalanceTooltip />}
+          amountOne={availableAccountBalance}
+          titleTwo={t('Your Maximum Allowable Salary (CAP)')}
+          amountTwo={individualCap}
+          titleThree={t('Remaining Allowable Salary')}
+          amountThree={remainingCap}
+          spouseComponent={<SpouseComponent />}
+          note={approvalNote}
+          showContent
+        />
+      )}
       <Typography variant="body1" paragraph>
         <Trans t={t}>
           Your Net Additional Salary calculated below represents the amount you

@@ -3,6 +3,7 @@ import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
 import {
   createRenderFormComponent,
   defaultMockContextValue,
+  openAvailableBalanceTooltip,
   setupMockContext,
 } from '../testUtils';
 import { EditForm } from './EditForm';
@@ -77,6 +78,19 @@ describe('EditForm', () => {
     expect(getByTestId('amount-two')).toHaveTextContent('-$40,000.00');
     // remainingAllowableSalary shows a dash when the API leaves it out
     expect(getByTestId('amount-three')).toHaveTextContent(missingValue);
+  });
+
+  it('explains the available amount in a tooltip beside its label', async () => {
+    const utils = renderComponent();
+
+    expect(utils.queryByText(/Primary balance/)).not.toBeInTheDocument();
+    const tooltip = await openAvailableBalanceTooltip(utils);
+    expect(tooltip).toHaveTextContent(
+      'Primary balance of $40,000.00, minus $10,000.00 in other unpaid requests',
+    );
+    expect(tooltip).toHaveTextContent(
+      "Your spouse's request, waiting for approval: $10,000.00",
+    );
   });
 
   it('shows the approval note inside the card, under the amounts', () => {
