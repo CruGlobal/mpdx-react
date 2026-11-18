@@ -17,8 +17,8 @@ interface StaffInfoCardProps {
 }
 
 /**
- * A card with a staff member's avatar/name and an optional spouse toggle header, plus a body slot
- * for the details of the selected person.
+ * A card with a staff member's avatar/name and an optional spouse toggle beside the name, plus a
+ * body slot for the details of the selected person.
  */
 export const StaffInfoCard: React.FC<StaffInfoCardProps> = ({
   person,
@@ -34,20 +34,20 @@ export const StaffInfoCard: React.FC<StaffInfoCardProps> = ({
         <Stack
           direction="row"
           alignItems="center"
-          justifyContent="space-between"
+          flexWrap="wrap"
+          useFlexGap
+          spacing={1}
         >
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <Avatar
-              src={person.avatarSrc ?? undefined}
-              alt={person.name}
-              variant="rounded"
-              sx={{
-                width: theme.spacing(5),
-                height: theme.spacing(5),
-              }}
-            />
-            <Typography variant="h6">{person.name}</Typography>
-          </Stack>
+          <Avatar
+            src={person.avatarSrc ?? undefined}
+            alt={person.name}
+            variant="rounded"
+            sx={{
+              width: theme.spacing(5),
+              height: theme.spacing(5),
+            }}
+          />
+          <Typography variant="h6">{person.name}</Typography>
           {toggle && (
             <Button endIcon={<RightArrowIcon />} onClick={toggle.onClick}>
               {t('View {{name}}', { name: toggle.name })}
