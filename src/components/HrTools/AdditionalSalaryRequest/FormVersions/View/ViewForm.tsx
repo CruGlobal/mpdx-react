@@ -16,6 +16,7 @@ import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetA
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 import { useApprovalNote } from '../../Shared/useApprovalNote';
 import { useFormUserInfo } from '../../Shared/useFormUserInfo';
+import { useNeedsApproval } from '../../Shared/useNeedsApproval';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 import { AvailableBalanceTooltip } from '../../SharedComponents/AvailableBalanceTooltip';
 import { ContactInformationSummaryCard } from '../../SharedComponents/ContactInformationSummaryCard';
@@ -45,6 +46,7 @@ export const ViewForm: React.FC = () => {
   const { exceedsCap } = useSalaryCalculations({
     values,
   });
+  const needsApproval = useNeedsApproval(values);
 
   useEffect(() => {
     if (!pendingPrint) {
@@ -114,7 +116,7 @@ export const ViewForm: React.FC = () => {
       <NetAdditionalSalary />
       <ContactInformationSummaryCard />
       {exceedsCap && <TotalSalaryRequested onForm />}
-      <ApprovalProcess onForm exceedsCap={exceedsCap} />
+      <ApprovalProcess onForm needsApproval={needsApproval} />
 
       <Button
         onClick={() => setPageType(PageEnum.Reset)}

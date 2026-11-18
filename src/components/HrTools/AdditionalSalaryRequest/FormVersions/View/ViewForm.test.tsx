@@ -2,6 +2,8 @@ import { AsrStatusEnum } from 'src/graphql/types.generated';
 import { missingValue } from '../../../Shared/helpers/missingValue';
 import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
 import {
+  combinedCapOverrides,
+  combinedCapValues,
   createRenderFormComponent,
   defaultMockContextValue,
   openAvailableBalanceTooltip,
@@ -175,6 +177,16 @@ describe('ViewForm', () => {
     expect(getByText('Contact Information')).toBeInTheDocument();
     expect(getByText('Total Salary Requested')).toBeInTheDocument();
     expect(getByText('Approval Process')).toBeInTheDocument();
+  });
+
+  it("shows the approval process past the API's threshold even under the own cap", () => {
+    const { getByText, queryByText } = renderComponent({
+      initialValues: combinedCapValues,
+      contextOverrides: combinedCapOverrides,
+    });
+
+    expect(getByText('Approval Process')).toBeInTheDocument();
+    expect(queryByText('Total Salary Requested')).not.toBeInTheDocument();
   });
 
   it('should not render total salary requested or approval process when under cap', () => {

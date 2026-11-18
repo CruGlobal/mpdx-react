@@ -170,11 +170,8 @@ const defaultGqlMocks: DeepPartialMock<MocksType> = {
       id: 'test-request-id',
       progressiveApprovalTierReason:
         ProgressiveApprovalTierReasonEnum.OverUserCap,
-      calculations: {
-        currentSalaryCap: 100000,
-        ytdAsrAmount: 0,
-        grossAnnualSalary: 40000,
-      },
+      // Less than the $60,000 left under a $100,000 cap on $40,000 of salary, as when the combined cap is nearer
+      calculations: { currentSalaryCap: 100000, approvalThreshold: 10000 },
     },
   },
 };
@@ -558,13 +555,13 @@ describe('useAdditionalSalaryRequestForm', () => {
       expect(errors.adoption).toBeUndefined();
     });
 
-    it('should validate additional info when exceedsCap is true', async () => {
+    it("requires additional info past the API's approval threshold, even under the own cap", async () => {
       const { result } = renderHook(
         () =>
           useAdditionalSalaryRequestForm({
             ...defaultFormValues,
             phoneNumber: '555-123-4567',
-            additionalSalaryWithinMax: '70000',
+            additionalSalaryWithinMax: '20000',
           }),
         {
           wrapper: TestWrapper,
@@ -626,11 +623,8 @@ describe('useAdditionalSalaryRequestForm', () => {
                   latestAdditionalSalaryRequest: {
                     ...defaultGqlMocks.AdditionalSalaryRequest
                       ?.latestAdditionalSalaryRequest,
-                    calculations: {
-                      currentSalaryCap: 67500,
-                      ytdAsrAmount: 0,
-                      grossAnnualSalary: 96234.65,
-                    },
+                    // Salary already over the cap, so the API sends a threshold of 0
+                    calculations: { approvalThreshold: 0 },
                   },
                 },
               }}
@@ -670,11 +664,8 @@ describe('useAdditionalSalaryRequestForm', () => {
                   latestAdditionalSalaryRequest: {
                     ...defaultGqlMocks.AdditionalSalaryRequest
                       ?.latestAdditionalSalaryRequest,
-                    calculations: {
-                      currentSalaryCap: 67500,
-                      ytdAsrAmount: 0,
-                      grossAnnualSalary: 96234.65,
-                    },
+                    // Salary already over the cap, so the API sends a threshold of 0
+                    calculations: { approvalThreshold: 0 },
                   },
                 },
               }}
