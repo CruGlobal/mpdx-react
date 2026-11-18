@@ -28,27 +28,9 @@ import {
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 import { EffectiveDateNote } from '../../Shared/EffectiveDateNote';
 import { StepCard, StepTableHead } from '../../Shared/StepCard';
+import { estimateRequestedSalary } from '../../Shared/estimateRequestedSalary';
 import { orientSalaryRequest } from '../../Shared/orientSalaryRequest';
 import { useSosaBlockOverCap } from '../useSosaBlockOverCap';
-
-/**
- * Estimate a person's requested salary from their current HCM gross salary by reversing the
- * requested salary -> gross calculation: gross = salary * (1 + SECA fraction) / non-403b fraction.
- * Used when there is no approved salary request on file, such as a person's first request in MPDX.
- */
-export const estimateRequestedSalary = (
-  grossSalary: number | null | undefined,
-  calculations: CalculationFieldsFragment | null | undefined,
-): number | null => {
-  if (!grossSalary || !calculations) {
-    return null;
-  }
-
-  return Math.round(
-    (grossSalary * calculations.non403bFraction) /
-      (1 + calculations.secaEstimatedFraction),
-  );
-};
 
 const SosaHardCapAlert: React.FC = () => {
   const { t } = useTranslation();
