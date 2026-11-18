@@ -1,7 +1,12 @@
-import { AsrStatusEnum } from 'src/graphql/types.generated';
+import {
+  AsrStatusEnum,
+  ProgressiveApprovalTierReasonEnum,
+} from 'src/graphql/types.generated';
 import { missingValue } from '../../../Shared/helpers/missingValue';
 import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
 import {
+  combinedCapOverrides,
+  combinedCapValues,
   createRenderFormComponent,
   defaultMockContextValue,
   openAvailableBalanceTooltip,
@@ -24,6 +29,19 @@ const renderComponent = createRenderFormComponent(
   ViewForm,
   mockUseAdditionalSalaryRequest,
 );
+
+// The tier the API gives the viewed request, as when its amount needed approval. Its threshold of $55,000 is above
+// the request, as on an approved request whose threshold counts the request itself.
+const withApprovalTier = {
+  requestData: {
+    latestAdditionalSalaryRequest: {
+      ...defaultMockContextValue.requestData.latestAdditionalSalaryRequest,
+      progressiveApprovalTier: { id: 'tier-1' },
+      progressiveApprovalTierReason:
+        ProgressiveApprovalTierReasonEnum.OverCombinedCap,
+    },
+  },
+};
 
 describe('ViewForm', () => {
   beforeEach(() => {
@@ -159,6 +177,7 @@ describe('ViewForm', () => {
         ...defaultCompleteFormValues,
         additionalSalaryWithinMax: '200000',
       },
+      contextOverrides: withApprovalTier,
     });
 
     expect(
@@ -175,6 +194,26 @@ describe('ViewForm', () => {
     expect(getByText('Contact Information')).toBeInTheDocument();
     expect(getByText('Total Salary Requested')).toBeInTheDocument();
     expect(getByText('Approval Process')).toBeInTheDocument();
+  });
+
+  it("shows the approval process by the request's own approval tier, even under the threshold and the own cap", () => {
+    const { getByText, queryByText } = renderComponent({
+      initialValues: combinedCapValues,
+      contextOverrides: withApprovalTier,
+    });
+
+    expect(getByText('Approval Process')).toBeInTheDocument();
+    expect(queryByText('Total Salary Requested')).not.toBeInTheDocument();
+  });
+
+  // An approved or paid request counts itself in its own threshold, so the threshold can't say whether it needed approval
+  it("hides the approval process when the request has no approval tier, even past the API's threshold", () => {
+    const { queryByText } = renderComponent({
+      initialValues: combinedCapValues,
+      contextOverrides: combinedCapOverrides,
+    });
+
+    expect(queryByText('Approval Process')).not.toBeInTheDocument();
   });
 
   it('should not render total salary requested or approval process when under cap', () => {
