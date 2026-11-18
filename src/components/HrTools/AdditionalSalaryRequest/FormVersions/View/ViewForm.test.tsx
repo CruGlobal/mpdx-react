@@ -39,8 +39,8 @@ describe('ViewForm', () => {
   it('displays financial balances from context', () => {
     const { getByTestId } = renderComponent();
 
-    // staffAccountBalance: 40000
-    expect(getByTestId('amount-one')).toHaveTextContent('$40,000.00');
+    // availableStaffAccountBalance, not the raw staffAccountBalance of 40000
+    expect(getByTestId('amount-one')).toHaveTextContent('$30,000.00');
     // currentSalaryCap: value in the backend
     expect(getByTestId('amount-two')).toHaveTextContent('$100,000.00');
     // remainingAllowableSalary from the API
@@ -84,7 +84,7 @@ describe('ViewForm', () => {
       },
     });
 
-    // staffAccountBalance defaults to 0 when calculations are undefined
+    // availableStaffAccountBalance defaults to 0 when calculations are undefined
     expect(getByTestId('amount-one')).toHaveTextContent('$0.00');
     // currentSalaryCap calculation done in backend
     expect(getByTestId('amount-two')).toHaveTextContent('-$40,000.00');

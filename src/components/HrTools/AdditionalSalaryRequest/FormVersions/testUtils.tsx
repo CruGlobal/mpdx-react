@@ -31,6 +31,17 @@ export const defaultMockContextValue = {
       calculations: {
         currentSalaryCap: 100000,
         staffAccountBalance: 40000,
+        staffAccountDeficitLimit: 0,
+        unpaidHouseholdAsrAmount: 10000,
+        unpaidHouseholdAsrs: [
+          {
+            amount: 10000,
+            status: 'PENDING',
+            submittedAt: '2026-11-03T15:00:00Z',
+            spouse: true,
+          },
+        ],
+        availableStaffAccountBalance: 30000,
         ytdAsrAmount: 5000,
         grossAnnualSalary: 40000,
         remainingAllowableSalary: 55000,

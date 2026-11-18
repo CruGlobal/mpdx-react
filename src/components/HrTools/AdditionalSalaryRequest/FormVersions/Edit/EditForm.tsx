@@ -15,6 +15,7 @@ import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetA
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 import { useFormUserInfo } from '../../Shared/useFormUserInfo';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
+import { AvailableBalanceBreakdown } from '../../SharedComponents/AvailableBalanceBreakdown';
 import { MissingLocationAlert } from '../../SharedComponents/MissingLocationAlert';
 import { SpouseComponent } from '../../SharedComponents/SpouseComponent';
 import { ValidationAlert } from '../../SharedComponents/ValidationAlert';
@@ -26,7 +27,7 @@ export const EditForm: React.FC = () => {
   const { calculations, hcmLoading } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
 
-  const { name, primaryAccountBalance, remainingCap } = useFormUserInfo();
+  const { name, availableAccountBalance, remainingCap } = useFormUserInfo();
   const individualCap = calculations?.currentSalaryCap ?? 0;
 
   const { exceedsCap } = useSalaryCalculations({
@@ -48,8 +49,8 @@ export const EditForm: React.FC = () => {
         ) : (
           <NameDisplay
             names={name ?? ''}
-            titleOne={t('Primary Account Balance')}
-            amountOne={primaryAccountBalance}
+            titleOne={t('Available for This Request')}
+            amountOne={availableAccountBalance}
             titleTwo={t('Your Maximum Allowable Salary (CAP)')}
             amountTwo={individualCap}
             titleThree={t('Remaining Allowable Salary')}
@@ -58,6 +59,7 @@ export const EditForm: React.FC = () => {
             showContent
           />
         )}
+        <AvailableBalanceBreakdown />
         <MissingLocationAlert />
       </Stack>
       <Typography variant="body1" paragraph>

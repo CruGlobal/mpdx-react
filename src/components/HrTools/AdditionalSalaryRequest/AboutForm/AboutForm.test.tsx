@@ -126,9 +126,10 @@ describe('AboutForm', () => {
   });
 
   it('should display financial data when a request exists', async () => {
-    const { findByText } = render(<TestWrapper />);
+    const { findByText, queryByText } = render(<TestWrapper />);
 
-    expect(await findByText(/Primary Account Balance/i)).toBeInTheDocument();
+    expect(await findByText(/Available for This Request/i)).toBeInTheDocument();
+    expect(queryByText(/Primary Account Balance/i)).not.toBeInTheDocument();
     expect(
       await findByText(/Your Maximum Allowable Salary \(CAP\)/i),
     ).toBeInTheDocument();
@@ -199,7 +200,7 @@ describe('AboutForm', () => {
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('AdditionalSalaryRequest'),
     );
-    expect(queryByText(/Primary Account Balance/i)).not.toBeInTheDocument();
+    expect(queryByText(/Available for This Request/i)).not.toBeInTheDocument();
     expect(
       queryByText(/Your Maximum Allowable Salary \(CAP\)/i),
     ).not.toBeInTheDocument();

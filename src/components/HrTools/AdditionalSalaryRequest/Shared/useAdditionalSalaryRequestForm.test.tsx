@@ -1,7 +1,10 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { DeepPartial } from 'ts-essentials';
-import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import {
+  DeepPartialMock,
+  GqlMockedProvider,
+  gqlMock,
+} from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
 import {
   HcmDocument,
@@ -161,7 +164,7 @@ type MocksType = {
   SubmitAdditionalSalaryRequest: SubmitAdditionalSalaryRequestMutation;
 };
 
-const defaultGqlMocks: DeepPartial<MocksType> = {
+const defaultGqlMocks: DeepPartialMock<MocksType> = {
   AdditionalSalaryRequest: {
     latestAdditionalSalaryRequest: {
       id: 'test-request-id',
@@ -178,7 +181,7 @@ const defaultGqlMocks: DeepPartial<MocksType> = {
 
 interface TestComponentProps {
   children: React.ReactElement;
-  mocks?: DeepPartial<MocksType>;
+  mocks?: DeepPartialMock<MocksType>;
 }
 
 const TestWrapper: React.FC<TestComponentProps> = ({ children, mocks }) => {
@@ -435,10 +438,7 @@ describe('useAdditionalSalaryRequestForm', () => {
 
       it('rejects a total beyond the balance plus deficit limit', async () => {
         const errors = await validateBackpay('12000');
-
-        expect(errors.totalAdditionalSalaryRequested).toBe(
-          'Exceeds account balance plus deficit limit.',
-        );
+        expect(errors.totalAdditionalSalaryRequested).toContain('$11,000.00');
       });
 
       it('rejects a $0 total', async () => {

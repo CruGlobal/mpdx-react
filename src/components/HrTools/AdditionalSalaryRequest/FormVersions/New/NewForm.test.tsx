@@ -52,7 +52,8 @@ describe('NewForm', () => {
     it('displays correct account balances from request data', () => {
       const { getByTestId } = renderComponent();
 
-      expect(getByTestId('amount-one')).toHaveTextContent('$40,000.00');
+      // availableStaffAccountBalance, not the raw staffAccountBalance of 40000
+      expect(getByTestId('amount-one')).toHaveTextContent('$30,000.00');
       // currentSalaryCap: value on backend
       expect(getByTestId('amount-two')).toHaveTextContent('$100,000.00');
       // remainingAllowableSalary from the API

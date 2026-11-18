@@ -15,6 +15,7 @@ import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetA
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 import { useFormUserInfo } from '../../Shared/useFormUserInfo';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
+import { AvailableBalanceBreakdown } from '../../SharedComponents/AvailableBalanceBreakdown';
 import { ContactInformationSummaryCard } from '../../SharedComponents/ContactInformationSummaryCard';
 import { SpouseComponent } from '../../SharedComponents/SpouseComponent';
 import { ApprovalProcess } from '../../SubmitModalAccordions/ApprovalProcess/ApprovalProcess';
@@ -30,7 +31,7 @@ export const ViewForm: React.FC = () => {
     hcmLoading,
   } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
-  const { name, primaryAccountBalance, remainingCap } = useFormUserInfo();
+  const { name, availableAccountBalance, remainingCap } = useFormUserInfo();
   const individualCap = calculations?.currentSalaryCap ?? 0;
 
   const { exceedsCap } = useSalaryCalculations({
@@ -80,8 +81,8 @@ export const ViewForm: React.FC = () => {
       ) : (
         <NameDisplay
           names={name ?? ''}
-          titleOne={t('Primary Account Balance')}
-          amountOne={primaryAccountBalance}
+          titleOne={t('Available for This Request')}
+          amountOne={availableAccountBalance}
           titleTwo={t('Your Maximum Allowable Salary (CAP)')}
           amountTwo={individualCap}
           titleThree={t('Remaining Allowable Salary')}
@@ -90,6 +91,7 @@ export const ViewForm: React.FC = () => {
           showContent
         />
       )}
+      <AvailableBalanceBreakdown />
       <Typography variant="body1" paragraph>
         <Trans t={t}>
           Your Net Additional Salary calculated below represents the amount you

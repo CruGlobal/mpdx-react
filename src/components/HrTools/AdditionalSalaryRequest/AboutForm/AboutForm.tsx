@@ -9,6 +9,7 @@ import { getHeader } from '../Shared/Helper/getHeader';
 import { paperVersionLink, progressiveApprovalsLink } from '../Shared/pdfLinks';
 import { useFormUserInfo } from '../Shared/useFormUserInfo';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
+import { AvailableBalanceBreakdown } from '../SharedComponents/AvailableBalanceBreakdown';
 import { MissingLocationAlert } from '../SharedComponents/MissingLocationAlert';
 import { SpouseComponent } from '../SharedComponents/SpouseComponent';
 
@@ -18,7 +19,7 @@ export const AboutForm: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
 
-  const { name, primaryAccountBalance, remainingCap } = useFormUserInfo();
+  const { name, availableAccountBalance, remainingCap } = useFormUserInfo();
   const latestRequest = requestData?.latestAdditionalSalaryRequest;
   const individualCap = latestRequest?.calculations.currentSalaryCap ?? 0;
 
@@ -92,8 +93,8 @@ export const AboutForm: React.FC = () => {
       ) : (
         <NameDisplay
           names={name ?? ''}
-          titleOne={t('Primary Account Balance')}
-          amountOne={primaryAccountBalance}
+          titleOne={t('Available for This Request')}
+          amountOne={availableAccountBalance}
           titleTwo={t('Your Maximum Allowable Salary (CAP)')}
           amountTwo={individualCap}
           titleThree={t('Remaining Allowable Salary')}
@@ -102,6 +103,7 @@ export const AboutForm: React.FC = () => {
           showContent={!!latestRequest}
         />
       )}
+      <AvailableBalanceBreakdown />
       <MissingLocationAlert />
     </AdditionalSalaryRequestSection>
   );
