@@ -1,7 +1,12 @@
 import { AsrStatusEnum } from 'src/graphql/types.generated';
 import { missingValue } from '../../../Shared/helpers/missingValue';
 import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
-import { createRenderFormComponent, setupMockContext } from '../testUtils';
+import {
+  createRenderFormComponent,
+  defaultMockContextValue,
+  openAvailableBalanceTooltip,
+  setupMockContext,
+} from '../testUtils';
 import { ViewForm } from './ViewForm';
 
 jest.mock('../../Shared/AdditionalSalaryRequestContext', () => {
@@ -39,8 +44,8 @@ describe('ViewForm', () => {
   it('displays financial balances from context', () => {
     const { getByTestId } = renderComponent();
 
-    // staffAccountBalance: 40000
-    expect(getByTestId('amount-one')).toHaveTextContent('$40,000.00');
+    // availableStaffAccountBalance, not the raw staffAccountBalance of 40000
+    expect(getByTestId('amount-one')).toHaveTextContent('$30,000.00');
     // currentSalaryCap: value in the backend
     expect(getByTestId('amount-two')).toHaveTextContent('$100,000.00');
     // remainingAllowableSalary from the API
@@ -68,6 +73,62 @@ describe('ViewForm', () => {
     expect(getByTestId('amount-three')).toHaveTextContent('$15,000.00');
   });
 
+  it.each([
+    { status: AsrStatusEnum.Pending, shown: false },
+    { status: AsrStatusEnum.ActionRequired, shown: true },
+  ])(
+    'with status $status shows the approval note: $shown',
+    ({ status, shown }) => {
+      const { queryByText } = renderComponent({
+        contextOverrides: {
+          requestData: {
+            latestAdditionalSalaryRequest: {
+              ...defaultMockContextValue.requestData
+                .latestAdditionalSalaryRequest,
+              status,
+            },
+          },
+        },
+      });
+
+      expect(!!queryByText(/need approval/)).toBe(shown);
+    },
+  );
+
+  it('explains the available amount in a tooltip beside its label', async () => {
+    const utils = renderComponent();
+
+    expect(utils.queryByText(/Primary balance/)).not.toBeInTheDocument();
+    const tooltip = await openAvailableBalanceTooltip(utils);
+    expect(tooltip).toHaveTextContent(
+      'Primary balance of $40,000.00, minus $10,000.00 in other unpaid requests',
+    );
+    expect(tooltip).toHaveTextContent(
+      "Your spouse's request, waiting for approval: $10,000.00",
+    );
+  });
+
+  it('shows the approval note inside the card on a request sent back', () => {
+    const { getByText, getByTestId } = renderComponent({
+      contextOverrides: {
+        requestData: {
+          latestAdditionalSalaryRequest: {
+            ...defaultMockContextValue.requestData
+              .latestAdditionalSalaryRequest,
+            status: AsrStatusEnum.ActionRequired,
+          },
+        },
+      },
+    });
+
+    const note = getByText(
+      /Requests over \$55,000\.00 \(your remaining allowable salary\) need approval/,
+    );
+    expect(note.closest('.MuiCard-root')).toContainElement(
+      getByTestId('amount-one'),
+    );
+  });
+
   it('handles missing calculations gracefully', () => {
     const { getByTestId } = renderComponent({
       contextOverrides: {
@@ -84,7 +145,7 @@ describe('ViewForm', () => {
       },
     });
 
-    // staffAccountBalance defaults to 0 when calculations are undefined
+    // availableStaffAccountBalance defaults to 0 when calculations are undefined
     expect(getByTestId('amount-one')).toHaveTextContent('$0.00');
     // currentSalaryCap calculation done in backend
     expect(getByTestId('amount-two')).toHaveTextContent('-$40,000.00');

@@ -24,30 +24,41 @@ interface NameDisplayProps {
   names: string;
   showContent?: boolean;
   titleOne?: string;
+  // Rendered beside the first title, such as an info icon explaining its amount
+  titleOneAdornment?: React.ReactNode;
   titleTwo?: string;
   titleThree?: string;
   amountOne?: number | null;
   amountTwo?: number | null;
   amountThree?: number | null;
   spouseComponent?: React.ReactNode;
+  // A full-width caption under the amounts
+  note?: string | null;
 }
 
 export const NameDisplay: React.FC<NameDisplayProps> = ({
   names,
   showContent,
   titleOne,
+  titleOneAdornment,
   titleTwo,
   titleThree,
   amountOne,
   amountTwo,
   amountThree,
   spouseComponent,
+  note,
 }) => {
   const locale = useLocale();
   const theme = useTheme();
   const currency = 'USD';
   const columns = [
-    { title: titleOne, amount: amountOne, testId: 'amount-one' },
+    {
+      title: titleOne,
+      adornment: titleOneAdornment,
+      amount: amountOne,
+      testId: 'amount-one',
+    },
     { title: titleTwo, amount: amountTwo, testId: 'amount-two' },
     ...(titleThree
       ? [{ title: titleThree, amount: amountThree, testId: 'amount-three' }]
@@ -76,42 +87,55 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
         {showContent && (
           <CardContent>
             <Grid container spacing={theme.spacing(2)}>
-              {columns.map(({ title: columnTitle, amount, testId }) => (
-                <Grid
-                  key={testId}
-                  size={size}
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                    {columnTitle?.toUpperCase()}
-                  </Typography>
-                  <Typography
-                    variant={amountVariant}
-                    fontWeight="bold"
+              {columns.map(
+                ({ title: columnTitle, adornment, amount, testId }) => (
+                  <Grid
+                    key={testId}
+                    size={size}
                     sx={{
-                      color: 'primary.main',
-                      ...(phoneAmountVariant && {
-                        [theme.breakpoints.down('sm')]: {
-                          fontSize:
-                            theme.typography[phoneAmountVariant].fontSize,
-                        },
-                      }),
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
                     }}
-                    data-testid={testId}
                   >
-                    {typeof amount === 'number'
-                      ? currencyFormat(amount, currency, locale, {
-                          showTrailingZeros: true,
-                        })
-                      : missingValue}
-                  </Typography>
-                </Grid>
-              ))}
+                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                      {columnTitle?.toUpperCase()}
+                      {adornment}
+                    </Typography>
+                    <Typography
+                      variant={amountVariant}
+                      fontWeight="bold"
+                      sx={{
+                        color: 'primary.main',
+                        ...(phoneAmountVariant && {
+                          [theme.breakpoints.down('sm')]: {
+                            fontSize:
+                              theme.typography[phoneAmountVariant].fontSize,
+                          },
+                        }),
+                      }}
+                      data-testid={testId}
+                    >
+                      {typeof amount === 'number'
+                        ? currencyFormat(amount, currency, locale, {
+                            showTrailingZeros: true,
+                          })
+                        : missingValue}
+                    </Typography>
+                  </Grid>
+                ),
+              )}
             </Grid>
+            {note && (
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                component="p"
+                sx={{ marginTop: theme.spacing(2) }}
+              >
+                {note}
+              </Typography>
+            )}
           </CardContent>
         )}
       </Card>
