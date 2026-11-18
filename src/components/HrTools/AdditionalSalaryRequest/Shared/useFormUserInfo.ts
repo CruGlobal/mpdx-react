@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
+import { approvalThreshold } from './approvalThreshold';
 import { overBalanceMessage } from './overBalanceMessage';
 
 export const useFormUserInfo = () => {
@@ -8,6 +9,8 @@ export const useFormUserInfo = () => {
   const locale = useLocale();
   const { requestData, user } = useAdditionalSalaryRequest();
   const calculations = requestData?.latestAdditionalSalaryRequest?.calculations;
+  const spouseCalculations =
+    requestData?.latestAdditionalSalaryRequest?.spouseCalculations;
   const {
     staffAccountBalance,
     staffAccountDeficitLimit,
@@ -36,5 +39,6 @@ export const useFormUserInfo = () => {
     balanceBreakdown,
     overBalanceMessage: overBalanceMessage(t, locale, availableAccountBalance),
     remainingCap,
+    approvalThreshold: approvalThreshold(calculations, spouseCalculations),
   };
 };

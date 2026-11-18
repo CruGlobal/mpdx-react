@@ -15,11 +15,23 @@ const mockUseAdditionalSalaryRequest =
 const mockCalculations = (
   calculations: Record<string, unknown> | undefined,
   hcmLoading = false,
+  spouseCalculations: Record<string, unknown> | null = null,
 ) =>
   mockUseAdditionalSalaryRequest.mockReturnValue({
     hcmLoading,
-    requestData: { latestAdditionalSalaryRequest: { calculations } },
+    requestData: {
+      latestAdditionalSalaryRequest: { calculations, spouseCalculations },
+    },
   } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+const capFigures = {
+  staffAccountBalance: 1500,
+  currentSalaryCap: 56750,
+  combinedCap: 150000,
+  ytdAsrAmount: 0,
+};
+const backpayNote =
+  "Current year's salary not received doesn't count toward this amount.";
 
 describe('AvailableBalanceBreakdown', () => {
   it('breaks the available amount into balance, deficit limit, and unpaid requests', () => {
@@ -98,35 +110,65 @@ describe('AvailableBalanceBreakdown', () => {
   });
 
   it.each([
-    { person: 'at their cap', remaining: 0, amount: '$0.00' },
-    { person: 'with room left', remaining: 26750, amount: '$26,750.00' },
+    { person: 'at their cap', gross: 56750, amount: '$0.00' },
+    { person: 'with room left', gross: 30000, amount: '$26,750.00' },
   ])(
     'names the amount that needs approval for a person $person',
-    ({ remaining, amount }) => {
-      mockCalculations({
-        staffAccountBalance: 1500,
-        remainingAllowableSalary: remaining,
-      });
+    ({ gross, amount }) => {
+      mockCalculations({ ...capFigures, grossAnnualSalary: gross });
 
       const { getByText } = render(<AvailableBalanceBreakdown />);
 
       expect(
         getByText(
-          `Requests over ${amount} (your remaining allowable salary) need approval. Current year's salary not received doesn't count toward this amount.`,
+          `Requests over ${amount} (your remaining allowable salary) need approval. ${backpayNote}`,
         ),
       ).toBeInTheDocument();
     },
   );
 
+  it('names the combined cap when it leaves less room', () => {
+    mockCalculations(
+      { ...capFigures, grossAnnualSalary: 30000, combinedCap: 100000 },
+      false,
+      { currentSalaryCap: 60000, grossAnnualSalary: 60000, ytdAsrAmount: 0 },
+    );
+
+    const { getByText } = render(<AvailableBalanceBreakdown />);
+
+    expect(
+      getByText(
+        `Requests over $10,000.00 (what's left under your combined cap with your spouse) need approval. ${backpayNote}`,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('says any amount needs approval when the spouse is over their cap', () => {
+    mockCalculations({ ...capFigures, grossAnnualSalary: 30000 }, false, {
+      currentSalaryCap: 60000,
+      grossAnnualSalary: 65000,
+      ytdAsrAmount: 0,
+    });
+
+    const { getByText } = render(<AvailableBalanceBreakdown />);
+
+    expect(
+      getByText(
+        'Any amount needs approval because your spouse is over their cap.',
+      ),
+    ).toBeInTheDocument();
+  });
+
   it('leaves out the approval note without a cap', () => {
     mockCalculations({
-      staffAccountBalance: 1500,
-      remainingAllowableSalary: null,
+      ...capFigures,
+      currentSalaryCap: null,
+      grossAnnualSalary: 30000,
     });
 
     const { queryByText } = render(<AvailableBalanceBreakdown />);
 
-    expect(queryByText(/need approval/)).not.toBeInTheDocument();
+    expect(queryByText(/needs? approval/)).not.toBeInTheDocument();
   });
 
   it('renders nothing without calculations', () => {

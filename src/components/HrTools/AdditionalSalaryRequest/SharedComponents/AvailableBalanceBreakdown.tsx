@@ -5,10 +5,36 @@ import { useTranslation } from 'react-i18next';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
+import { ApprovalThreshold } from '../Shared/approvalThreshold';
 import { useFormUserInfo } from '../Shared/useFormUserInfo';
 
 const requestLabel = (spouse: boolean, t: TFunction): string =>
   spouse ? t("Your spouse's request") : t('Your request');
+
+const approvalNote = (
+  { amount, reason }: NonNullable<ApprovalThreshold>,
+  format: (amount: number) => string,
+  t: TFunction,
+): string => {
+  if (reason === 'spouseOverCap') {
+    return t(
+      'Any amount needs approval because your spouse is over their cap.',
+    );
+  }
+  const over =
+    reason === 'combinedCap'
+      ? t(
+          "Requests over {{amount}} (what's left under your combined cap with your spouse) need approval.",
+          { amount: format(amount) },
+        )
+      : t(
+          'Requests over {{amount}} (your remaining allowable salary) need approval.',
+          { amount: format(amount) },
+        );
+  return `${over} ${t(
+    "Current year's salary not received doesn't count toward this amount.",
+  )}`;
+};
 
 const statusLabel = (status: AsrStatusEnum, t: TFunction): string => {
   switch (status) {
@@ -27,7 +53,7 @@ export const AvailableBalanceBreakdown: React.FC = () => {
   const { t } = useTranslation();
   const { formatCurrency: format } = useFormatters();
   const { hcmLoading } = useAdditionalSalaryRequest();
-  const { balanceBreakdown, remainingCap } = useFormUserInfo();
+  const { balanceBreakdown, approvalThreshold } = useFormUserInfo();
 
   if (hcmLoading || !balanceBreakdown) {
     return null;
@@ -71,13 +97,9 @@ export const AvailableBalanceBreakdown: React.FC = () => {
           ))}
         </List>
       )}
-      {remainingCap !== null && (
-        // SAA sends a request for approval once its non-backpay amount goes past the remaining allowable salary
+      {approvalThreshold && (
         <Typography variant="body2" color="text.secondary">
-          {t(
-            "Requests over {{amount}} (your remaining allowable salary) need approval. Current year's salary not received doesn't count toward this amount.",
-            { amount: format(remainingCap) },
-          )}
+          {approvalNote(approvalThreshold, format, t)}
         </Typography>
       )}
     </Stack>
