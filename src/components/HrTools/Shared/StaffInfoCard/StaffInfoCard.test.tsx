@@ -43,6 +43,25 @@ describe('StaffInfoCard', () => {
     expect(mutationSpy).toHaveBeenCalledTimes(1);
   });
 
+  it('places the toggle button beside the name', () => {
+    const { getByRole } = renderCard();
+
+    const row = getByRole('button', { name: 'View Jane' }).parentElement;
+    expect(row).toContainElement(getByRole('heading', { name: 'John Doe' }));
+    expect(row).toHaveStyle({ flexWrap: 'wrap' });
+    expect(row).not.toHaveStyle({ justifyContent: 'space-between' });
+  });
+
+  it('keeps the avatar and name together when the row wraps', () => {
+    const { getByRole } = renderCard();
+
+    const nameGroup = getByRole('heading', { name: 'John Doe' }).parentElement;
+    expect(nameGroup).toContainElement(getByRole('img', { name: 'John Doe' }));
+    expect(nameGroup).not.toContainElement(
+      getByRole('button', { name: 'View Jane' }),
+    );
+  });
+
   it('hides the toggle button when no spouse is provided', () => {
     const { queryByRole } = renderCard({ hasSpouse: false });
 
