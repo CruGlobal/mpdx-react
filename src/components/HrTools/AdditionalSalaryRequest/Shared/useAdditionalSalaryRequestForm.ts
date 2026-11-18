@@ -207,10 +207,10 @@ export const useAdditionalSalaryRequestForm = (
       getMaxForField,
       t,
       availableAccountBalance,
+      overBalanceMessage,
       individualCap,
       ytdAsrAmount,
       grossAnnualSalary,
-      locale,
       requestData,
     ],
   );

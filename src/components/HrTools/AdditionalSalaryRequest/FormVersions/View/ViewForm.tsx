@@ -76,22 +76,24 @@ export const ViewForm: React.FC = () => {
       maxWidth={mainContentWidth}
     >
       <Typography variant="h4">{t('View Your Request')}</Typography>
-      {hcmLoading ? (
-        <NameDisplaySkeleton showContent columns={3} />
-      ) : (
-        <NameDisplay
-          names={name ?? ''}
-          titleOne={t('Available for This Request')}
-          amountOne={availableAccountBalance}
-          titleTwo={t('Your Maximum Allowable Salary (CAP)')}
-          amountTwo={individualCap}
-          titleThree={t('Remaining Allowable Salary')}
-          amountThree={remainingCap}
-          spouseComponent={<SpouseComponent />}
-          showContent
-        />
-      )}
-      <AvailableBalanceBreakdown />
+      <Stack gap={0.5}>
+        {hcmLoading ? (
+          <NameDisplaySkeleton showContent columns={3} />
+        ) : (
+          <NameDisplay
+            names={name ?? ''}
+            titleOne={t('Available for This Request')}
+            amountOne={availableAccountBalance}
+            titleTwo={t('Your Maximum Allowable Salary (CAP)')}
+            amountTwo={individualCap}
+            titleThree={t('Remaining Allowable Salary')}
+            amountThree={remainingCap}
+            spouseComponent={<SpouseComponent />}
+            showContent
+          />
+        )}
+        <AvailableBalanceBreakdown />
+      </Stack>
       <Typography variant="body1" paragraph>
         <Trans t={t}>
           Your Net Additional Salary calculated below represents the amount you

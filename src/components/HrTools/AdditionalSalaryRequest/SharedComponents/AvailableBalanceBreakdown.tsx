@@ -2,9 +2,8 @@ import React from 'react';
 import { List, ListItem, Stack, Typography } from '@mui/material';
 import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
-import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat } from 'src/lib/intlFormat';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { useFormUserInfo } from '../Shared/useFormUserInfo';
 
@@ -25,7 +24,7 @@ const statusLabel = (status: AsrStatusEnum, t: TFunction): string => {
 // Explains the "Available for This Request" amount with the same numbers SAA checks the request against
 export const AvailableBalanceBreakdown: React.FC = () => {
   const { t } = useTranslation();
-  const locale = useLocale();
+  const { formatCurrency: format } = useFormatters();
   const { hcmLoading } = useAdditionalSalaryRequest();
   const { balanceBreakdown } = useFormUserInfo();
 
@@ -35,8 +34,6 @@ export const AvailableBalanceBreakdown: React.FC = () => {
 
   const { balance, deficitLimit, unpaidTotal, unpaidRequests } =
     balanceBreakdown;
-  const format = (amount: number) =>
-    currencyFormat(amount, 'USD', locale, { showTrailingZeros: true });
   const parts = [
     t('Primary balance of {{amount}}', { amount: format(balance) }),
   ];
