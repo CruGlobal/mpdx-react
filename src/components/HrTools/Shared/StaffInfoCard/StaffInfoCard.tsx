@@ -38,16 +38,18 @@ export const StaffInfoCard: React.FC<StaffInfoCardProps> = ({
           useFlexGap
           spacing={1}
         >
-          <Avatar
-            src={person.avatarSrc ?? undefined}
-            alt={person.name}
-            variant="rounded"
-            sx={{
-              width: theme.spacing(5),
-              height: theme.spacing(5),
-            }}
-          />
-          <Typography variant="h6">{person.name}</Typography>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <Avatar
+              src={person.avatarSrc ?? undefined}
+              alt={person.name}
+              variant="rounded"
+              sx={{
+                width: theme.spacing(5),
+                height: theme.spacing(5),
+              }}
+            />
+            <Typography variant="h6">{person.name}</Typography>
+          </Stack>
           {toggle && (
             <Button endIcon={<RightArrowIcon />} onClick={toggle.onClick}>
               {t('View {{name}}', { name: toggle.name })}
