@@ -1,0 +1,12 @@
+query GoalSalary($accountListId: ID!, $after: String) {
+  goalCalculations(accountListId: $accountListId, after: $after) {
+    nodes {
+      ...ListGoalCalculation
+      firstName
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+}
