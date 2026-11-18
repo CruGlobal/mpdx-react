@@ -72,7 +72,7 @@ export const ValidationAlert: React.FC = () => {
           <li>
             {getTotal(values) > 0
               ? t(
-                  'Your total additional salary requested exceeds your account balance.',
+                  'Your total additional salary requested exceeds the amount available for this request.',
                 )
               : t(
                   'Enter an amount in at least one category before submitting.',

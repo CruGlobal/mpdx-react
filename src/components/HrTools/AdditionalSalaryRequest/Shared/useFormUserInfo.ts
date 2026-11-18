@@ -34,12 +34,7 @@ export const useFormUserInfo = () => {
     name,
     availableAccountBalance,
     balanceBreakdown,
-    overBalanceMessage: overBalanceMessage(
-      t,
-      locale,
-      availableAccountBalance,
-      balanceBreakdown?.unpaidTotal ?? 0,
-    ),
+    overBalanceMessage: overBalanceMessage(t, locale, availableAccountBalance),
     remainingCap,
   };
 };

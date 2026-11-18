@@ -54,7 +54,7 @@ describe('useFormUserInfo', () => {
     expect(result.current.email).toBe('john.doe@example.com');
     expect(result.current.availableAccountBalance).toBe(45000);
     expect(result.current.overBalanceMessage).toBe(
-      'Exceeds the $45,000.00 available for this request (balance plus deficit limit, minus $10,000.00 in other unpaid requests).',
+      'Exceeds the $45,000.00 available for this request.',
     );
     expect(result.current.balanceBreakdown).toEqual({
       balance: 40000,
