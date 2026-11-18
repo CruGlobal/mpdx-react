@@ -110,12 +110,21 @@ describe('AvailableBalanceBreakdown', () => {
   });
 
   it.each([
-    { person: 'at their cap', gross: 56750, amount: '$0.00' },
-    { person: 'with room left', gross: 30000, amount: '$26,750.00' },
+    { person: 'at their cap', gross: 56750, room: 0, amount: '$0.00' },
+    {
+      person: 'with room left',
+      gross: 30000,
+      room: 26750,
+      amount: '$26,750.00',
+    },
   ])(
     'names the amount that needs approval for a person $person',
-    ({ gross, amount }) => {
-      mockCalculations({ ...capFigures, grossAnnualSalary: gross });
+    ({ gross, room, amount }) => {
+      mockCalculations({
+        ...capFigures,
+        grossAnnualSalary: gross,
+        remainingAllowableSalary: room,
+      });
 
       const { getByText } = render(<AvailableBalanceBreakdown />);
 
@@ -129,7 +138,12 @@ describe('AvailableBalanceBreakdown', () => {
 
   it('names the combined cap when it leaves less room', () => {
     mockCalculations(
-      { ...capFigures, grossAnnualSalary: 30000, combinedCap: 100000 },
+      {
+        ...capFigures,
+        grossAnnualSalary: 30000,
+        remainingAllowableSalary: 26750,
+        combinedCap: 100000,
+      },
       false,
       { currentSalaryCap: 60000, grossAnnualSalary: 60000, ytdAsrAmount: 0 },
     );
@@ -144,11 +158,15 @@ describe('AvailableBalanceBreakdown', () => {
   });
 
   it('says any amount needs approval when the spouse is over their cap', () => {
-    mockCalculations({ ...capFigures, grossAnnualSalary: 30000 }, false, {
-      currentSalaryCap: 60000,
-      grossAnnualSalary: 65000,
-      ytdAsrAmount: 0,
-    });
+    mockCalculations(
+      {
+        ...capFigures,
+        grossAnnualSalary: 30000,
+        remainingAllowableSalary: 26750,
+      },
+      false,
+      { currentSalaryCap: 60000, grossAnnualSalary: 65000, ytdAsrAmount: 0 },
+    );
 
     const { getByText } = render(<AvailableBalanceBreakdown />);
 
@@ -164,10 +182,26 @@ describe('AvailableBalanceBreakdown', () => {
       ...capFigures,
       currentSalaryCap: null,
       grossAnnualSalary: 30000,
+      remainingAllowableSalary: null,
     });
 
     const { queryByText } = render(<AvailableBalanceBreakdown />);
 
+    expect(queryByText(/needs? approval/)).not.toBeInTheDocument();
+  });
+
+  it('leaves out the approval note when asked to, as on a submitted request', () => {
+    mockCalculations({
+      ...capFigures,
+      grossAnnualSalary: 30000,
+      remainingAllowableSalary: 26750,
+    });
+
+    const { getByText, queryByText } = render(
+      <AvailableBalanceBreakdown showApprovalNote={false} />,
+    );
+
+    expect(getByText('Primary balance of $1,500.00')).toBeInTheDocument();
     expect(queryByText(/needs? approval/)).not.toBeInTheDocument();
   });
 

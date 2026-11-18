@@ -3,7 +3,10 @@ import { List, ListItem, Stack, Typography } from '@mui/material';
 import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
-import { AsrStatusEnum } from 'src/graphql/types.generated';
+import {
+  AsrStatusEnum,
+  ProgressiveApprovalTierReasonEnum,
+} from 'src/graphql/types.generated';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { ApprovalThreshold } from '../Shared/approvalThreshold';
 import { useFormUserInfo } from '../Shared/useFormUserInfo';
@@ -12,28 +15,26 @@ const requestLabel = (spouse: boolean, t: TFunction): string =>
   spouse ? t("Your spouse's request") : t('Your request');
 
 const approvalNote = (
-  { amount, reason }: NonNullable<ApprovalThreshold>,
+  { amount, reason }: ApprovalThreshold,
   format: (amount: number) => string,
   t: TFunction,
 ): string => {
-  if (reason === 'spouseOverCap') {
-    return t(
-      'Any amount needs approval because your spouse is over their cap.',
-    );
+  switch (reason) {
+    case ProgressiveApprovalTierReasonEnum.OverSpouseCap:
+      return t(
+        'Any amount needs approval because your spouse is over their cap.',
+      );
+    case ProgressiveApprovalTierReasonEnum.OverCombinedCap:
+      return t(
+        "Requests over {{amount}} (what's left under your combined cap with your spouse) need approval. Current year's salary not received doesn't count toward this amount.",
+        { amount: format(amount) },
+      );
+    default:
+      return t(
+        "Requests over {{amount}} (your remaining allowable salary) need approval. Current year's salary not received doesn't count toward this amount.",
+        { amount: format(amount) },
+      );
   }
-  const over =
-    reason === 'combinedCap'
-      ? t(
-          "Requests over {{amount}} (what's left under your combined cap with your spouse) need approval.",
-          { amount: format(amount) },
-        )
-      : t(
-          'Requests over {{amount}} (your remaining allowable salary) need approval.',
-          { amount: format(amount) },
-        );
-  return `${over} ${t(
-    "Current year's salary not received doesn't count toward this amount.",
-  )}`;
 };
 
 const statusLabel = (status: AsrStatusEnum, t: TFunction): string => {
@@ -49,7 +50,14 @@ const statusLabel = (status: AsrStatusEnum, t: TFunction): string => {
 
 // Explains the "Available for This Request" amount with the same numbers SAA checks the request against, and the
 // amount past which the request needs approval
-export const AvailableBalanceBreakdown: React.FC = () => {
+interface AvailableBalanceBreakdownProps {
+  // A submitted request already counts toward the cap, so the note would not describe it
+  showApprovalNote?: boolean;
+}
+
+export const AvailableBalanceBreakdown: React.FC<
+  AvailableBalanceBreakdownProps
+> = ({ showApprovalNote = true }) => {
   const { t } = useTranslation();
   const { formatCurrency: format } = useFormatters();
   const { hcmLoading } = useAdditionalSalaryRequest();
@@ -97,7 +105,7 @@ export const AvailableBalanceBreakdown: React.FC = () => {
           ))}
         </List>
       )}
-      {approvalThreshold && (
+      {showApprovalNote && approvalThreshold && (
         <Typography variant="body2" color="text.secondary">
           {approvalNote(approvalThreshold, format, t)}
         </Typography>

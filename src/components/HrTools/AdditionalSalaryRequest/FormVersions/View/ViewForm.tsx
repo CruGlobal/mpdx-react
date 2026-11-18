@@ -92,7 +92,7 @@ export const ViewForm: React.FC = () => {
             showContent
           />
         )}
-        <AvailableBalanceBreakdown />
+        <AvailableBalanceBreakdown showApprovalNote={false} />
       </Stack>
       <Typography variant="body1" paragraph>
         <Trans t={t}>
