@@ -232,9 +232,7 @@ export const RequestedSalaryCard: React.FC = () => {
                 </TableCell>
               )}
             </TableRow>
-
             <GoalSalaryRow />
-
             <TableRow>
               <TableCell component="th" scope="row">
                 {t('Minimum Salary')}

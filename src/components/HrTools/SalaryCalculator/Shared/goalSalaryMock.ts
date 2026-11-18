@@ -47,3 +47,8 @@ export const goalSalaryCalculations = {
   non403bFraction: 0.9,
   secaEstimatedFraction: 0.2,
 };
+
+/** The GoalSalary query response with these goals */
+export const goalSalaryQueryMock = (goals: GoalMock[]) => ({
+  goalCalculations: { nodes: goals, pageInfo: { hasNextPage: false } },
+});

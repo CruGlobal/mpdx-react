@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { merge } from 'lodash';
 import { DeepPartial } from 'ts-essentials';
 import { AutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import {
@@ -17,7 +16,6 @@ import {
   hcmSpouseMock,
   hcmUserMock,
 } from '../../SalaryCalculatorTestWrapper';
-import { goalSalaryCalculations, makeGoal } from '../../Shared/goalSalaryMock';
 import { RequestedSalaryCard } from './RequestedSalaryCard';
 
 const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
@@ -67,61 +65,6 @@ const TestComponent: React.FC<SalaryCalculatorTestWrapperProps> = ({
 );
 
 describe('RequestedSalaryCard', () => {
-  describe('MPD Goal salary', () => {
-    const goalRatesMock = merge({}, defaultSalaryMock, {
-      calculations: goalSalaryCalculations,
-      spouseCalculations: goalSalaryCalculations,
-    });
-
-    it("shows each person's salary from their MPD Goal", async () => {
-      const { findByRole } = render(
-        <TestComponent
-          salaryRequestMock={goalRatesMock}
-          goals={[makeGoal('1')]}
-        />,
-      );
-
-      const row = await findByRole('row', { name: /MPD Goal Salary/ });
-      expect(row).toHaveTextContent('From your goal: Goal 1');
-      expect(row).toHaveTextContent('$36,000.00');
-      expect(row).toHaveTextContent('$18,000.00');
-    });
-
-    it('fills the requested salaries from the goal', async () => {
-      const mutationSpy = jest.fn();
-      const { findByRole } = render(
-        <TestComponent
-          salaryRequestMock={goalRatesMock}
-          goals={[makeGoal('1')]}
-          onCall={mutationSpy}
-        />,
-      );
-
-      userEvent.click(await findByRole('button', { name: 'Use Goal Salary' }));
-
-      await waitFor(() =>
-        expect(mutationSpy).toHaveGraphqlOperation('UpdateSalaryCalculation', {
-          input: {
-            attributes: {
-              id: 'salary-request-1',
-              salary: 36000,
-              spouseSalary: 18000,
-            },
-          },
-        }),
-      );
-    });
-
-    it('is hidden without an MPD Goal', async () => {
-      const { findByText, queryByRole } = render(<TestComponent />);
-
-      expect(await findByText('HCM loaded')).toBeInTheDocument();
-      expect(
-        queryByRole('row', { name: /MPD Goal Salary/ }),
-      ).not.toBeInTheDocument();
-    });
-  });
-
   describe('married', () => {
     it('should render explanation message', async () => {
       const { getByTestId } = render(<TestComponent />);

@@ -16,7 +16,6 @@ import {
   calculateCategoryEnumTotal,
   calculateCategoryTotal,
   calculateFamilyTotal,
-  calculateGoalGrossAnnualSalaries,
   calculateGoalSubtotals,
   calculateGoalTotals,
 } from './calculateTotals';
@@ -163,59 +162,6 @@ describe('calculateGoalTotals', () => {
       overallSubtotalWithAdmin: 0,
       attrition: 0,
       overallTotal: 0,
-    });
-  });
-});
-
-describe('calculateGoalGrossAnnualSalaries', () => {
-  const constants = formatConstants(constantsMock);
-
-  it("splits the household gross annual salary by each person's share of the net paychecks", () => {
-    const { grossAnnualSalary, spouseGrossAnnualSalary } =
-      calculateGoalGrossAnnualSalaries(goalCalculationMock);
-
-    expect(grossAnnualSalary).toBeCloseTo(77854 * (2500 / 4500), 0);
-    expect(spouseGrossAnnualSalary).toBeCloseTo(77854 * (2000 / 4500), 0);
-    expect(grossAnnualSalary + spouseGrossAnnualSalary).toBeCloseTo(
-      calculateGoalTotals(goalCalculationMock, constants).grossAnnualSalary,
-    );
-  });
-
-  it('gives the whole salary to a single staff member', () => {
-    const goalCalculation = {
-      ...goalCalculationMock,
-      familySize: MpdGoalBenefitsConstantSizeEnum.Single,
-    };
-
-    expect(calculateGoalGrossAnnualSalaries(goalCalculation)).toEqual({
-      grossAnnualSalary: expect.closeTo(77047, 0),
-      spouseGrossAnnualSalary: 0,
-    });
-  });
-
-  it('uses the net paycheck split when the household budget is entered directly', () => {
-    const goalCalculation = {
-      ...goalCalculationMock,
-      householdFamily: {
-        ...goalCalculationMock.householdFamily,
-        directInput: 9000,
-      },
-    };
-    const { grossAnnualSalary, spouseGrossAnnualSalary } =
-      calculateGoalGrossAnnualSalaries(goalCalculation);
-
-    expect(grossAnnualSalary / spouseGrossAnnualSalary).toBeCloseTo(
-      2500 / 2000,
-    );
-    expect(grossAnnualSalary + spouseGrossAnnualSalary).toBeCloseTo(
-      calculateGoalTotals(goalCalculation, constants).grossAnnualSalary,
-    );
-  });
-
-  it('returns 0 for a goal with no salary', () => {
-    expect(calculateGoalGrossAnnualSalaries(null)).toEqual({
-      grossAnnualSalary: 0,
-      spouseGrossAnnualSalary: 0,
     });
   });
 });

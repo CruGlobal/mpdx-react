@@ -19,7 +19,11 @@ import {
 import theme from 'src/theme';
 import { StaffAccountIdQuery } from '../../../Shared/StaffAccountId.generated';
 import { GoalSalaryQuery } from '../../Shared/GoalSalary.generated';
-import { GoalMock, goalSalaryCalculations } from '../../Shared/goalSalaryMock';
+import {
+  GoalMock,
+  goalSalaryCalculations,
+  goalSalaryQueryMock,
+} from '../../Shared/goalSalaryMock';
 import { AccountBalanceQuery } from '../AccountBalance.generated';
 import {
   CreateSalaryCalculationMutation,
@@ -47,6 +51,19 @@ export interface LandingTestWrapperProps {
   /** The account list's MPD Goals */
   goals?: GoalMock[];
 }
+
+const staffAccountIdMock = { user: { staffAccountId: '111111111' } };
+
+// The new calculation's rates convert goalSalaryMock's goals to $36,000 and $18,000
+const createCalculationMock = {
+  createSalaryRequest: {
+    salaryRequest: {
+      id: 'new-calculation',
+      calculations: goalSalaryCalculations,
+      spouseCalculations: goalSalaryCalculations,
+    },
+  },
+};
 
 export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
   onCall,
@@ -172,11 +189,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
                   }
                 : null,
             },
-            StaffAccountId: {
-              user: {
-                staffAccountId: '111111111',
-              },
-            },
+            StaffAccountId: staffAccountIdMock,
             AccountBalance: {
               reportsStaffExpenses: balanceError
                 ? ((() => {
@@ -194,21 +207,8 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
                 usStaffGroup: UsStaffGroupEnum.SeniorStaff,
               },
             },
-            GoalSalary: {
-              goalCalculations: {
-                nodes: goals,
-                pageInfo: { hasNextPage: false },
-              },
-            },
-            CreateSalaryCalculation: {
-              createSalaryRequest: {
-                salaryRequest: {
-                  id: 'new-calculation',
-                  calculations: goalSalaryCalculations,
-                  spouseCalculations: goalSalaryCalculations,
-                },
-              },
-            },
+            GoalSalary: goalSalaryQueryMock(goals),
+            CreateSalaryCalculation: createCalculationMock,
           }}
           onCall={onCall}
         >

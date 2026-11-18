@@ -34,7 +34,7 @@ import {
   useSalaryCalculator,
 } from './SalaryCalculatorContext/SalaryCalculatorContext';
 import { GoalSalaryQuery } from './Shared/GoalSalary.generated';
-import { GoalMock } from './Shared/goalSalaryMock';
+import { GoalMock, goalSalaryQueryMock } from './Shared/goalSalaryMock';
 import {
   SubmitSalaryCalculationMutation,
   SubmitSalaryCalculationMutationVariables,
@@ -167,6 +167,22 @@ export interface SalaryCalculatorTestWrapperProps {
   goals?: GoalMock[];
 }
 
+const staffAccountMock = {
+  staffAccount: {
+    id: '12345',
+    name: 'Test Account',
+  },
+};
+
+const goalCalculatorConstantsMock = {
+  constant: {
+    mpdGoalGeographicConstants: [
+      { location: 'Atlanta, GA' },
+      { location: 'Miami, FL' },
+    ],
+  },
+};
+
 export const SalaryCalculatorTestWrapper: React.FC<
   SalaryCalculatorTestWrapperProps
 > = ({
@@ -215,12 +231,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
             GoalSalary: GoalSalaryQuery;
           }>
             mocks={{
-              StaffAccount: {
-                staffAccount: {
-                  id: '12345',
-                  name: 'Test Account',
-                },
-              },
+              StaffAccount: staffAccountMock,
               GetUser: {
                 user: {
                   userType,
@@ -237,23 +248,11 @@ export const SalaryCalculatorTestWrapper: React.FC<
               PayrollDates: {
                 payrollDates,
               },
-              GoalSalary: {
-                goalCalculations: {
-                  nodes: goals,
-                  pageInfo: { hasNextPage: false },
-                },
-              },
+              GoalSalary: goalSalaryQueryMock(goals),
               EffectiveSalaryCalculation: {
                 salaryRequest: effectiveSalaryRequestMock,
               },
-              GoalCalculatorConstants: {
-                constant: {
-                  mpdGoalGeographicConstants: [
-                    { location: 'Atlanta, GA' },
-                    { location: 'Miami, FL' },
-                  ],
-                },
-              },
+              GoalCalculatorConstants: goalCalculatorConstantsMock,
               Hcm: {
                 hcm: mockHcmUnavailable(
                   hasSpouse
