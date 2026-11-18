@@ -126,6 +126,38 @@ describe('NameDisplay', () => {
     expect(queryByTestId('amount-three')).not.toBeInTheDocument();
   });
 
+  it('renders the note as a full-width caption under the amounts', () => {
+    const { getByText } = render(
+      <ThemeProvider theme={theme}>
+        <NameDisplay
+          names="Doe, John"
+          showContent
+          titleOne={titleOne}
+          titleTwo={titleTwo}
+          titleThree="Title Three"
+          amountOne={1000}
+          amountTwo={20000}
+          amountThree={5000}
+          note="Requests over $5,000.00 need approval."
+        />
+      </ThemeProvider>,
+    );
+
+    const note = getByText('Requests over $5,000.00 need approval.');
+    expect(note).toHaveClass('MuiTypography-caption');
+    expect(note.closest('.MuiCardContent-root')).toBeInTheDocument();
+    // Below the amounts, not inside one of their columns
+    expect(note.closest('.MuiGrid-root')).toBeNull();
+  });
+
+  it('renders no note without one', () => {
+    const { container } = render(
+      <TestComponent names="Doe, John" showContent />,
+    );
+
+    expect(container.querySelector('.MuiTypography-caption')).toBeNull();
+  });
+
   it('renders spouseComponent when provided', () => {
     const { getByTestId, getByText } = render(
       <TestComponent

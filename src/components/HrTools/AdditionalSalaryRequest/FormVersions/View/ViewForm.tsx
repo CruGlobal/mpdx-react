@@ -14,6 +14,7 @@ import { AdditionalSalaryRequest } from '../../CompleteForm/AdditionalSalaryRequ
 import { Deduction } from '../../CompleteForm/Deduction/Deduction';
 import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetAdditionalSalary';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
+import { useApprovalNote } from '../../Shared/useApprovalNote';
 import { useFormUserInfo } from '../../Shared/useFormUserInfo';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 import { AvailableBalanceBreakdown } from '../../SharedComponents/AvailableBalanceBreakdown';
@@ -35,6 +36,11 @@ export const ViewForm: React.FC = () => {
   const { values } = useFormikContext<CompleteFormValues>();
   const { name, availableAccountBalance, remainingCap } = useFormUserInfo();
   const individualCap = calculations?.currentSalaryCap ?? 0;
+  // A submitted request already counts toward the cap; one sent back for changes does not
+  const approvalNote = useApprovalNote(
+    requestData?.latestAdditionalSalaryRequest?.status ===
+      AsrStatusEnum.ActionRequired,
+  );
 
   const { exceedsCap } = useSalaryCalculations({
     values,
@@ -91,16 +97,11 @@ export const ViewForm: React.FC = () => {
             titleThree={t('Remaining Allowable Salary')}
             amountThree={remainingCap}
             spouseComponent={<SpouseComponent />}
+            note={approvalNote}
             showContent
           />
         )}
-        {/* A submitted request already counts toward the cap; one sent back for changes does not */}
-        <AvailableBalanceBreakdown
-          showApprovalNote={
-            requestData?.latestAdditionalSalaryRequest?.status ===
-            AsrStatusEnum.ActionRequired
-          }
-        />
+        <AvailableBalanceBreakdown />
       </Stack>
       <Typography variant="body1" paragraph>
         <Trans t={t}>

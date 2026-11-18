@@ -159,6 +159,34 @@ describe('AboutForm', () => {
     expect(await findByTestId('amount-three')).toHaveTextContent('$30,000.00');
   });
 
+  it('shows the approval note inside the card, under the amounts', async () => {
+    const { findByText, getByTestId } = render(
+      <TestWrapper
+        asrMocks={{
+          AdditionalSalaryRequest: {
+            latestAdditionalSalaryRequest: {
+              calculations: {
+                currentSalaryCap: 120000,
+                combinedCap: null,
+                grossAnnualSalary: 60000,
+                ytdAsrAmount: 0,
+                remainingAllowableSalary: 30000,
+              },
+              spouseCalculations: null,
+            },
+          },
+        }}
+      />,
+    );
+
+    const note = await findByText(
+      /Requests over \$30,000\.00 \(your remaining allowable salary\) need approval/,
+    );
+    expect(note.closest('.MuiCard-root')).toContainElement(
+      getByTestId('amount-one'),
+    );
+  });
+
   // MPDX-10269: the spouse figure comes from the API, not cap - gross - ytd ($10,000 here)
   it("shows the spouse's remaining salary from the API", async () => {
     const { findByText } = render(

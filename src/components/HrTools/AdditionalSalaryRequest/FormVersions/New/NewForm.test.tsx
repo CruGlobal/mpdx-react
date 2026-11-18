@@ -49,6 +49,17 @@ describe('NewForm', () => {
   });
 
   describe('financial calculations', () => {
+    it('shows the approval note inside the card, under the amounts', () => {
+      const { getByText, getByTestId } = renderComponent();
+
+      const note = getByText(
+        /Requests over \$55,000\.00 \(your remaining allowable salary\) need approval/,
+      );
+      expect(note.closest('.MuiCard-root')).toContainElement(
+        getByTestId('amount-one'),
+      );
+    });
+
     it('displays correct account balances from request data', () => {
       const { getByTestId } = renderComponent();
 

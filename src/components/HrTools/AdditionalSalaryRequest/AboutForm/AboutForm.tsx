@@ -7,6 +7,7 @@ import { NameDisplaySkeleton } from '../../Shared/CalculationReports/NameDisplay
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { getHeader } from '../Shared/Helper/getHeader';
 import { paperVersionLink, progressiveApprovalsLink } from '../Shared/pdfLinks';
+import { useApprovalNote } from '../Shared/useApprovalNote';
 import { useFormUserInfo } from '../Shared/useFormUserInfo';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
 import { AvailableBalanceBreakdown } from '../SharedComponents/AvailableBalanceBreakdown';
@@ -20,6 +21,7 @@ export const AboutForm: React.FC = () => {
   const theme = useTheme();
 
   const { name, availableAccountBalance, remainingCap } = useFormUserInfo();
+  const approvalNote = useApprovalNote();
   const latestRequest = requestData?.latestAdditionalSalaryRequest;
   const individualCap = latestRequest?.calculations.currentSalaryCap ?? 0;
 
@@ -100,6 +102,7 @@ export const AboutForm: React.FC = () => {
           titleThree={t('Remaining Allowable Salary')}
           amountThree={remainingCap}
           spouseComponent={<SpouseComponent />}
+          note={approvalNote}
           showContent={!!latestRequest}
         />
       )}

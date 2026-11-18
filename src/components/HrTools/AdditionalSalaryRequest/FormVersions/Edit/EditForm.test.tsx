@@ -79,6 +79,17 @@ describe('EditForm', () => {
     expect(getByTestId('amount-three')).toHaveTextContent(missingValue);
   });
 
+  it('shows the approval note inside the card, under the amounts', () => {
+    const { getByText, getByTestId } = renderComponent();
+
+    const note = getByText(
+      /Requests over \$55,000\.00 \(your remaining allowable salary\) need approval/,
+    );
+    expect(note.closest('.MuiCard-root')).toContainElement(
+      getByTestId('amount-one'),
+    );
+  });
+
   it('renders all child components when user exceeds cap', () => {
     const { getByText, getAllByText } = renderComponent({
       initialValues: {

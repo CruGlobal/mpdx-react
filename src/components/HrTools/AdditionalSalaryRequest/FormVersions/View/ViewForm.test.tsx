@@ -94,6 +94,27 @@ describe('ViewForm', () => {
     },
   );
 
+  it('shows the approval note inside the card on a request sent back', () => {
+    const { getByText, getByTestId } = renderComponent({
+      contextOverrides: {
+        requestData: {
+          latestAdditionalSalaryRequest: {
+            ...defaultMockContextValue.requestData
+              .latestAdditionalSalaryRequest,
+            status: AsrStatusEnum.ActionRequired,
+          },
+        },
+      },
+    });
+
+    const note = getByText(
+      /Requests over \$55,000\.00 \(your remaining allowable salary\) need approval/,
+    );
+    expect(note.closest('.MuiCard-root')).toContainElement(
+      getByTestId('amount-one'),
+    );
+  });
+
   it('handles missing calculations gracefully', () => {
     const { getByTestId } = renderComponent({
       contextOverrides: {

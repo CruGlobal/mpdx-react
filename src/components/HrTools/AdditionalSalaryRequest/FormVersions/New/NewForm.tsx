@@ -13,6 +13,7 @@ import { ContactInformation } from '../../CompleteForm/ContactInformation/Contac
 import { Deduction } from '../../CompleteForm/Deduction/Deduction';
 import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetAdditionalSalary';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
+import { useApprovalNote } from '../../Shared/useApprovalNote';
 import { useFormUserInfo } from '../../Shared/useFormUserInfo';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 import { AvailableBalanceBreakdown } from '../../SharedComponents/AvailableBalanceBreakdown';
@@ -27,6 +28,7 @@ export const NewForm: React.FC = () => {
   const { calculations, hcmLoading } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
   const { name, availableAccountBalance, remainingCap } = useFormUserInfo();
+  const approvalNote = useApprovalNote();
   const individualCap = calculations?.currentSalaryCap ?? 0;
 
   const { exceedsCap } = useSalaryCalculations({
@@ -55,6 +57,7 @@ export const NewForm: React.FC = () => {
             titleThree={t('Remaining Allowable Salary')}
             amountThree={remainingCap}
             spouseComponent={<SpouseComponent />}
+            note={approvalNote}
             showContent
           />
         )}

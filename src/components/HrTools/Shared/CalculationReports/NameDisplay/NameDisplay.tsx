@@ -30,6 +30,8 @@ interface NameDisplayProps {
   amountTwo?: number | null;
   amountThree?: number | null;
   spouseComponent?: React.ReactNode;
+  // A full-width caption under the amounts
+  note?: string | null;
 }
 
 export const NameDisplay: React.FC<NameDisplayProps> = ({
@@ -42,6 +44,7 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
   amountTwo,
   amountThree,
   spouseComponent,
+  note,
 }) => {
   const locale = useLocale();
   const theme = useTheme();
@@ -112,6 +115,16 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
                 </Grid>
               ))}
             </Grid>
+            {note && (
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                component="p"
+                sx={{ marginTop: theme.spacing(2) }}
+              >
+                {note}
+              </Typography>
+            )}
           </CardContent>
         )}
       </Card>
