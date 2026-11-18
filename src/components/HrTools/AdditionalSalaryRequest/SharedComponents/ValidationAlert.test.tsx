@@ -257,7 +257,7 @@ describe('ValidationAlert', () => {
     await findByRole('alert');
     expect(
       await findByText(
-        'Your total additional salary requested exceeds your account balance.',
+        'Your total additional salary requested exceeds the amount available for this request.',
       ),
     ).toBeInTheDocument();
   });
@@ -275,7 +275,7 @@ describe('ValidationAlert', () => {
     ).toBeInTheDocument();
     expect(
       queryByText(
-        'Your total additional salary requested exceeds your account balance.',
+        'Your total additional salary requested exceeds the amount available for this request.',
       ),
     ).not.toBeInTheDocument();
   });

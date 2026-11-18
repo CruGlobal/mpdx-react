@@ -5,6 +5,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { NameDisplay } from 'src/components/HrTools/Shared/CalculationReports/NameDisplay/NameDisplay';
 import { NameDisplaySkeleton } from 'src/components/HrTools/Shared/CalculationReports/NameDisplay/NameDisplaySkeleton';
 import { PageEnum } from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
+import { AsrStatusEnum } from 'src/graphql/types.generated';
 import {
   CompleteFormValues,
   mainContentWidth,
@@ -13,8 +14,10 @@ import { AdditionalSalaryRequest } from '../../CompleteForm/AdditionalSalaryRequ
 import { Deduction } from '../../CompleteForm/Deduction/Deduction';
 import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetAdditionalSalary';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
+import { useApprovalNote } from '../../Shared/useApprovalNote';
 import { useFormUserInfo } from '../../Shared/useFormUserInfo';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
+import { AvailableBalanceTooltip } from '../../SharedComponents/AvailableBalanceTooltip';
 import { ContactInformationSummaryCard } from '../../SharedComponents/ContactInformationSummaryCard';
 import { SpouseComponent } from '../../SharedComponents/SpouseComponent';
 import { ApprovalProcess } from '../../SubmitModalAccordions/ApprovalProcess/ApprovalProcess';
@@ -24,14 +27,20 @@ export const ViewForm: React.FC = () => {
   const { t } = useTranslation();
   const {
     calculations,
+    requestData,
     setPageType,
     pendingPrint,
     setPendingPrint,
     hcmLoading,
   } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
-  const { name, primaryAccountBalance, remainingCap } = useFormUserInfo();
+  const { name, availableAccountBalance, remainingCap } = useFormUserInfo();
   const individualCap = calculations?.currentSalaryCap ?? 0;
+  // A submitted request already counts toward the cap; one sent back for changes does not
+  const approvalNote = useApprovalNote(
+    requestData?.latestAdditionalSalaryRequest?.status ===
+      AsrStatusEnum.ActionRequired,
+  );
 
   const { exceedsCap } = useSalaryCalculations({
     values,
@@ -80,13 +89,15 @@ export const ViewForm: React.FC = () => {
       ) : (
         <NameDisplay
           names={name ?? ''}
-          titleOne={t('Primary Account Balance')}
-          amountOne={primaryAccountBalance}
+          titleOne={t('Available for This Request')}
+          titleOneAdornment={<AvailableBalanceTooltip />}
+          amountOne={availableAccountBalance}
           titleTwo={t('Your Maximum Allowable Salary (CAP)')}
           amountTwo={individualCap}
           titleThree={t('Remaining Allowable Salary')}
           amountThree={remainingCap}
           spouseComponent={<SpouseComponent />}
+          note={approvalNote}
           showContent
         />
       )}
