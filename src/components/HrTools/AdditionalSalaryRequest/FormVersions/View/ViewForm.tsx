@@ -16,7 +16,6 @@ import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetA
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 import { useApprovalNote } from '../../Shared/useApprovalNote';
 import { useFormUserInfo } from '../../Shared/useFormUserInfo';
-import { useNeedsApproval } from '../../Shared/useNeedsApproval';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 import { AvailableBalanceTooltip } from '../../SharedComponents/AvailableBalanceTooltip';
 import { ContactInformationSummaryCard } from '../../SharedComponents/ContactInformationSummaryCard';
@@ -47,7 +46,10 @@ export const ViewForm: React.FC = () => {
   const { exceedsCap } = useSalaryCalculations({
     values,
   });
-  const needsApproval = useNeedsApproval(values);
+  // The API's tier for this request says whether it needs approval. Its threshold can't: once the request is
+  // approved or paid, the threshold counts the request itself as used.
+  const needsApproval =
+    !!requestData?.latestAdditionalSalaryRequest?.progressiveApprovalTier;
 
   useEffect(() => {
     if (!pendingPrint) {
