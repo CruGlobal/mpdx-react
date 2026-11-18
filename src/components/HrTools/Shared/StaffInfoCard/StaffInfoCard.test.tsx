@@ -43,6 +43,14 @@ describe('StaffInfoCard', () => {
     expect(mutationSpy).toHaveBeenCalledTimes(1);
   });
 
+  it('places the toggle button beside the name', () => {
+    const { getByRole } = renderCard();
+
+    expect(
+      getByRole('heading', { name: 'John Doe' }).parentElement,
+    ).toContainElement(getByRole('button', { name: 'View Jane' }));
+  });
+
   it('hides the toggle button when no spouse is provided', () => {
     const { queryByRole } = renderCard({ hasSpouse: false });
 
