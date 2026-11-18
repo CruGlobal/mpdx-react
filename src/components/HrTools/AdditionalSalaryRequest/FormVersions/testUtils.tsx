@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { RenderResult, render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { FormikProvider, useFormik } from 'formik';
 import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
@@ -31,6 +32,17 @@ export const defaultMockContextValue = {
       calculations: {
         currentSalaryCap: 100000,
         staffAccountBalance: 40000,
+        staffAccountDeficitLimit: 0,
+        unpaidHouseholdAsrAmount: 10000,
+        unpaidHouseholdAsrs: [
+          {
+            amount: 10000,
+            status: 'PENDING',
+            submittedAt: '2026-11-03T15:00:00Z',
+            spouse: true,
+          },
+        ],
+        availableStaffAccountBalance: 30000,
         ytdAsrAmount: 5000,
         grossAnnualSalary: 40000,
         remainingAllowableSalary: 55000,
@@ -132,3 +144,17 @@ export const createRenderFormComponent =
       </ThemeProvider>,
     );
   };
+
+// Hovers the info icon beside the "Available for This Request" label and returns the tooltip it opens
+export const openAvailableBalanceTooltip = async ({
+  getByRole,
+  getByText,
+  findByRole,
+}: RenderResult): Promise<HTMLElement> => {
+  const icon = getByRole('img', {
+    name: 'How the amount available for this request is calculated',
+  });
+  expect(getByText('AVAILABLE FOR THIS REQUEST')).toContainElement(icon);
+  userEvent.hover(icon);
+  return findByRole('tooltip');
+};

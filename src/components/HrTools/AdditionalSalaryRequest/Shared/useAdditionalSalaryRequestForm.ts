@@ -36,7 +36,7 @@ export const useAdditionalSalaryRequestForm = (
     fieldConfig,
   } = useAdditionalSalaryRequest();
 
-  const { availableAccountBalance } = useFormUserInfo();
+  const { availableAccountBalance, overBalanceMessage } = useFormUserInfo();
 
   const { data: requestData } = useAdditionalSalaryRequestQuery({
     variables: { isSpouse },
@@ -156,7 +156,7 @@ export const useAdditionalSalaryRequestForm = (
           )
           .test(
             'total-within-remaining-allowable-salary',
-            t('Exceeds account balance plus deficit limit.'),
+            overBalanceMessage,
             function () {
               const total = getTotal(this.parent as CompleteFormValues);
 
@@ -207,10 +207,10 @@ export const useAdditionalSalaryRequestForm = (
       getMaxForField,
       t,
       availableAccountBalance,
+      overBalanceMessage,
       individualCap,
       ytdAsrAmount,
       grossAnnualSalary,
-      locale,
       requestData,
     ],
   );
