@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor, within } from '@testing-library/react';
+import { act, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MediaValues } from 'css-mediaquery';
 import matchMediaMock from '__tests__/util/matchMediaMock';
@@ -121,6 +121,10 @@ describe('AvailableBalanceTooltip', () => {
       mockCalculations({ staffAccountBalance: 1500 });
     });
 
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
     it('opens on a tap and closes on a second tap', async () => {
       const { getByRole, findByRole, queryByRole } = renderTooltip();
       const icon = getByRole('img', { name: iconName });
@@ -137,6 +141,7 @@ describe('AvailableBalanceTooltip', () => {
     });
 
     it('stays open when the pointer leaves, and closes on a tap elsewhere', async () => {
+      jest.useFakeTimers();
       const { getByRole, findByRole, queryByRole } = renderTooltip();
       const icon = getByRole('img', { name: iconName });
 
@@ -144,9 +149,13 @@ describe('AvailableBalanceTooltip', () => {
       await findByRole('tooltip');
       // Touch browsers send a mouseleave right after a tap
       userEvent.unhover(icon);
-      // Longer than the close transition, so a closing tooltip would be gone
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      expect(getByRole('tooltip')).toBeInTheDocument();
+      act(() => {
+        jest.advanceTimersByTime(500);
+      });
+      // The icon is described by the tooltip only while it is open
+      expect(icon).toHaveAccessibleDescription(
+        expect.stringContaining('Primary balance of $1,500.00'),
+      );
 
       userEvent.click(document.body);
       await waitFor(() =>

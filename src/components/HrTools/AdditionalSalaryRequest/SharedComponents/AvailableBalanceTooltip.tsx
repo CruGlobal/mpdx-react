@@ -99,7 +99,7 @@ export const AvailableBalanceTooltip: React.FC = () => {
         titleAccess={t(
           'How the amount available for this request is calculated',
         )}
-        onClick={() => setTouchOpen((open) => !open)}
+        onClick={touchScreen ? () => setTouchOpen((open) => !open) : undefined}
       />
     </Tooltip>
   );
