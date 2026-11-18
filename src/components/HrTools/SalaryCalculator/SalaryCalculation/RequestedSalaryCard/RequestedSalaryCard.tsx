@@ -58,6 +58,38 @@ const SosaHardCapAlert: React.FC = () => {
   );
 };
 
+const EstimatedSalary: React.FC<{ estimate: number }> = ({ estimate }) => {
+  const { t } = useTranslation();
+  const locale = useLocale();
+
+  return (
+    <>
+      <Box
+        component="span"
+        sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}
+      >
+        {/* No cents, since this is an estimate and not an exact amount */}
+        {currencyFormat(estimate, 'USD', locale, { fractionDigits: 0 })}
+        <Tooltip
+          title={t(
+            'We could not find an approved salary request on file, so this is our best estimate based on your current salary and 403(b) contributions in HCM. Please check your current salary in HCM to confirm it.',
+          )}
+          arrow
+        >
+          <InfoIcon
+            fontSize="small"
+            color="action"
+            data-testid="RequestedSalaryCard-estimateIcon"
+          />
+        </Tooltip>
+      </Box>
+      <Typography variant="caption" color="textSecondary" display="block">
+        {t('Estimate - confirm in HCM')}
+      </Typography>
+    </>
+  );
+};
+
 export const RequestedSalaryCard: React.FC = () => {
   const { t } = useTranslation();
   const {
@@ -66,7 +98,6 @@ export const RequestedSalaryCard: React.FC = () => {
     hcmSpouse,
   } = useSalaryCalculator();
   const { formatCurrency } = useFormatters();
-  const locale = useLocale();
   const { isUserSosa, blockOnCap } = useSosaBlockOverCap();
   const { markValid, markInvalid } = useAutosaveForm();
 
@@ -100,32 +131,7 @@ export const RequestedSalaryCard: React.FC = () => {
     if (!estimated) {
       return '–';
     }
-    return (
-      <>
-        <Box
-          component="span"
-          sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}
-        >
-          {/* No cents, since this is an estimate and not an exact amount */}
-          {currencyFormat(estimated, 'USD', locale, { fractionDigits: 0 })}
-          <Tooltip
-            title={t(
-              'We could not find an approved salary request on file, so this is our best estimate based on your current salary and 403(b) contributions in HCM. Please check your current salary in HCM to confirm it.',
-            )}
-            arrow
-          >
-            <InfoIcon
-              fontSize="small"
-              color="action"
-              data-testid="RequestedSalaryCard-estimateIcon"
-            />
-          </Tooltip>
-        </Box>
-        <Typography variant="caption" color="textSecondary" display="block">
-          {t('Estimate - confirm in HCM')}
-        </Typography>
-      </>
-    );
+    return <EstimatedSalary estimate={estimated} />;
   };
 
   // Disable the Continue button while the saved gross exceeds the SOSA hard cap.
@@ -232,7 +238,9 @@ export const RequestedSalaryCard: React.FC = () => {
                 </TableCell>
               )}
             </TableRow>
+
             <GoalSalaryRow />
+
             <TableRow>
               <TableCell component="th" scope="row">
                 {t('Minimum Salary')}

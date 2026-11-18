@@ -18,17 +18,13 @@ import {
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { StaffAccountIdQuery } from '../../../Shared/StaffAccountId.generated';
-import { GoalSalaryQuery } from '../../Shared/GoalSalary.generated';
 import {
   GoalMock,
   goalSalaryCalculations,
   goalSalaryQueryMock,
 } from '../../Shared/goalSalaryMock';
 import { AccountBalanceQuery } from '../AccountBalance.generated';
-import {
-  CreateSalaryCalculationMutation,
-  LandingSalaryCalculationsQuery,
-} from './LandingSalaryCalculations.generated';
+import { LandingSalaryCalculationsQuery } from './LandingSalaryCalculations.generated';
 
 export interface LandingTestWrapperProps {
   onCall?: MockLinkCallHandler;
@@ -53,6 +49,13 @@ export interface LandingTestWrapperProps {
 }
 
 const staffAccountIdMock = { user: { staffAccountId: '111111111' } };
+
+const getUserMock = {
+  user: {
+    userType: UserTypeEnum.UsStaff,
+    usStaffGroup: UsStaffGroupEnum.SeniorStaff,
+  },
+};
 
 // The new calculation's rates convert goalSalaryMock's goals to $36,000 and $18,000
 const createCalculationMock = {
@@ -90,8 +93,6 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
           AccountBalance: AccountBalanceQuery;
           LandingSalaryCalculations: LandingSalaryCalculationsQuery;
           GetUser: GetUserQuery;
-          GoalSalary: GoalSalaryQuery;
-          CreateSalaryCalculation: CreateSalaryCalculationMutation;
         }>
           mocks={{
             Hcm: {
@@ -201,12 +202,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
                       : [{ fundType: 'Primary', endBalance: 10000 }],
                   },
             },
-            GetUser: {
-              user: {
-                userType: UserTypeEnum.UsStaff,
-                usStaffGroup: UsStaffGroupEnum.SeniorStaff,
-              },
-            },
+            GetUser: getUserMock,
             GoalSalary: goalSalaryQueryMock(goals),
             CreateSalaryCalculation: createCalculationMock,
           }}
