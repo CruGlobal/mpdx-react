@@ -3,6 +3,7 @@ import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
 import {
   createRenderFormComponent,
   defaultMockContextValue,
+  openAvailableBalanceTooltip,
   setupMockContext,
 } from '../testUtils';
 import { NewForm } from './NewForm';
@@ -49,10 +50,35 @@ describe('NewForm', () => {
   });
 
   describe('financial calculations', () => {
+    it('explains the available amount in a tooltip beside its label', async () => {
+      const utils = renderComponent();
+
+      expect(utils.queryByText(/Primary balance/)).not.toBeInTheDocument();
+      const tooltip = await openAvailableBalanceTooltip(utils);
+      expect(tooltip).toHaveTextContent(
+        'Primary balance of $40,000.00, minus $10,000.00 in other unpaid requests',
+      );
+      expect(tooltip).toHaveTextContent(
+        "Your spouse's request, waiting for approval: $10,000.00",
+      );
+    });
+
+    it('shows the approval note inside the card, under the amounts', () => {
+      const { getByText, getByTestId } = renderComponent();
+
+      const note = getByText(
+        /Requests over \$55,000\.00 \(your remaining allowable salary\) need approval/,
+      );
+      expect(note.closest('.MuiCard-root')).toContainElement(
+        getByTestId('amount-one'),
+      );
+    });
+
     it('displays correct account balances from request data', () => {
       const { getByTestId } = renderComponent();
 
-      expect(getByTestId('amount-one')).toHaveTextContent('$40,000.00');
+      // availableStaffAccountBalance, not the raw staffAccountBalance of 40000
+      expect(getByTestId('amount-one')).toHaveTextContent('$30,000.00');
       // currentSalaryCap: value on backend
       expect(getByTestId('amount-two')).toHaveTextContent('$100,000.00');
       // remainingAllowableSalary from the API
