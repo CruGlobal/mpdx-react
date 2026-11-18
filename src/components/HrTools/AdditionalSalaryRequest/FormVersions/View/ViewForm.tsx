@@ -36,7 +36,8 @@ export const ViewForm: React.FC = () => {
   const { values } = useFormikContext<CompleteFormValues>();
   const { name, availableAccountBalance, remainingCap } = useFormUserInfo();
   const individualCap = calculations?.currentSalaryCap ?? 0;
-  // A submitted request already counts toward the cap; one sent back for changes does not
+  // The note says when a request would need approval, which only helps while it can still change: a request sent
+  // back for changes. A submitted one has already been checked at submit.
   const approvalNote = useApprovalNote(
     requestData?.latestAdditionalSalaryRequest?.status ===
       AsrStatusEnum.ActionRequired,
@@ -45,6 +46,10 @@ export const ViewForm: React.FC = () => {
   const { exceedsCap } = useSalaryCalculations({
     values,
   });
+  // The API's tier for this request says whether it needs approval. Its threshold can't: once the request is
+  // approved or paid, the threshold counts the request itself as used.
+  const needsApproval =
+    !!requestData?.latestAdditionalSalaryRequest?.progressiveApprovalTier;
 
   useEffect(() => {
     if (!pendingPrint) {
@@ -114,7 +119,7 @@ export const ViewForm: React.FC = () => {
       <NetAdditionalSalary />
       <ContactInformationSummaryCard />
       {exceedsCap && <TotalSalaryRequested onForm />}
-      <ApprovalProcess onForm exceedsCap={exceedsCap} />
+      <ApprovalProcess onForm needsApproval={needsApproval} />
 
       <Button
         onClick={() => setPageType(PageEnum.Reset)}

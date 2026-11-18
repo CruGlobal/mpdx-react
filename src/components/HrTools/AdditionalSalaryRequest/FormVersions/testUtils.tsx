@@ -6,6 +6,7 @@ import { FormikProvider, useFormik } from 'formik';
 import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ProgressiveApprovalTierReasonEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import { amount, phoneNumber } from 'src/lib/yupHelpers';
 import theme from 'src/theme';
@@ -46,6 +47,8 @@ export const defaultMockContextValue = {
         ytdAsrAmount: 5000,
         grossAnnualSalary: 40000,
         remainingAllowableSalary: 55000,
+        approvalThreshold: 55000,
+        approvalThresholdReason: ProgressiveApprovalTierReasonEnum.OverUserCap,
       },
     },
   },
@@ -57,6 +60,26 @@ export const defaultMockContextValue = {
     geographicLocation: 'Orlando, FL',
   },
   user: mockUser,
+};
+
+// Under the user's own cap, but over what's left under the couple's combined cap
+export const combinedCapOverrides = {
+  requestData: {
+    latestAdditionalSalaryRequest: {
+      ...defaultMockContextValue.requestData.latestAdditionalSalaryRequest,
+      calculations: {
+        ...defaultMockContextValue.requestData.latestAdditionalSalaryRequest
+          .calculations,
+        approvalThreshold: 10000,
+        approvalThresholdReason:
+          ProgressiveApprovalTierReasonEnum.OverCombinedCap,
+      },
+    },
+  },
+};
+export const combinedCapValues = {
+  ...defaultCompleteFormValues,
+  additionalSalaryWithinMax: '20000',
 };
 
 export const router = {

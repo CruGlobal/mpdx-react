@@ -15,6 +15,7 @@ import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetA
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 import { useApprovalNote } from '../../Shared/useApprovalNote';
 import { useFormUserInfo } from '../../Shared/useFormUserInfo';
+import { useNeedsApproval } from '../../Shared/useNeedsApproval';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 import { AvailableBalanceTooltip } from '../../SharedComponents/AvailableBalanceTooltip';
 import { MissingLocationAlert } from '../../SharedComponents/MissingLocationAlert';
@@ -34,6 +35,7 @@ export const NewForm: React.FC = () => {
   const { exceedsCap } = useSalaryCalculations({
     values,
   });
+  const needsApproval = useNeedsApproval(values);
 
   return (
     <Stack
@@ -78,7 +80,7 @@ export const NewForm: React.FC = () => {
       <Deduction />
       <NetAdditionalSalary />
       {exceedsCap && <TotalSalaryRequested onForm />}
-      <ApprovalProcess onForm exceedsCap={exceedsCap} />
+      <ApprovalProcess onForm needsApproval={needsApproval} />
       <Typography variant="body1" paragraph>
         <Trans t={t}>
           If the above information is correct, please confirm your telephone

@@ -8,7 +8,10 @@ import {
   DeepPartialMock,
   GqlMockedProvider,
 } from '__tests__/util/graphqlMocking';
-import { AsrStatusEnum } from 'src/graphql/types.generated';
+import {
+  AsrStatusEnum,
+  ProgressiveApprovalTierReasonEnum,
+} from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { HcmQuery } from '../../Shared/HcmData/Hcm.generated';
 import { AdditionalSalaryRequestQuery } from '../AdditionalSalaryRequest.generated';
@@ -205,13 +208,10 @@ describe('AboutForm', () => {
           AdditionalSalaryRequest: {
             latestAdditionalSalaryRequest: {
               calculations: {
-                currentSalaryCap: 120000,
-                combinedCap: null,
-                grossAnnualSalary: 60000,
-                ytdAsrAmount: 0,
-                remainingAllowableSalary: 30000,
+                approvalThreshold: 30000,
+                approvalThresholdReason:
+                  ProgressiveApprovalTierReasonEnum.OverUserCap,
               },
-              spouseCalculations: null,
             },
           },
         }}

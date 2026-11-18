@@ -9,12 +9,12 @@ import { ModalAccordion } from '../ModalAccordion/ModalAccordion';
 
 interface ApprovalProcessProps {
   onForm?: boolean;
-  exceedsCap?: boolean;
+  needsApproval?: boolean;
 }
 
 export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({
   onForm,
-  exceedsCap = true,
+  needsApproval = true,
 }) => {
   const { t } = useTranslation();
 
@@ -28,10 +28,10 @@ export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({
     <ModalAccordion
       backgroundColor={alpha(theme.palette.info.light, 0.1)}
       icon={InfoSharp}
-      title={exceedsCap ? t('Approval Process') : t('Optional Comments')}
+      title={needsApproval ? t('Approval Process') : t('Optional Comments')}
       titleColor="info.dark"
       subtitle={
-        exceedsCap
+        needsApproval
           ? t('Approvals needed for this request')
           : t(
               'Use this optional comment section to communicate specific payroll needs, if needed.',
@@ -41,7 +41,7 @@ export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({
       onForm={onForm}
     >
       <CardContent>
-        {exceedsCap ? (
+        {needsApproval ? (
           <Typography variant="body1">
             {t(
               'Please explain in detail, what are the specific expenses and reasons why you are requesting this salary level and how your ministry assignment relates to this need. So that you would not exceed your CAP, could this request be spread over 2-3 years?',
