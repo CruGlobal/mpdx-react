@@ -17,6 +17,8 @@ describe('exceedsApprovalThreshold', () => {
   it.each([
     { nonBackpayTotal: 10000, threshold: 10000, expected: false },
     { nonBackpayTotal: 10000.01, threshold: 10000, expected: true },
+    // 1000.1 + 0.2 sums to 1000.3000000000001
+    { nonBackpayTotal: 1000.1 + 0.2, threshold: 1000.3, expected: false },
     { nonBackpayTotal: 1, threshold: 0, expected: true },
     { nonBackpayTotal: 0, threshold: 0, expected: false },
     { nonBackpayTotal: 50000, threshold: null, expected: false },

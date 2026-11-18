@@ -37,7 +37,8 @@ export const ViewForm: React.FC = () => {
   const { values } = useFormikContext<CompleteFormValues>();
   const { name, availableAccountBalance, remainingCap } = useFormUserInfo();
   const individualCap = calculations?.currentSalaryCap ?? 0;
-  // A submitted request already counts toward the cap; one sent back for changes does not
+  // The note says when a request would need approval, which only helps while it can still change: a request sent
+  // back for changes. A submitted one has already been checked at submit.
   const approvalNote = useApprovalNote(
     requestData?.latestAdditionalSalaryRequest?.status ===
       AsrStatusEnum.ActionRequired,
