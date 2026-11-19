@@ -26,17 +26,31 @@ export const ChartLegendContent: React.FC<ChartLegendContentProps> = ({
           key={`item-${index}`}
           style={{ display: 'flex', alignItems: 'center' }}
         >
-          <span
-            className="legend-swatch"
-            style={{
-              width: 14,
-              height: 14,
-              backgroundColor: entry.color,
-              marginRight: 6,
-              WebkitPrintColorAdjust: 'exact',
-              printColorAdjust: 'exact',
-            }}
-          />
+          {entry.type === 'plainline' ? (
+            <svg width={16} height={14} style={{ marginRight: 6 }}>
+              <line
+                x1={0}
+                y1={7}
+                x2={16}
+                y2={7}
+                stroke={entry.color}
+                strokeWidth={2}
+                strokeDasharray={entry.payload?.strokeDasharray}
+              />
+            </svg>
+          ) : (
+            <span
+              className="legend-swatch"
+              style={{
+                width: 14,
+                height: 14,
+                backgroundColor: entry.color,
+                marginRight: 6,
+                WebkitPrintColorAdjust: 'exact',
+                printColorAdjust: 'exact',
+              }}
+            />
+          )}
           <span style={{ color: theme.palette.chartBlack.main }}>
             {entry.value}
           </span>

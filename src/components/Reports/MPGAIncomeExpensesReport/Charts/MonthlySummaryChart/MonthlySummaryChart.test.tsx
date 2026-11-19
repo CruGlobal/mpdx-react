@@ -135,52 +135,67 @@ describe('MonthlySummaryChart', () => {
     expect(within(region).queryByText(/^\$/)).not.toBeInTheDocument();
   });
 
-  it('draws a dashed line with its amount for each average when given averages', async () => {
+  it('lists each average with its amount in the legend', async () => {
+    const { findByRole } = render(<ChartWithAverages />);
+
+    const list = await findByRole('list');
+
+    expect(
+      within(list)
+        .getAllByRole('listitem')
+        .map((item) => item.textContent),
+    ).toEqual([
+      'Contributions',
+      'Expenses',
+      'Contributions average: $3,800.00',
+      'Expenses average: $3,700.00',
+    ]);
+  });
+
+  it('puts the legend above the chart when it lists averages', async () => {
+    const { findByRole } = render(<ChartWithAverages />);
+
+    const list = await findByRole('list');
+
+    expect(list.closest('.recharts-wrapper')).toBeNull();
+  });
+
+  it('draws an unlabelled dashed line for each average', async () => {
     const { findByRole } = render(<ChartWithAverages />);
 
     const region = await findByRole('region');
 
-    expect(
-      await within(region).findByText('Contributions average: $3,800.00'),
-    ).toBeInTheDocument();
-    expect(
-      within(region).getByText('Expenses average: $3,700.00'),
-    ).toBeInTheDocument();
-    const lines = region.querySelectorAll('.recharts-reference-line line');
-    expect(lines).toHaveLength(2);
-    lines.forEach((line) =>
-      expect(line).toHaveAttribute('stroke-dasharray', '6 4'),
+    await waitFor(() =>
+      expect(
+        region.querySelectorAll('.recharts-reference-line line'),
+      ).toHaveLength(2),
     );
+    region
+      .querySelectorAll('.recharts-reference-line line')
+      .forEach((line) =>
+        expect(line).toHaveAttribute('stroke-dasharray', '6 4'),
+      );
+    expect(
+      region.querySelectorAll('.recharts-reference-line text'),
+    ).toHaveLength(0);
   });
 
-  it('puts the higher average label above its line and the lower one below', async () => {
-    const { findByRole } = render(<ChartWithAverages />);
-
-    const region = await findByRole('region');
-    await within(region).findByText('Contributions average: $3,800.00');
-
-    const [income, expenses] = Array.from(
-      region.querySelectorAll('.recharts-reference-line'),
-    ).map((line) => ({
-      lineY: Number(line.querySelector('line')?.getAttribute('y1')),
-      labelY: Number(line.querySelector('text')?.getAttribute('y')),
-    }));
-    expect(income.labelY).toBeLessThan(income.lineY);
-    expect(expenses.labelY).toBeGreaterThan(expenses.lineY);
-  });
-
-  it('puts a lone $0 average label above its line, clear of the axis', async () => {
+  it('shows a lone $0 average in the legend and as a line', async () => {
     const { findByRole } = render(
       <ChartWithAverages averages={{ expenses: 0 }} />,
     );
 
-    const region = await findByRole('region');
-    await within(region).findByText('Expenses average: $0.00');
+    const list = await findByRole('list');
 
-    const line = region.querySelector('.recharts-reference-line');
-    expect(Number(line?.querySelector('text')?.getAttribute('y'))).toBeLessThan(
-      Number(line?.querySelector('line')?.getAttribute('y1')),
-    );
+    expect(
+      within(list).getByText('Expenses average: $0.00'),
+    ).toBeInTheDocument();
+    expect(
+      within(list).queryByText(/Contributions average/),
+    ).not.toBeInTheDocument();
+    expect(
+      (await findByRole('region')).querySelectorAll('.recharts-reference-line'),
+    ).toHaveLength(1);
   });
 
   it('draws no average lines without averages', async () => {
@@ -212,6 +227,7 @@ describe('MonthlySummaryChart', () => {
     const list = await findByRole('list');
     const items = within(list).getAllByRole('listitem');
     expect(items).toHaveLength(2);
+    expect(list.closest('.recharts-legend-wrapper')).toBeInTheDocument();
 
     expect(within(list).getByText('Income')).toBeInTheDocument();
     expect(within(list).getByText('Expenses')).toBeInTheDocument();
