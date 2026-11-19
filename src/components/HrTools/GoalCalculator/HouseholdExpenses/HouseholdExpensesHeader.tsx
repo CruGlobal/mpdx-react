@@ -101,10 +101,8 @@ export const HouseholdExpensesHeader: React.FC = () => {
     }
   };
 
-  // setDirectInput's mutation failure is already surfaced via the global
-  // Apollo error link; catch it here too so a rejection doesn't also surface
-  // as an unhandled promise rejection, which RUM attaches to the triggering
-  // click as a frustration signal (safety net monitor 312883915).
+  // The global Apollo error link already shows and reports mutation errors.
+  // Catch them here so RUM doesn't also log an unhandled rejection.
   const handleUsePaycheck = () => {
     setDirectInput(null).catch(() => {});
     setEditing(false);

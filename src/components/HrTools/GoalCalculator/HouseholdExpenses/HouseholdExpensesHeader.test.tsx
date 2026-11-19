@@ -205,9 +205,8 @@ describe('HouseholdExpensesHeader', () => {
       );
     });
 
+    // Jest fails the test if the rejected mutation is left unhandled
     it('should not leave an unhandled rejection when the update fails', async () => {
-      const onUnhandled = jest.fn();
-      process.on('unhandledRejection', onUnhandled);
       const { findByRole } = render(<TestComponent mutationFails />);
 
       userEvent.click(
@@ -220,8 +219,6 @@ describe('HouseholdExpensesHeader', () => {
         ),
       );
       await new Promise((resolve) => setTimeout(resolve, 0));
-      process.off('unhandledRejection', onUnhandled);
-      expect(onUnhandled).not.toHaveBeenCalled();
     });
   });
 

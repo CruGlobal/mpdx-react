@@ -215,10 +215,8 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 
       // Set directInput to the existing value or fall back to totalAmount
       // This preserves user input or defaults to the calculated total
-      // The mutation's failure is already surfaced via the global Apollo
-      // error link; catch here too so a rejection doesn't also surface as an
-      // unhandled promise rejection, which RUM attaches to this click as a
-      // frustration signal (safety net monitor 312883915).
+      // The global Apollo error link already shows and reports mutation errors.
+      // Catch here and below so RUM doesn't also log an unhandled rejection.
       updateDirectInput(existingValue || totalAmount).catch(() => {});
     } else {
       // Switching to "Line Item" mode
@@ -252,10 +250,6 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 
     gridData.forEach((row) => {
       if (row.category) {
-        // Not awaited: these mutations run independently of each other and
-        // of the effect itself. Catch rejections so a failure doesn't
-        // surface as an unhandled promise rejection (see the comment on
-        // handleDirectInputToggle above).
         trackMutation(() =>
           updateSubBudgetCategory({
             variables: {
@@ -300,9 +294,6 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const addExpense = () => {
     const tempId = `temp-${Date.now()}`;
 
-    // Catch rejections so a failure doesn't surface as an unhandled promise
-    // rejection on top of the error the global Apollo error link already
-    // shows (see the comment on handleDirectInputToggle above).
     trackMutation(() =>
       createSubBudgetCategory({
         variables: {
@@ -355,7 +346,6 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const handleDelete = (id: string | number) => {
     const rowId = id.toString();
 
-    // See the comment on addExpense above.
     trackMutation(() =>
       deleteSubBudgetCategory({
         variables: {
@@ -418,10 +408,6 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
         return updated;
       });
 
-      // Not awaited: the grid commits the row optimistically and this runs
-      // in the background. Catch rejections so a failure doesn't surface as
-      // an unhandled promise rejection attached to the cell-edit click (see
-      // the comment on handleDirectInputToggle above).
       trackMutation(() =>
         updateSubBudgetCategory({
           variables: {
