@@ -236,15 +236,20 @@ describe('StaffTabMonthlySummary', () => {
 
   it('draws the 12-month contributions and expenses averages on the chart', async () => {
     const { findByRole, findByText, getByText } = render(
-      <TestComponent monthlySummary={mockMonthlySummary} />,
+      <TestComponent
+        monthlySummary={[
+          { ...mockMonthlySummary[0], contributions: 4000, expenses: 3000 },
+          { ...mockMonthlySummary[1], contributions: 5000, expenses: 3600 },
+        ]}
+      />,
     );
 
     userEvent.click(await findByRole('button', { name: 'Chart view' }));
 
     expect(
-      await findByText('Contributions 12-month avg: $3,733.33'),
+      await findByText('Contributions average: $4,500.00'),
     ).toBeInTheDocument();
-    expect(getByText('Expenses 12-month avg: $3,733.33')).toBeInTheDocument();
+    expect(getByText('Expenses average: $3,300.00')).toBeInTheDocument();
   });
 
   it('charts labelled empty months without showing a zero amount', async () => {

@@ -137,10 +137,10 @@ describe('MonthlySummaryChart', () => {
     const region = await findByRole('region');
 
     expect(
-      await within(region).findByText('Contributions 12-month avg: $3,800.00'),
+      await within(region).findByText('Contributions average: $3,800.00'),
     ).toBeInTheDocument();
     expect(
-      within(region).getByText('Expenses 12-month avg: $3,700.00'),
+      within(region).getByText('Expenses average: $3,700.00'),
     ).toBeInTheDocument();
     const lines = region.querySelectorAll('.recharts-reference-line line');
     expect(lines).toHaveLength(2);
@@ -169,7 +169,7 @@ describe('MonthlySummaryChart', () => {
       expect(region.querySelector('svg.recharts-surface')).toBeTruthy(),
     );
     expect(region.querySelectorAll('.recharts-reference-line')).toHaveLength(0);
-    expect(within(region).queryByText(/12-month avg/)).not.toBeInTheDocument();
+    expect(within(region).queryByText(/average/)).not.toBeInTheDocument();
   });
 
   it('renders legend with correct labels', async () => {

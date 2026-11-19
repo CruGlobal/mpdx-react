@@ -2,13 +2,14 @@ import { DateTime } from 'luxon';
 import { MonthlySummaryChartData } from 'src/components/Reports/MPGAIncomeExpensesReport/Charts/MonthlySummaryChart/MonthlySummaryChart';
 import { MonthlySummaryAverages } from 'src/components/Reports/MPGAIncomeExpensesReport/Charts/MonthlySummaryChart/averageReferenceLines';
 import { monthYearFormat } from 'src/lib/intlFormat';
+import { MonthlyPayrollSummaryQuery } from './MonthlyPayrollSummary.generated';
 
-interface MonthAmounts {
-  month?: string | null;
-  contributions?: number | null;
-  expenses?: number | null;
-  net?: number | null;
-}
+type MonthAmounts = Partial<
+  Pick<
+    MonthlyPayrollSummaryQuery['monthlyPayrollSummary'][number],
+    'month' | 'contributions' | 'expenses' | 'net'
+  >
+>;
 
 export const toChartData = (
   months: MonthAmounts[],
@@ -24,8 +25,8 @@ export const toChartData = (
     };
   });
 
-// Months with no amount yet (the current month, months before they joined)
-// are left out so they don't drag the average down. A reported $0 counts.
+// Months with no amount (before they joined, or not synced) are left out so
+// they don't drag the average down. A reported $0 counts.
 const average = (values: Array<number | null | undefined>) => {
   const amounts = values.filter(
     (value): value is number => value !== null && value !== undefined,

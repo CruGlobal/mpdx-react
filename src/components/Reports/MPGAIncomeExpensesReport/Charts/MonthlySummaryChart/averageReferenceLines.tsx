@@ -21,23 +21,27 @@ export const averageReferenceLines = ({
   averages,
   incomeName,
   formatAmount,
-}: AverageReferenceLinesOptions) =>
-  [
+}: AverageReferenceLinesOptions) => {
+  // The higher line's label sits above it and the lower one's below, so the
+  // two labels never share the gap between close lines.
+  const incomeOnTop = (averages.income ?? 0) >= (averages.expenses ?? 0);
+
+  return [
     {
       key: 'income',
       value: averages.income,
       name: incomeName,
       color: theme.palette.success.main,
-      labelPosition: 'insideTopLeft' as const,
+      above: incomeOnTop,
     },
     {
       key: 'expenses',
       value: averages.expenses,
       name: t('Expenses'),
       color: theme.palette.error.main,
-      labelPosition: 'insideBottomLeft' as const,
+      above: !incomeOnTop,
     },
-  ].map(({ key, value, name, color, labelPosition }) =>
+  ].map(({ key, value, name, color, above }) =>
     value === undefined ? null : (
       <ReferenceLine
         key={key}
@@ -46,14 +50,19 @@ export const averageReferenceLines = ({
         strokeWidth={2}
         strokeDasharray="6 4"
         label={{
-          value: t('{{name}} 12-month avg: {{amount}}', {
+          value: t('{{name}} average: {{amount}}', {
             name,
             amount: formatAmount(value),
           }),
-          position: labelPosition,
+          position: above ? 'insideTopRight' : 'insideBottomRight',
           fill: color,
           fontSize: theme.typography.body2.fontSize,
+          // A white outline keeps the label readable where it crosses a bar
+          stroke: theme.palette.common.white,
+          strokeWidth: 4,
+          paintOrder: 'stroke',
         }}
       />
     ),
   );
+};
