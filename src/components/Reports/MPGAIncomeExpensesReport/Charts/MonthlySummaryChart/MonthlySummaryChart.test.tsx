@@ -3,7 +3,10 @@ import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
 import { useMPGAIncomeExpenses } from '../../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { MPGAIncomeExpensesReportTestWrapper } from '../../MPGAIncomeExpensesReportTestWrapper';
-import { MonthlySummaryChart } from './MonthlySummaryChart';
+import {
+  MonthlySummaryAverages,
+  MonthlySummaryChart,
+} from './MonthlySummaryChart';
 import { useMonthlySummaryChartData } from './useMonthlySummaryChartData';
 
 const mutationSpy = jest.fn();
@@ -41,6 +44,28 @@ const ChartWithNoDataLabel: React.FC = () => (
       aspect={1.35}
       width={100}
       noDataLabel="N/A"
+    />
+  </MPGAIncomeExpensesReportTestWrapper>
+);
+
+const averagesData = [
+  { month: 'Jan 2023', income: 4000, expenses: 3500, net: 500 },
+  { month: 'Feb 2023', income: 3600, expenses: 3900, net: -300 },
+];
+
+const ChartWithAverages: React.FC<{
+  noDataLabel?: string;
+  averages?: MonthlySummaryAverages;
+}> = ({ noDataLabel, averages = { income: 3800, expenses: 3700 } }) => (
+  <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+    <MonthlySummaryChart
+      data={averagesData}
+      currency="USD"
+      aspect={1.35}
+      width={100}
+      overrideIncomeText="Contributions"
+      averages={averages}
+      noDataLabel={noDataLabel}
     />
   </MPGAIncomeExpensesReportTestWrapper>
 );
@@ -110,12 +135,99 @@ describe('MonthlySummaryChart', () => {
     expect(within(region).queryByText(/^\$/)).not.toBeInTheDocument();
   });
 
+  it('lists each average with its amount in the legend', async () => {
+    const { findByRole } = render(<ChartWithAverages />);
+
+    const list = await findByRole('list');
+
+    expect(
+      within(list)
+        .getAllByRole('listitem')
+        .map((item) => item.textContent),
+    ).toEqual([
+      'Contributions',
+      'Expenses',
+      'Contributions average: $3,800.00',
+      'Expenses average: $3,700.00',
+    ]);
+  });
+
+  it('puts the legend above the chart when it lists averages', async () => {
+    const { findByRole } = render(<ChartWithAverages />);
+
+    const list = await findByRole('list');
+
+    expect(list.closest('.recharts-wrapper')).toBeNull();
+  });
+
+  it('draws an unlabelled dashed line for each average', async () => {
+    const { findByRole } = render(<ChartWithAverages />);
+
+    const region = await findByRole('region');
+
+    await waitFor(() =>
+      expect(
+        region.querySelectorAll('.recharts-reference-line line'),
+      ).toHaveLength(2),
+    );
+    region
+      .querySelectorAll('.recharts-reference-line line')
+      .forEach((line) =>
+        expect(line).toHaveAttribute('stroke-dasharray', '6 4'),
+      );
+    expect(
+      region.querySelectorAll('.recharts-reference-line text'),
+    ).toHaveLength(0);
+  });
+
+  it('shows a lone $0 average in the legend and as a line', async () => {
+    const { findByRole } = render(
+      <ChartWithAverages averages={{ expenses: 0 }} />,
+    );
+
+    const list = await findByRole('list');
+
+    expect(
+      within(list).getByText('Expenses average: $0.00'),
+    ).toBeInTheDocument();
+    expect(
+      within(list).queryByText(/Contributions average/),
+    ).not.toBeInTheDocument();
+    expect(
+      (await findByRole('region')).querySelectorAll('.recharts-reference-line'),
+    ).toHaveLength(1);
+  });
+
+  it('draws no average lines without averages', async () => {
+    const { findByRole } = render(<TestComponent />);
+
+    const region = await findByRole('region');
+
+    await waitFor(() =>
+      expect(region.querySelector('svg.recharts-surface')).toBeTruthy(),
+    );
+    expect(region.querySelectorAll('.recharts-reference-line')).toHaveLength(0);
+  });
+
+  it('draws no average lines when amounts are masked', async () => {
+    const { findByRole } = render(<ChartWithAverages noDataLabel="N/A" />);
+
+    const region = await findByRole('region');
+
+    await waitFor(() =>
+      expect(region.querySelector('svg.recharts-surface')).toBeTruthy(),
+    );
+    expect(region.querySelectorAll('.recharts-reference-line')).toHaveLength(0);
+    expect(within(region).queryByText(/average/)).not.toBeInTheDocument();
+  });
+
   it('renders legend with correct labels', async () => {
     const { findByRole } = render(<TestComponent />);
 
     const list = await findByRole('list');
     const items = within(list).getAllByRole('listitem');
     expect(items).toHaveLength(2);
+    expect(list.closest('.recharts-legend-wrapper')).toBeInTheDocument();
 
     expect(within(list).getByText('Income')).toBeInTheDocument();
     expect(within(list).getByText('Expenses')).toBeInTheDocument();

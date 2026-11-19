@@ -15,12 +15,18 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { ChartFrame } from '../ChartFrame';
 import { ChartLegendContent } from '../ChartLegendContent/ChartLegendContent';
+import { averageReferenceLines, chartLegend } from './averageReferenceLines';
 
 export interface MonthlySummaryChartData {
   month: string;
   income: number;
   expenses: number;
   net: number;
+}
+
+export interface MonthlySummaryAverages {
+  income?: number;
+  expenses?: number;
 }
 
 interface MonthlySummaryChartProps {
@@ -31,13 +37,18 @@ interface MonthlySummaryChartProps {
   width: number;
   overrideIncomeText?: string;
   noDataLabel?: string;
+  // Draws a dashed line at each average and lists its amount in the legend
+  averages?: MonthlySummaryAverages;
 }
 
 interface MonthlyTotal extends MonthlySummaryChartData {
   tallest: number;
 }
 
-const chartColors = [theme.palette.success.main, theme.palette.error.main];
+const chartColors: [string, string] = [
+  theme.palette.success.main,
+  theme.palette.error.main,
+];
 
 export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
   data,
@@ -47,16 +58,33 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
   width,
   overrideIncomeText,
   noDataLabel,
+  averages,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
 
   const maskAmounts = noDataLabel !== undefined;
 
+  const formatCurrency = (value: number) =>
+    currencyFormat(value, currency, locale, { showTrailingZeros: true });
+
   const formatAmount = (value: number) =>
-    maskAmounts
-      ? noDataLabel
-      : currencyFormat(value, currency, locale, { showTrailingZeros: true });
+    maskAmounts ? noDataLabel : formatCurrency(value);
+
+  const incomeName = overrideIncomeText ?? t('Income');
+
+  // Masked amounts hide the averages too
+  const averageOptions = {
+    t,
+    averages: maskAmounts ? undefined : averages,
+    incomeName,
+  };
+
+  const { legendPayload, legendAbove } = chartLegend({
+    ...averageOptions,
+    formatCurrency,
+    barColors: chartColors,
+  });
 
   const monthlyTotals = useMemo(
     (): MonthlyTotal[] =>
@@ -78,6 +106,7 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
         }}
       />
       <Box className="labels-print-only">
+        {legendAbove && <ChartLegendContent payload={legendPayload} />}
         <ChartFrame width={width} aspect={aspect} loading={loading}>
           <BarChart
             data={monthlyTotals}
@@ -123,8 +152,7 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
                       {label}
                     </Typography>
                     <Typography variant="body1">
-                      {overrideIncomeText ?? t('Income')}:{' '}
-                      {formatAmount(income)}
+                      {incomeName}: {formatAmount(income)}
                     </Typography>
                     <Typography variant="body1">
                       {t('Expenses')}: {formatAmount(expenses)}
@@ -147,11 +175,7 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
                 );
               }}
             />
-            <Bar
-              dataKey="income"
-              name={overrideIncomeText ?? t('Income')}
-              fill={chartColors[0]}
-            />
+            <Bar dataKey="income" name={incomeName} fill={chartColors[0]} />
             <Bar
               dataKey="expenses"
               name={t('Expenses')}
@@ -171,34 +195,22 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
                     fill: theme.palette.chartBlack.main,
                     fontSize: theme.typography.body2.fontSize,
                   }}
-                  formatter={(value: number) =>
-                    currencyFormat(value, currency, locale, {
-                      showTrailingZeros: true,
-                    })
-                  }
+                  formatter={formatCurrency}
                 />
               )}
             </Bar>
-            <Legend
-              verticalAlign="top"
-              align="center"
-              wrapperStyle={{ marginBottom: 5 }}
-              content={({ payload }) => (
-                <ChartLegendContent payload={payload} />
-              )}
-              payload={[
-                {
-                  value: overrideIncomeText ?? t('Income'),
-                  type: 'square',
-                  color: chartColors[0],
-                },
-                {
-                  value: t('Expenses'),
-                  type: 'square',
-                  color: chartColors[1],
-                },
-              ]}
-            />
+            {averageReferenceLines(averageOptions)}
+            {!legendAbove && (
+              <Legend
+                verticalAlign="top"
+                align="center"
+                wrapperStyle={{ marginBottom: 5 }}
+                content={({ payload }) => (
+                  <ChartLegendContent payload={payload} />
+                )}
+                payload={legendPayload}
+              />
+            )}
           </BarChart>
         </ChartFrame>
       </Box>

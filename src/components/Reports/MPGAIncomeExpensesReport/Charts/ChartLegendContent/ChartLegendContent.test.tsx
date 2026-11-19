@@ -32,6 +32,25 @@ describe('ChartLegendContent', () => {
     });
   });
 
+  it('draws a dashed line swatch for a dashed line entry', () => {
+    const { getByRole } = render(
+      <ChartLegendContent
+        payload={[
+          {
+            value: 'Expenses average: $3,700.00',
+            type: 'plainline',
+            color: theme.palette.error.dark,
+            payload: { strokeDasharray: '6 4' },
+          },
+        ]}
+      />,
+    );
+
+    const line = getByRole('listitem').querySelector('line');
+    expect(line).toHaveAttribute('stroke', theme.palette.error.dark);
+    expect(line).toHaveAttribute('stroke-dasharray', '6 4');
+  });
+
   it('renders no items when recharts supplies no payload', () => {
     const { queryAllByRole } = render(<ChartLegendContent />);
 
