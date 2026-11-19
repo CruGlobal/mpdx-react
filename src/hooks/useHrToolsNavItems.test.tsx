@@ -28,7 +28,7 @@ const mpdGoalEligibleUser = {
   canViewNewStaffCohorts: true,
 };
 
-// A New Staff user, the only group offered the NSO MPD Questionnaire
+// A New Staff user, the only group offered the New Staff Goal Calculator
 const newStaffUser = {
   userType: UserTypeEnum.UsStaff,
   usStaffGroup: UsStaffGroupEnum.NewStaff,

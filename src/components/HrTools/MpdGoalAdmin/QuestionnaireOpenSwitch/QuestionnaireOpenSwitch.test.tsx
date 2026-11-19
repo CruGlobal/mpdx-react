@@ -31,10 +31,25 @@ jest.mock('notistack', () => ({
 
 interface TestComponentProps {
   isGoalsAdmin?: boolean;
+  /** Starts the selected training with its questionnaire open. */
+  startOpen?: boolean;
+  /** Makes the save fail. */
+  failSave?: boolean;
 }
+
+const openCohortsMock = {
+  newStaffCohorts: {
+    ...cohortsMock.newStaffCohorts,
+    nodes: cohortsMock.newStaffCohorts.nodes.map((node, index) =>
+      index === 0 ? { ...node, questionnaireOpen: true } : node,
+    ),
+  },
+};
 
 const TestComponent: React.FC<TestComponentProps> = ({
   isGoalsAdmin = true,
+  startOpen = false,
+  failSave = false,
 }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
@@ -46,13 +61,20 @@ const TestComponent: React.FC<TestComponentProps> = ({
       }>
         mocks={{
           GetUser: isGoalsAdmin ? goalsAdminUserMock : coordinatorUserMock,
-          NewStaffCohorts: cohortsMock,
+          NewStaffCohorts: startOpen ? openCohortsMock : cohortsMock,
           NewStaffCohortAttendees: attendeesMock(),
           // Normalizes over the selected cohort, so the switch flips without a refetch.
           SetNewStaffCohortQuestionnaireOpen: {
-            setNewStaffCohortQuestionnaireOpen: {
-              newStaffCohort: { id: 'fall-nso-2026', questionnaireOpen: true },
-            },
+            setNewStaffCohortQuestionnaireOpen: failSave
+              ? ((() => {
+                  throw new Error('Save failed');
+                }) as never)
+              : {
+                  newStaffCohort: {
+                    id: 'fall-nso-2026',
+                    questionnaireOpen: !startOpen,
+                  },
+                },
           },
         }}
         onCall={mutationSpy}
@@ -72,7 +94,7 @@ describe('QuestionnaireOpenSwitch', () => {
     const { findByRole, findByText } = render(<TestComponent />);
 
     const toggle = await findByRole('switch', {
-      name: 'NSO MPD Questionnaire open',
+      name: 'NSO MPD Questionnaire',
     });
     expect(toggle).not.toBeChecked();
     expect(await findByText('Closed')).toBeInTheDocument();
@@ -90,6 +112,49 @@ describe('QuestionnaireOpenSwitch', () => {
     expect(mockEnqueue).toHaveBeenCalledWith(
       'The NSO MPD Questionnaire is now open for Fall NSO 2026.',
       { variant: 'success' },
+    );
+  });
+
+  it('closes an open questionnaire', async () => {
+    const { findByRole } = render(<TestComponent startOpen />);
+
+    const toggle = await findByRole('switch', {
+      name: 'NSO MPD Questionnaire',
+    });
+    await waitFor(() => expect(toggle).toBeChecked());
+    userEvent.click(toggle);
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'SetNewStaffCohortQuestionnaireOpen',
+        { input: { id: 'fall-nso-2026', open: false } },
+      ),
+    );
+    await waitFor(() => expect(toggle).not.toBeChecked());
+    expect(mockEnqueue).toHaveBeenCalledWith(
+      'The NSO MPD Questionnaire is now closed for Fall NSO 2026.',
+      { variant: 'success' },
+    );
+  });
+
+  it('keeps the saved state and shows no success toast when the save fails', async () => {
+    const { findByRole } = render(<TestComponent failSave />);
+
+    const toggle = await findByRole('switch', {
+      name: 'NSO MPD Questionnaire',
+    });
+    userEvent.click(toggle);
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'SetNewStaffCohortQuestionnaireOpen',
+      ),
+    );
+    await waitFor(() => expect(toggle).toBeEnabled());
+    expect(toggle).not.toBeChecked();
+    expect(mockEnqueue).not.toHaveBeenCalledWith(
+      expect.stringContaining('now open'),
+      expect.anything(),
     );
   });
 

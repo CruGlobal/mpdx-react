@@ -51,7 +51,7 @@ export const QuestionnaireOpenSwitch: React.FC = () => {
           disabled={loading}
           onChange={(event) => handleChange(event.target.checked)}
           slotProps={{
-            input: { 'aria-label': t('NSO MPD Questionnaire open') },
+            input: { 'aria-label': t('NSO MPD Questionnaire') },
           }}
         />
       }

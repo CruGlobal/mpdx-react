@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Stack, TextField, Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
+import { UsStaffGroupEnum } from 'src/graphql/types.generated';
 import { getLocalizedAge } from 'src/lib/functions/getLocalizedAge';
 import { StaffInfoCard } from '../../Shared/StaffInfoCard/StaffInfoCard';
 import { useNsoMpdQuestionnaire } from '../Shared/NsoMpdQuestionnaireContext';
@@ -17,6 +18,9 @@ export const StaffInformation: React.FC = () => {
   const { t } = useTranslation();
   const { questionnaire, hasSpouse } = useNsoMpdQuestionnaire();
   const { data: userData } = useGetUserQuery();
+  // The questionnaire's staff member is always new staff, so any other viewer is their spouse
+  const viewerIsStaffMember =
+    userData?.user.usStaffGroup === UsStaffGroupEnum.NewStaff;
 
   const [viewingSpouse, setViewingSpouse] = useState(false);
 
@@ -91,7 +95,10 @@ export const StaffInformation: React.FC = () => {
         person={{
           name,
           // Backend doesn't currently support accessing the spouse's avatar
-          avatarSrc: viewingSpouse ? null : userData?.user.avatar,
+          avatarSrc:
+            viewingSpouse || !viewerIsStaffMember
+              ? null
+              : userData?.user.avatar,
         }}
         toggle={
           hasSpouse

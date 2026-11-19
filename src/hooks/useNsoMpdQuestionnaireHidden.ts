@@ -1,22 +1,22 @@
 import { useNewStaffQuestionnaireStatusQuery } from './NewStaffQuestionnaireStatus.generated';
 import { useAccountListId } from './useAccountListId';
 import { useIneligibleByGroup } from './useIneligibleByGroup';
-import { useReportsDisabled } from './useReportsDisabled';
+import { useNsGoalCalculatorAccess } from './useNsGoalCalculatorAccess';
 
 /** Whether to hide the NSO MPD Questionnaire menu item. */
 export function useNsoMpdQuestionnaireHidden(): boolean {
   const { inNsGoalCalcIneligibleGroup, userLoading } = useIneligibleByGroup();
-  const { reportsDisabled } = useReportsDisabled();
+  const { featureEnabled } = useNsGoalCalculatorAccess();
   const accountListId = useAccountListId();
 
   // The API returns a questionnaire only to households in a training with the questionnaire open,
   // whatever either spouse's staff group, so everyone asks.
   const { data, loading, error } = useNewStaffQuestionnaireStatusQuery({
     variables: { accountListId },
-    skip: userLoading,
+    skip: userLoading || !featureEnabled,
   });
 
-  if (reportsDisabled || process.env.DISABLE_NS_GOAL_CALCULATOR === 'true') {
+  if (!featureEnabled) {
     return true;
   }
   // A failed query must not hide the path to paperwork new staff still owe,
@@ -25,5 +25,6 @@ export function useNsoMpdQuestionnaireHidden(): boolean {
     return inNsGoalCalcIneligibleGroup;
   }
   const questionnaire = data?.newStaffQuestionnaire;
-  return loading || !questionnaire || questionnaire.completed;
+  // Cached data keeps the item steady through a cache-and-network refetch
+  return (loading && !data) || !questionnaire || questionnaire.completed;
 }
