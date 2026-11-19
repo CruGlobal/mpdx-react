@@ -149,6 +149,22 @@ describe('MonthlySummaryChart', () => {
     );
   });
 
+  it('puts the higher average label above its line and the lower one below', async () => {
+    const { findByRole } = render(<ChartWithAverages />);
+
+    const region = await findByRole('region');
+    await within(region).findByText('Contributions average: $3,800.00');
+
+    const [income, expenses] = Array.from(
+      region.querySelectorAll('.recharts-reference-line'),
+    ).map((line) => ({
+      lineY: Number(line.querySelector('line')?.getAttribute('y1')),
+      labelY: Number(line.querySelector('text')?.getAttribute('y')),
+    }));
+    expect(income.labelY).toBeLessThan(income.lineY);
+    expect(expenses.labelY).toBeGreaterThan(expenses.lineY);
+  });
+
   it('draws no average lines without averages', async () => {
     const { findByRole } = render(<TestComponent />);
 

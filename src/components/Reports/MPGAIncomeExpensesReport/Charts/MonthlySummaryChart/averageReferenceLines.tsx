@@ -54,7 +54,8 @@ export const averageReferenceLines = ({
             name,
             amount: formatAmount(value),
           }),
-          position: above ? 'insideTopRight' : 'insideBottomRight',
+          // On a flat line, "insideBottom" sits above it and "insideTop" below
+          position: above ? 'insideBottomRight' : 'insideTopRight',
           fill: color,
           fontSize: theme.typography.body2.fontSize,
           // A white outline keeps the label readable where it crosses a bar
