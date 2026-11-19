@@ -234,12 +234,14 @@ describe('StaffTabMonthlySummary', () => {
     expect(getByRole('table')).toBeInTheDocument();
   });
 
-  it('draws the 12-month contributions and expenses averages on the chart', async () => {
+  it('draws the contributions and expenses averages of the finished months on the chart', async () => {
     const { findByRole, findByText, getByText } = render(
       <TestComponent
         monthlySummary={[
           { ...mockMonthlySummary[0], contributions: 4000, expenses: 3000 },
           { ...mockMonthlySummary[1], contributions: 5000, expenses: 3600 },
+          // The current month is left out of the averages
+          { ...mockMonthlySummary[2], contributions: 100, expenses: 100 },
         ]}
       />,
     );

@@ -39,13 +39,12 @@ const average = (values: Array<number | null | undefined>) => {
   return amounts.reduce((sum, value) => sum + value, 0) / amounts.length;
 };
 
-// The current month is still in progress, so it is left out too, the same as
-// the Dashboard's donation average.
+// The API's last row is the current month, still in progress, so it is left
+// out too, the same as the Dashboard's donation average.
 export const monthlyAverages = (
   months: MonthAmounts[],
 ): MonthlySummaryAverages => {
-  const currentMonth = DateTime.local().toFormat('yyyy-MM');
-  const pastMonths = months.filter((month) => month.month !== currentMonth);
+  const pastMonths = months.slice(0, -1);
   return {
     income: average(pastMonths.map((month) => month.contributions)),
     expenses: average(pastMonths.map((month) => month.expenses)),
