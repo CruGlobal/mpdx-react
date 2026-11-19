@@ -6,7 +6,6 @@ import {
   BarChart,
   LabelList,
   Legend,
-  LegendProps,
   Tooltip,
   XAxis,
   YAxis,
@@ -16,10 +15,7 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { ChartFrame } from '../ChartFrame';
 import { ChartLegendContent } from '../ChartLegendContent/ChartLegendContent';
-import {
-  averageLegendItems,
-  averageReferenceLines,
-} from './averageReferenceLines';
+import { averageReferenceLines, chartLegend } from './averageReferenceLines';
 
 export interface MonthlySummaryChartData {
   month: string;
@@ -49,7 +45,10 @@ interface MonthlyTotal extends MonthlySummaryChartData {
   tallest: number;
 }
 
-const chartColors = [theme.palette.success.main, theme.palette.error.main];
+const chartColors: [string, string] = [
+  theme.palette.success.main,
+  theme.palette.error.main,
+];
 
 export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
   data,
@@ -81,20 +80,11 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
     incomeName,
   };
 
-  const averageItems = averageLegendItems({
+  const { legendPayload, legendAbove } = chartLegend({
     ...averageOptions,
     formatCurrency,
+    barColors: chartColors,
   });
-
-  // Averages make the legend wrap to several lines on a phone, so then it sits
-  // above the chart instead of taking height from the plot
-  const legendAbove = averageItems.length > 0;
-
-  const legendPayload: LegendProps['payload'] = [
-    { value: incomeName, type: 'square', color: chartColors[0] },
-    { value: t('Expenses'), type: 'square', color: chartColors[1] },
-    ...averageItems,
-  ];
 
   const monthlyTotals = useMemo(
     (): MonthlyTotal[] =>

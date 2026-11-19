@@ -1,5 +1,5 @@
 import { TFunction } from 'i18next';
-import { ReferenceLine } from 'recharts';
+import { LegendProps, ReferenceLine } from 'recharts';
 import theme from 'src/theme';
 import { MonthlySummaryAverages } from './MonthlySummaryChart';
 
@@ -49,7 +49,7 @@ export const averageReferenceLines = (options: AverageSeriesOptions) =>
     />
   ));
 
-export const averageLegendItems = ({
+const averageLegendItems = ({
   formatCurrency,
   ...options
 }: AverageLegendOptions) =>
@@ -62,3 +62,24 @@ export const averageLegendItems = ({
     color,
     payload: { strokeDasharray: averageDash },
   }));
+
+interface ChartLegendOptions extends AverageLegendOptions {
+  barColors: [string, string];
+}
+
+// The bars' legend entries plus one per average
+export const chartLegend = ({ barColors, ...options }: ChartLegendOptions) => {
+  const averageItems = averageLegendItems(options);
+  const legendPayload: LegendProps['payload'] = [
+    { value: options.incomeName, type: 'square', color: barColors[0] },
+    { value: options.t('Expenses'), type: 'square', color: barColors[1] },
+    ...averageItems,
+  ];
+
+  return {
+    legendPayload,
+    // Averages make the legend wrap to several lines on a phone, so then it
+    // sits above the chart instead of taking height from the plot
+    legendAbove: averageItems.length > 0,
+  };
+};
