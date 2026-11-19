@@ -215,11 +215,13 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 
       // Set directInput to the existing value or fall back to totalAmount
       // This preserves user input or defaults to the calculated total
-      updateDirectInput(existingValue || totalAmount);
+      // The global Apollo error link already shows and reports mutation errors.
+      // Catch here and below so RUM doesn't also log an unhandled rejection.
+      updateDirectInput(existingValue || totalAmount).catch(() => {});
     } else {
       // Switching to "Line Item" mode
       // Set directInput to null to indicate line item mode
-      updateDirectInput(null);
+      updateDirectInput(null).catch(() => {});
     }
 
     // Clear any validation errors when switching modes
@@ -246,9 +248,9 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       categoryType,
     );
 
-    gridData.forEach(async (row) => {
+    gridData.forEach((row) => {
       if (row.category) {
-        await trackMutation(() =>
+        trackMutation(() =>
           updateSubBudgetCategory({
             variables: {
               input: {
@@ -261,7 +263,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
               },
             },
           }),
-        );
+        ).catch(() => {});
       }
     });
 
@@ -338,7 +340,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
           }
         },
       }),
-    );
+    ).catch(() => {});
   };
 
   const handleDelete = (id: string | number) => {
@@ -380,7 +382,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
           }
         },
       }),
-    );
+    ).catch(() => {});
   };
 
   const processRowUpdate = (newRow: GridValidRowModel) => {
@@ -431,7 +433,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
             },
           },
         }),
-      );
+      ).catch(() => {});
     } catch (error) {
       // Handle validation errors from yup schema
       if (error instanceof yup.ValidationError) {
