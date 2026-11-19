@@ -2,14 +2,13 @@ import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
 import { ProgressiveApprovalTierReasonEnum } from 'src/graphql/types.generated';
-import { ApprovalThreshold } from './approvalThreshold';
-import { useFormUserInfo } from './useFormUserInfo';
+import { ApprovalThreshold, useFormUserInfo } from './useFormUserInfo';
 
 const approvalNote = (
   { amount, reason }: ApprovalThreshold,
   format: (amount: number) => string,
   t: TFunction,
-): string => {
+): string | null => {
   switch (reason) {
     case ProgressiveApprovalTierReasonEnum.OverSpouseCap:
       return t(
@@ -25,6 +24,8 @@ const approvalNote = (
         "Requests over {{amount}} (your remaining allowable salary) need approval. Current year's salary not received doesn't count toward this amount.",
         { amount: format(amount) },
       );
+    default:
+      return null;
   }
 };
 

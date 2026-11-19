@@ -20,6 +20,7 @@ import {
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import { getNonBackpayTotal, getTotal } from './Helper/getTotal';
 import { useFormUserInfo } from './useFormUserInfo';
+import { exceedsApprovalThreshold } from './useNeedsApproval';
 
 export const useAdditionalSalaryRequestForm = (
   providedInitialValues?: CompleteFormValues,
@@ -41,14 +42,8 @@ export const useAdditionalSalaryRequestForm = (
   const { data: requestData } = useAdditionalSalaryRequestQuery({
     variables: { isSpouse },
   });
-  const individualCap =
-    requestData?.latestAdditionalSalaryRequest?.calculations.currentSalaryCap ??
-    0;
-  const ytdAsrAmount =
-    requestData?.latestAdditionalSalaryRequest?.calculations.ytdAsrAmount ?? 0;
-  const grossAnnualSalary =
-    requestData?.latestAdditionalSalaryRequest?.calculations
-      .grossAnnualSalary ?? 0;
+  const approvalThreshold =
+    requestData?.latestAdditionalSalaryRequest?.calculations.approvalThreshold;
 
   const [updateAdditionalSalaryRequest] =
     useUpdateAdditionalSalaryRequestMutation();
@@ -183,13 +178,10 @@ export const useAdditionalSalaryRequestForm = (
               const nonBackpayTotal = getNonBackpayTotal(
                 this.parent as CompleteFormValues,
               );
-              // Match useSalaryCalculations: backpay alone never exceeds the cap
-              const amountRequestedYtd =
-                grossAnnualSalary + ytdAsrAmount + nonBackpayTotal;
-              const exceedsCap =
-                nonBackpayTotal > 0 && amountRequestedYtd > individualCap;
 
-              if (exceedsCap) {
+              if (
+                exceedsApprovalThreshold(approvalThreshold, nonBackpayTotal)
+              ) {
                 return !!value && value.trim().length > 0;
               }
               return true;
@@ -208,9 +200,7 @@ export const useAdditionalSalaryRequestForm = (
       t,
       availableAccountBalance,
       overBalanceMessage,
-      individualCap,
-      ytdAsrAmount,
-      grossAnnualSalary,
+      approvalThreshold,
       requestData,
     ],
   );

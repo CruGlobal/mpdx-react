@@ -1,4 +1,5 @@
 import { renderHook } from '@testing-library/react';
+import { ProgressiveApprovalTierReasonEnum } from 'src/graphql/types.generated';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import { useFormUserInfo } from './useFormUserInfo';
 
@@ -112,6 +113,47 @@ describe('useFormUserInfo', () => {
       unpaidRequests: [],
     });
   });
+
+  it("returns the API's approval threshold and reason", () => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      requestData: {
+        latestAdditionalSalaryRequest: {
+          calculations: {
+            approvalThreshold: 0,
+            approvalThresholdReason:
+              ProgressiveApprovalTierReasonEnum.OverSpouseCap,
+          },
+        },
+      },
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+    const { result } = renderHook(() => useFormUserInfo());
+
+    expect(result.current.approvalThreshold).toEqual({
+      amount: 0,
+      reason: ProgressiveApprovalTierReasonEnum.OverSpouseCap,
+    });
+  });
+
+  it.each([
+    { approvalThreshold: null, approvalThresholdReason: null },
+    {
+      approvalThreshold: null,
+      approvalThresholdReason: ProgressiveApprovalTierReasonEnum.OverUserCap,
+    },
+    { approvalThreshold: 5000, approvalThresholdReason: null },
+  ])(
+    'returns no approval threshold unless the API sends both the amount and the reason ($approvalThreshold, $approvalThresholdReason)',
+    (calculations) => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        requestData: { latestAdditionalSalaryRequest: { calculations } },
+      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+      const { result } = renderHook(() => useFormUserInfo());
+
+      expect(result.current.approvalThreshold).toBeNull();
+    },
+  );
 
   it('handles undefined requestData gracefully', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
