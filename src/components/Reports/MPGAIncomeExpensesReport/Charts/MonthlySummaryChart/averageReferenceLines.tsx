@@ -1,17 +1,13 @@
 import { TFunction } from 'i18next';
 import { ReferenceLine } from 'recharts';
 import theme from 'src/theme';
-
-export interface MonthlySummaryAverages {
-  income?: number;
-  expenses?: number;
-}
+import { MonthlySummaryAverages } from './MonthlySummaryChart';
 
 interface AverageReferenceLinesOptions {
   t: TFunction;
-  averages: MonthlySummaryAverages;
+  averages?: MonthlySummaryAverages;
   incomeName: string;
-  formatAmount: (value: number) => string | undefined;
+  formatCurrency: (value: number) => string;
 }
 
 // Recharts only finds its own elements among the chart's direct children, so
@@ -20,25 +16,32 @@ export const averageReferenceLines = ({
   t,
   averages,
   incomeName,
-  formatAmount,
+  formatCurrency,
 }: AverageReferenceLinesOptions) => {
+  if (!averages) {
+    return [];
+  }
+
   // The higher line's label sits above it and the lower one's below, so the
-  // two labels never share the gap between close lines.
-  const incomeOnTop = (averages.income ?? 0) >= (averages.expenses ?? 0);
+  // two labels never share the gap between close lines. A lone line's label
+  // sits above it.
+  const incomeOnTop =
+    (averages.income ?? -Infinity) >= (averages.expenses ?? -Infinity);
 
   return [
     {
       key: 'income',
       value: averages.income,
       name: incomeName,
-      color: theme.palette.success.main,
+      // Darker than the bars so the line shows where it crosses its own bars
+      color: theme.palette.success.dark,
       above: incomeOnTop,
     },
     {
       key: 'expenses',
       value: averages.expenses,
       name: t('Expenses'),
-      color: theme.palette.error.main,
+      color: theme.palette.error.dark,
       above: !incomeOnTop,
     },
   ].map(({ key, value, name, color, above }) =>
@@ -52,7 +55,7 @@ export const averageReferenceLines = ({
         label={{
           value: t('{{name}} average: {{amount}}', {
             name,
-            amount: formatAmount(value),
+            amount: formatCurrency(value),
           }),
           // On a flat line, "insideBottom" sits above it and "insideTop" below
           position: above ? 'insideBottomRight' : 'insideTopRight',

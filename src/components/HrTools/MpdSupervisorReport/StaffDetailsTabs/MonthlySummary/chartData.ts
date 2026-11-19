@@ -1,6 +1,8 @@
 import { DateTime } from 'luxon';
-import { MonthlySummaryChartData } from 'src/components/Reports/MPGAIncomeExpensesReport/Charts/MonthlySummaryChart/MonthlySummaryChart';
-import { MonthlySummaryAverages } from 'src/components/Reports/MPGAIncomeExpensesReport/Charts/MonthlySummaryChart/averageReferenceLines';
+import {
+  MonthlySummaryAverages,
+  MonthlySummaryChartData,
+} from 'src/components/Reports/MPGAIncomeExpensesReport/Charts/MonthlySummaryChart/MonthlySummaryChart';
 import { monthYearFormat } from 'src/lib/intlFormat';
 import { MonthlyPayrollSummaryQuery } from './MonthlyPayrollSummary.generated';
 
@@ -37,9 +39,15 @@ const average = (values: Array<number | null | undefined>) => {
   return amounts.reduce((sum, value) => sum + value, 0) / amounts.length;
 };
 
+// The current month is still in progress, so it is left out too, the same as
+// the Dashboard's donation average.
 export const monthlyAverages = (
   months: MonthAmounts[],
-): MonthlySummaryAverages => ({
-  income: average(months.map((month) => month.contributions)),
-  expenses: average(months.map((month) => month.expenses)),
-});
+): MonthlySummaryAverages => {
+  const currentMonth = DateTime.local().toFormat('yyyy-MM');
+  const pastMonths = months.filter((month) => month.month !== currentMonth);
+  return {
+    income: average(pastMonths.map((month) => month.contributions)),
+    expenses: average(pastMonths.map((month) => month.expenses)),
+  };
+};

@@ -15,16 +15,18 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { ChartFrame } from '../ChartFrame';
 import { ChartLegendContent } from '../ChartLegendContent/ChartLegendContent';
-import {
-  MonthlySummaryAverages,
-  averageReferenceLines,
-} from './averageReferenceLines';
+import { averageReferenceLines } from './averageReferenceLines';
 
 export interface MonthlySummaryChartData {
   month: string;
   income: number;
   expenses: number;
   net: number;
+}
+
+export interface MonthlySummaryAverages {
+  income?: number;
+  expenses?: number;
 }
 
 interface MonthlySummaryChartProps {
@@ -60,10 +62,11 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
 
   const maskAmounts = noDataLabel !== undefined;
 
+  const formatCurrency = (value: number) =>
+    currencyFormat(value, currency, locale, { showTrailingZeros: true });
+
   const formatAmount = (value: number) =>
-    maskAmounts
-      ? noDataLabel
-      : currencyFormat(value, currency, locale, { showTrailingZeros: true });
+    maskAmounts ? noDataLabel : formatCurrency(value);
 
   const incomeName = overrideIncomeText ?? t('Income');
 
@@ -175,17 +178,17 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
                     fill: theme.palette.chartBlack.main,
                     fontSize: theme.typography.body2.fontSize,
                   }}
-                  formatter={(value: number) =>
-                    currencyFormat(value, currency, locale, {
-                      showTrailingZeros: true,
-                    })
-                  }
+                  formatter={formatCurrency}
                 />
               )}
             </Bar>
-            {averages &&
-              !maskAmounts &&
-              averageReferenceLines({ t, averages, incomeName, formatAmount })}
+            {!maskAmounts &&
+              averageReferenceLines({
+                t,
+                averages,
+                incomeName,
+                formatCurrency,
+              })}
             <Legend
               verticalAlign="top"
               align="center"

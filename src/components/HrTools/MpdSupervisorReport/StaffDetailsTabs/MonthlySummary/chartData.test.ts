@@ -38,6 +38,17 @@ describe('monthlyAverages', () => {
     ).toEqual({ income: 1500, expenses: 1000 });
   });
 
+  // Tests run pinned to 2020-01-01, so 2020-01 is the current month.
+  it('leaves out the current month, which is still in progress', () => {
+    expect(
+      monthlyAverages([
+        { month: '2019-11', contributions: 4000, expenses: 3000 },
+        { month: '2019-12', contributions: 5000, expenses: 4000 },
+        { month: '2020-01', contributions: 900, expenses: 500 },
+      ]),
+    ).toEqual({ income: 4500, expenses: 3500 });
+  });
+
   it('has no average for a field with no amounts', () => {
     expect(
       monthlyAverages([

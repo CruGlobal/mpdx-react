@@ -3,7 +3,10 @@ import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
 import { useMPGAIncomeExpenses } from '../../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { MPGAIncomeExpensesReportTestWrapper } from '../../MPGAIncomeExpensesReportTestWrapper';
-import { MonthlySummaryChart } from './MonthlySummaryChart';
+import {
+  MonthlySummaryAverages,
+  MonthlySummaryChart,
+} from './MonthlySummaryChart';
 import { useMonthlySummaryChartData } from './useMonthlySummaryChartData';
 
 const mutationSpy = jest.fn();
@@ -50,9 +53,10 @@ const averagesData = [
   { month: 'Feb 2023', income: 3600, expenses: 3900, net: -300 },
 ];
 
-const ChartWithAverages: React.FC<{ noDataLabel?: string }> = ({
-  noDataLabel,
-}) => (
+const ChartWithAverages: React.FC<{
+  noDataLabel?: string;
+  averages?: MonthlySummaryAverages;
+}> = ({ noDataLabel, averages = { income: 3800, expenses: 3700 } }) => (
   <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
     <MonthlySummaryChart
       data={averagesData}
@@ -60,7 +64,7 @@ const ChartWithAverages: React.FC<{ noDataLabel?: string }> = ({
       aspect={1.35}
       width={100}
       overrideIncomeText="Contributions"
-      averages={{ income: 3800, expenses: 3700 }}
+      averages={averages}
       noDataLabel={noDataLabel}
     />
   </MPGAIncomeExpensesReportTestWrapper>
@@ -163,6 +167,20 @@ describe('MonthlySummaryChart', () => {
     }));
     expect(income.labelY).toBeLessThan(income.lineY);
     expect(expenses.labelY).toBeGreaterThan(expenses.lineY);
+  });
+
+  it('puts a lone $0 average label above its line, clear of the axis', async () => {
+    const { findByRole } = render(
+      <ChartWithAverages averages={{ expenses: 0 }} />,
+    );
+
+    const region = await findByRole('region');
+    await within(region).findByText('Expenses average: $0.00');
+
+    const line = region.querySelector('.recharts-reference-line');
+    expect(Number(line?.querySelector('text')?.getAttribute('y'))).toBeLessThan(
+      Number(line?.querySelector('line')?.getAttribute('y1')),
+    );
   });
 
   it('draws no average lines without averages', async () => {
