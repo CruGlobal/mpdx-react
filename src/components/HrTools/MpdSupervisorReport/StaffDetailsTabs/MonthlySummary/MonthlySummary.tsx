@@ -25,6 +25,7 @@ import { pendingField } from '../../helpers';
 import { useMonthlyPayrollSummaryQuery } from './MonthlyPayrollSummary.generated';
 import { SupportVsGoalCells } from './SupportVsGoalCells';
 import { ToggleSummaryView } from './ToggleSummaryView/ToggleSummaryView';
+import { monthlyAverages, toChartData } from './chartData';
 
 export enum MonthlySummaryView {
   Table = 'table',
@@ -70,18 +71,7 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
   ) => (value === null || value === undefined ? pendingField : format(value));
 
   const chartData = useMemo(
-    (): MonthlySummaryChartData[] =>
-      monthlySummary.map((summary) => {
-        const date = DateTime.fromISO(summary.month ?? '');
-        return {
-          month: date.isValid
-            ? monthYearFormat(date.month, date.year, locale)
-            : '',
-          income: summary.contributions ?? 0,
-          expenses: summary.expenses ?? 0,
-          net: summary.net ?? 0,
-        };
-      }),
+    () => toChartData(monthlySummary, locale),
     [monthlySummary, locale],
   );
 
@@ -92,6 +82,8 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
 
   const showChart = view === MonthlySummaryView.Chart;
   const hasData = monthlySummary.length > 0;
+  const { months: averagedMonths, ...averages } =
+    monthlyAverages(monthlySummary);
 
   const emptyChartData = useMemo((): MonthlySummaryChartData[] => {
     const thisMonth = DateTime.local().startOf('month');
@@ -136,6 +128,10 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
           width={100}
           overrideIncomeText={t('Contributions')}
           noDataLabel={hasData ? undefined : t('N/A')}
+          averages={{
+            ...averages,
+            note: t('(last {{count}} full months)', { count: averagedMonths }),
+          }}
         />
       ) : (
         <TableContainer>
