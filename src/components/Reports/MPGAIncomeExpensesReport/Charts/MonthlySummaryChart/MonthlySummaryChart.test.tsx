@@ -3,7 +3,10 @@ import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
 import { useMPGAIncomeExpenses } from '../../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { MPGAIncomeExpensesReportTestWrapper } from '../../MPGAIncomeExpensesReportTestWrapper';
-import { MonthlySummaryChart } from './MonthlySummaryChart';
+import {
+  MonthlySummaryAverages,
+  MonthlySummaryChart,
+} from './MonthlySummaryChart';
 import { useMonthlySummaryChartData } from './useMonthlySummaryChartData';
 
 const mutationSpy = jest.fn();
@@ -41,6 +44,28 @@ const ChartWithNoDataLabel: React.FC = () => (
       aspect={1.35}
       width={100}
       noDataLabel="N/A"
+    />
+  </MPGAIncomeExpensesReportTestWrapper>
+);
+
+const averagesData = [
+  { month: 'Jan 2023', income: 4000, expenses: 3500, net: 500 },
+  { month: 'Feb 2023', income: 3600, expenses: 3900, net: -300 },
+];
+
+const ChartWithAverages: React.FC<{
+  noDataLabel?: string;
+  averages?: MonthlySummaryAverages;
+}> = ({ noDataLabel, averages = { income: 3800, expenses: 3700 } }) => (
+  <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+    <MonthlySummaryChart
+      data={averagesData}
+      currency="USD"
+      aspect={1.35}
+      width={100}
+      overrideIncomeText="Contributions"
+      averages={averages}
+      noDataLabel={noDataLabel}
     />
   </MPGAIncomeExpensesReportTestWrapper>
 );
@@ -108,6 +133,77 @@ describe('MonthlySummaryChart', () => {
       0,
     );
     expect(within(region).queryByText(/^\$/)).not.toBeInTheDocument();
+  });
+
+  it('draws a dashed line with its amount for each average when given averages', async () => {
+    const { findByRole } = render(<ChartWithAverages />);
+
+    const region = await findByRole('region');
+
+    expect(
+      await within(region).findByText('Contributions average: $3,800.00'),
+    ).toBeInTheDocument();
+    expect(
+      within(region).getByText('Expenses average: $3,700.00'),
+    ).toBeInTheDocument();
+    const lines = region.querySelectorAll('.recharts-reference-line line');
+    expect(lines).toHaveLength(2);
+    lines.forEach((line) =>
+      expect(line).toHaveAttribute('stroke-dasharray', '6 4'),
+    );
+  });
+
+  it('puts the higher average label above its line and the lower one below', async () => {
+    const { findByRole } = render(<ChartWithAverages />);
+
+    const region = await findByRole('region');
+    await within(region).findByText('Contributions average: $3,800.00');
+
+    const [income, expenses] = Array.from(
+      region.querySelectorAll('.recharts-reference-line'),
+    ).map((line) => ({
+      lineY: Number(line.querySelector('line')?.getAttribute('y1')),
+      labelY: Number(line.querySelector('text')?.getAttribute('y')),
+    }));
+    expect(income.labelY).toBeLessThan(income.lineY);
+    expect(expenses.labelY).toBeGreaterThan(expenses.lineY);
+  });
+
+  it('puts a lone $0 average label above its line, clear of the axis', async () => {
+    const { findByRole } = render(
+      <ChartWithAverages averages={{ expenses: 0 }} />,
+    );
+
+    const region = await findByRole('region');
+    await within(region).findByText('Expenses average: $0.00');
+
+    const line = region.querySelector('.recharts-reference-line');
+    expect(Number(line?.querySelector('text')?.getAttribute('y'))).toBeLessThan(
+      Number(line?.querySelector('line')?.getAttribute('y1')),
+    );
+  });
+
+  it('draws no average lines without averages', async () => {
+    const { findByRole } = render(<TestComponent />);
+
+    const region = await findByRole('region');
+
+    await waitFor(() =>
+      expect(region.querySelector('svg.recharts-surface')).toBeTruthy(),
+    );
+    expect(region.querySelectorAll('.recharts-reference-line')).toHaveLength(0);
+  });
+
+  it('draws no average lines when amounts are masked', async () => {
+    const { findByRole } = render(<ChartWithAverages noDataLabel="N/A" />);
+
+    const region = await findByRole('region');
+
+    await waitFor(() =>
+      expect(region.querySelector('svg.recharts-surface')).toBeTruthy(),
+    );
+    expect(region.querySelectorAll('.recharts-reference-line')).toHaveLength(0);
+    expect(within(region).queryByText(/average/)).not.toBeInTheDocument();
   });
 
   it('renders legend with correct labels', async () => {
