@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Stack, TextField, Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
-import { UsStaffGroupEnum } from 'src/graphql/types.generated';
+import { useIneligibleByGroup } from 'src/hooks/useIneligibleByGroup';
 import { getLocalizedAge } from 'src/lib/functions/getLocalizedAge';
 import { StaffInfoCard } from '../../Shared/StaffInfoCard/StaffInfoCard';
 import { useNsoMpdQuestionnaire } from '../Shared/NsoMpdQuestionnaireContext';
@@ -19,8 +19,8 @@ export const StaffInformation: React.FC = () => {
   const { questionnaire, hasSpouse } = useNsoMpdQuestionnaire();
   const { data: userData } = useGetUserQuery();
   // The questionnaire's staff member is always new staff, so any other viewer is their spouse
-  const viewerIsStaffMember =
-    userData?.user.usStaffGroup === UsStaffGroupEnum.NewStaff;
+  const { inNsGoalCalcIneligibleGroup } = useIneligibleByGroup();
+  const viewerIsStaffMember = !inNsGoalCalcIneligibleGroup;
 
   const [viewingSpouse, setViewingSpouse] = useState(false);
 
@@ -43,8 +43,11 @@ export const StaffInformation: React.FC = () => {
 
   const name =
     [firstName, questionnaire?.lastName].filter(Boolean).join(' ') || t('User');
+  // The card's other person is the viewer when the viewer is the staff member
+  // looking at the spouse, or the spouse looking at the staff member
+  const otherIsViewer = viewingSpouse === viewerIsStaffMember;
   const toggleName =
-    otherFirstName ?? (viewingSpouse ? t('Yourself') : t('Spouse'));
+    otherFirstName ?? (otherIsViewer ? t('Yourself') : t('Spouse'));
 
   const fields: StaffInfoField[] = [
     {

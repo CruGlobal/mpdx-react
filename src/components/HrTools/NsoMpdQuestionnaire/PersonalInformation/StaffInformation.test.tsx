@@ -71,6 +71,39 @@ describe('StaffInformation', () => {
     ).toBeNull();
   });
 
+  it('shows international and stint new staff their own avatar', async () => {
+    const { findByRole, container } = render(
+      <NsoMpdQuestionnaireTestWrapper
+        usStaffGroup={UsStaffGroupEnum.NewInternationalStaff}
+      >
+        <StaffInformation />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
+
+    await findByRole('heading', { name: 'John Doe' });
+    await waitFor(() =>
+      expect(container.querySelector('img[src="avatar.jpg"]')).not.toBeNull(),
+    );
+  });
+
+  it('offers a spouse viewer a way back to themselves when the spouse name is blank', async () => {
+    const onCall = jest.fn();
+    const { findByRole } = render(
+      <NsoMpdQuestionnaireTestWrapper
+        usStaffGroup={UsStaffGroupEnum.SeniorStaff}
+        newStaffQuestionnaire={{ spouseFirstName: null }}
+        onCall={onCall}
+      >
+        <StaffInformation />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
+
+    await waitFor(() => expect(onCall).toHaveGraphqlOperation('GetUser'));
+    expect(
+      await findByRole('button', { name: 'View Yourself' }),
+    ).toBeInTheDocument();
+  });
+
   it("toggles to the spouse's information", async () => {
     const { findByRole, getByRole } = render(
       <NsoMpdQuestionnaireTestWrapper>

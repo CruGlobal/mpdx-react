@@ -94,7 +94,7 @@ describe('QuestionnaireOpenSwitch', () => {
     const { findByRole, findByText } = render(<TestComponent />);
 
     const toggle = await findByRole('switch', {
-      name: 'NSO MPD Questionnaire',
+      name: 'NSO MPD Questionnaire: Closed',
     });
     expect(toggle).not.toBeChecked();
     expect(await findByText('Closed')).toBeInTheDocument();
@@ -119,7 +119,7 @@ describe('QuestionnaireOpenSwitch', () => {
     const { findByRole } = render(<TestComponent startOpen />);
 
     const toggle = await findByRole('switch', {
-      name: 'NSO MPD Questionnaire',
+      name: 'NSO MPD Questionnaire: Open',
     });
     await waitFor(() => expect(toggle).toBeChecked());
     userEvent.click(toggle);
@@ -141,7 +141,7 @@ describe('QuestionnaireOpenSwitch', () => {
     const { findByRole } = render(<TestComponent failSave />);
 
     const toggle = await findByRole('switch', {
-      name: 'NSO MPD Questionnaire',
+      name: 'NSO MPD Questionnaire: Closed',
     });
     userEvent.click(toggle);
 

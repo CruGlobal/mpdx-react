@@ -1,6 +1,6 @@
 import { ReactElement } from 'react';
 import { waitFor } from '@testing-library/dom';
-import { renderHook } from '@testing-library/react-hooks';
+import { act, renderHook } from '@testing-library/react-hooks';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -21,6 +21,7 @@ const mutationSpy = jest.fn();
 interface RenderOptions {
   usStaffGroup?: UsStaffGroupEnum;
   userGroupVerified?: boolean;
+  userType?: UserTypeEnum;
 }
 
 const renderHidden = (
@@ -30,12 +31,13 @@ const renderHidden = (
   {
     usStaffGroup = UsStaffGroupEnum.NewStaff,
     userGroupVerified = true,
+    userType = UserTypeEnum.UsStaff,
   }: RenderOptions = {},
 ) => {
   const mocks = {
     GetUser: {
       user: {
-        userType: UserTypeEnum.UsStaff,
+        userType,
         usStaffGroup,
         spouseUsStaffGroup: usStaffGroup,
       },
@@ -98,15 +100,17 @@ describe('useNsoMpdQuestionnaireHidden', () => {
       completed: true,
     });
     await statusQueried();
+    await act(async () => {});
 
-    await waitFor(() => expect(result.current).toBe(true));
+    expect(result.current).toBe(true);
   });
 
   it('hides it when the household has none to fill in', async () => {
     const { result } = renderHidden(null);
     await statusQueried();
+    await act(async () => {});
 
-    await waitFor(() => expect(result.current).toBe(true));
+    expect(result.current).toBe(true);
   });
 
   it('keeps it visible for new staff when the status query fails', async () => {
@@ -120,8 +124,9 @@ describe('useNsoMpdQuestionnaireHidden', () => {
       usStaffGroup: UsStaffGroupEnum.SeniorStaff,
     });
     await statusQueried();
+    await act(async () => {});
 
-    await waitFor(() => expect(result.current).toBe(true));
+    expect(result.current).toBe(true);
   });
 
   it('hides it until the user confirms their user group', async () => {
@@ -133,6 +138,18 @@ describe('useNsoMpdQuestionnaireHidden', () => {
     );
 
     await waitFor(() => expect(result.current).toBe(true));
+  });
+
+  it('hides it, without asking, from staff outside Cru US', async () => {
+    const { result, waitForNextUpdate } = renderHidden(openQuestionnaire, {
+      userType: UserTypeEnum.GlobalStaff,
+    });
+    await waitForNextUpdate();
+
+    expect(result.current).toBe(true);
+    expect(mutationSpy).not.toHaveGraphqlOperation(
+      'NewStaffQuestionnaireStatus',
+    );
   });
 
   it('hides it, without asking, when the New Staff Goal Calculator is turned off', async () => {
