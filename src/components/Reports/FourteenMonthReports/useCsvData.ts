@@ -5,7 +5,6 @@ import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { PledgeFrequencyEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
-import { FourteenMonthReportCurrencyType } from './FourteenMonthReport';
 import {
   calculateSolidMonthlySupport,
   getCommittedMonthlyEquivalent,
@@ -44,13 +43,10 @@ const getSolidMonthlySupportRow = (
 };
 
 /*
- * Return the data for a CSV export of the provided currency tables. The salary
- * currency export starts with the Solid Monthly Support total.
+ * Return the data for a CSV export of the provided currency tables. The export starts
+ * with the Solid Monthly Support total.
  */
-export const useCsvData = (
-  currencyTables: CurrencyTable[],
-  currencyType: FourteenMonthReportCurrencyType,
-): CsvData => {
+export const useCsvData = (currencyTables: CurrencyTable[]): CsvData => {
   const { t } = useTranslation();
   const locale = useLocale();
   const apiConstants = useApiConstants();
@@ -166,15 +162,12 @@ export const useCsvData = (
   );
 
   const csvData = useMemo(() => {
-    if (currencyType !== FourteenMonthReportCurrencyType.Salary) {
-      return tablesCsvData;
-    }
     // One row per currency table: each table's amounts are in its own currency
     const solidMonthlySupportRows = currencyTables.map((table) =>
       getSolidMonthlySupportRow(table, t),
     );
     return [...solidMonthlySupportRows, ...tablesCsvData];
-  }, [currencyTables, currencyType, tablesCsvData, t]);
+  }, [currencyTables, tablesCsvData, t]);
 
   return csvData;
 };
