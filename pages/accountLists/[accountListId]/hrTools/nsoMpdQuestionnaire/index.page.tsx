@@ -19,10 +19,7 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import {
-  RequiredUserGroupEnum,
-  UserTypeAccess,
-} from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
+import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
@@ -95,8 +92,10 @@ export const NsoMpdQuestionnairePage: React.FC = () => {
       <Head>
         <title>{`${appName} | ${t('HR Tools | NSO MPD Questionnaire')}`}</title>
       </Head>
+      {/* No staff group rule: the API returns a questionnaire only to households in
+          an open training, and either spouse may fill it in. */}
       {accountListId ? (
-        <UserTypeAccess requireUserGroups={RequiredUserGroupEnum.NsGoalCalc}>
+        <UserTypeAccess>
           <ReportPageWrapper>
             <NsoMpdQuestionnaireProvider>
               <NsoMpdQuestionnaireContent

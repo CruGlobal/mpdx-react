@@ -406,6 +406,53 @@ describe('useHrToolsNavItems', () => {
       );
     });
 
+    it('is shown to a senior staff spouse in the household with one to fill in', async () => {
+      const { result, waitForNextUpdate } = renderHook(
+        () => useHrToolsNavItems(),
+        {
+          wrapper: makeWrapper({
+            GetUser: { user: mpdGoalEligibleUser },
+            UserOption: verifiedUserOption,
+            NewStaffQuestionnaireStatus: {
+              newStaffQuestionnaire: {
+                id: 'questionnaire-1',
+                completed: false,
+              },
+            },
+          }),
+        },
+      );
+      await waitForNextUpdate();
+
+      const ids = result.current.items.map((item) => item.id);
+      expect(ids).toContain('nsoMpdQuestionnaire');
+      // The New Staff Goal Calculator keeps its New Staff group rule
+      expect(ids).not.toContain('nsGoalCalculator');
+    });
+
+    it('stays hidden from other staff when the status query fails', async () => {
+      const { result } = renderHook(() => useHrToolsNavItems(), {
+        wrapper: makeWrapper({
+          GetUser: { user: mpdGoalEligibleUser },
+          UserOption: verifiedUserOption,
+          NewStaffQuestionnaireStatus: {
+            newStaffQuestionnaire: () => {
+              throw new Error('Not authorized');
+            },
+          },
+        } as unknown as DeepPartial<Mocks>),
+      });
+
+      await waitFor(() =>
+        expect(result.current.items.map((item) => item.id)).toContain(
+          'goalCalculator',
+        ),
+      );
+      expect(result.current.items.map((item) => item.id)).not.toContain(
+        'nsoMpdQuestionnaire',
+      );
+    });
+
     it('stays visible for new staff when the status query fails', async () => {
       const { result } = renderHook(() => useHrToolsNavItems(), {
         wrapper: makeWrapper({

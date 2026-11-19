@@ -38,20 +38,22 @@ export function useHrToolsNavItems(): {
 
   const accountListId = useAccountListId();
 
-  // Only new staff are ever offered the questionnaire, so nobody else pays for this query.
+  // The API returns a questionnaire only to households in a training with the questionnaire open,
+  // whatever either spouse's staff group, so everyone asks.
   const {
     data: questionnaireData,
     loading: questionnaireLoading,
     error: questionnaireError,
   } = useNewStaffQuestionnaireStatusQuery({
     variables: { accountListId },
-    skip: userLoading || inNsGoalCalcIneligibleGroup,
+    skip: userLoading,
   });
   const questionnaire = questionnaireData?.newStaffQuestionnaire;
   const hasQuestionnaireToFillIn = !!questionnaire && !questionnaire.completed;
-  // A failed query must not hide the path to paperwork new staff still owe
+  // A failed query must not hide the path to paperwork new staff still owe,
+  // nor offer it to everyone else
   const hideQuestionnaire = questionnaireError
-    ? false
+    ? inNsGoalCalcIneligibleGroup
     : questionnaireLoading || !hasQuestionnaireToFillIn;
 
   const items = useMemo(() => {
@@ -79,7 +81,10 @@ export function useHrToolsNavItems(): {
       {
         id: 'nsoMpdQuestionnaire',
         title: t('NSO MPD Questionnaire'),
-        hideItem: !canUseNsGoalCalculator || hideQuestionnaire,
+        hideItem:
+          reportsDisabled ||
+          process.env.DISABLE_NS_GOAL_CALCULATOR === 'true' ||
+          hideQuestionnaire,
       },
       {
         id: 'goalCalculator',

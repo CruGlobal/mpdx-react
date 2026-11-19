@@ -141,6 +141,8 @@ export interface Cohort {
   goalsSentAt: DateTime | null;
   hasTrainingCosts: boolean;
   canRunAndSend: boolean;
+  /** Whether this training's households can see the NSO MPD Questionnaire. */
+  questionnaireOpen: boolean;
   /** Saved training cost figures; undefined until every cost is entered. */
   trainingCosts?: TrainingCosts;
 }
@@ -182,6 +184,7 @@ export const cohortNodeToCohort = (
   goalsSentAt: node.goalsSentAt ? DateTime.fromISO(node.goalsSentAt) : null,
   hasTrainingCosts: node.hasTrainingCosts,
   canRunAndSend: node.canRunAndSend,
+  questionnaireOpen: node.questionnaireOpen,
   trainingCosts: cohortToTrainingCosts(node),
 });
 
