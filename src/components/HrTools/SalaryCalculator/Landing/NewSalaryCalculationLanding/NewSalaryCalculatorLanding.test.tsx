@@ -1,6 +1,10 @@
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
+  getGridColumnsAtWidth,
+  getStyleAtWidth,
+} from '__tests__/util/styleAtWidth';
+import {
   LandingTestWrapper,
   LandingTestWrapperProps,
 } from './LandingTestWrapper';
@@ -43,6 +47,53 @@ describe('NewSalaryCalculatorLanding', () => {
       expect(getByTestId('amount-two')).toHaveTextContent('$0.00'),
     );
     expect(getByTestId('amount-one')).toHaveTextContent('$55,000.00');
+  });
+
+  describe('top card amounts', () => {
+    // The phone widths from the audit and the tablet width that already looked right
+    const phoneWidths = [360, 390];
+    const tabletWidth = 768;
+
+    const fontSizeInPx = (element: Element, width: number): number => {
+      const value = getStyleAtWidth(element, 'font-size', width);
+      return value.endsWith('rem') ? parseFloat(value) * 16 : parseFloat(value);
+    };
+
+    const renderAmounts = async () => {
+      const { findByTestId } = render(<TestComponent />);
+      const salary = await findByTestId('amount-one');
+      const balance = await findByTestId('amount-two');
+      // Each amount sits in its own Grid column, which has no role
+      return [salary, balance].map((amount) => {
+        const column = amount.closest('.MuiGrid-root');
+        if (!column) {
+          throw new Error(`No Grid column for "${amount.textContent}"`);
+        }
+        return { amount, column };
+      });
+    };
+
+    it.each(phoneWidths)(
+      'stacks salary and balance one per row with smaller text at %ipx',
+      async (width) => {
+        const amounts = await renderAmounts();
+
+        amounts.forEach(({ amount, column }) => {
+          expect(getGridColumnsAtWidth(column, width)).toBe(12);
+          expect(fontSizeInPx(amount, width)).toBeLessThan(
+            fontSizeInPx(amount, tabletWidth),
+          );
+        });
+      },
+    );
+
+    it('keeps salary and balance side by side on a tablet', async () => {
+      const amounts = await renderAmounts();
+
+      amounts.forEach(({ column }) => {
+        expect(getGridColumnsAtWidth(column, tabletWidth)).toBe(6);
+      });
+    });
   });
 
   it('renders table with correct cell data', async () => {

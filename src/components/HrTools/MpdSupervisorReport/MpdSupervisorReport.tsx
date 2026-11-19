@@ -20,11 +20,13 @@ import {
   NavListButton,
   NavMenuIcon,
   StickyHeader,
+  multiPageHeaderHeight,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { getHeaderTitleAccess } from 'src/components/Shared/MultiPageLayout/helpers';
 import { NavFilterIcon } from 'src/components/Shared/styledComponents/NavFilterIcon';
 import { useLocale } from 'src/hooks/useLocale';
 import theme from 'src/theme';
+import { HeaderActions } from './HeaderActions/HeaderActions';
 import { AppliedFilters } from './ListStates/AppliedFilters';
 import { EmptyStaffState } from './ListStates/EmptyStaffState';
 import { FilterRequiredState } from './ListStates/FilterRequiredState';
@@ -32,7 +34,6 @@ import { useManagedStaffTeamsQuery } from './ManagedStaffTeams.generated';
 import { Panel, useMpdSupervisorReport } from './MpdSupervisorReportContext';
 import { HealthColorKey } from './ReportLegend/HealthColorKey';
 import { ReportLegendButton } from './ReportLegend/ReportLegendButton';
-import { RowDensityToggle } from './RowDensityToggle/RowDensityToggle';
 import { StaffMember } from './StaffMemberRow/StaffMember';
 import { TeamSummary } from './TeamSummary/TeamSummary';
 import { balanceMonthHeaders } from './balanceHelpers';
@@ -53,6 +54,14 @@ const StyledContainer = styled(Container)(({ theme }) => ({
   overflow: 'hidden',
 }));
 
+// The fixed height only fits one row, so a header whose controls wrap grows
+// instead of covering the list
+const headerSx = {
+  flexShrink: 0,
+  height: 'auto',
+  minHeight: multiPageHeaderHeight,
+};
+
 const StickyHeaderInner = styled(Box)(() => ({
   display: 'flex',
   justifyContent: 'space-between',
@@ -70,6 +79,14 @@ const TitleBox = styled(Box)(() => ({
   // On phones the title and legend button wrap as separate header items
   [theme.breakpoints.down('sm')]: {
     display: 'contents',
+  },
+  // The summary sits under the one-line title, so the title never wraps into
+  // the list beside the filter panel
+  [theme.breakpoints.up('md')]: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    gap: 0,
   },
 }));
 
@@ -153,16 +170,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
 
   return (
     <PageBox>
-      <StickyHeader
-        p={2}
-        data-testid="MultiPageHeader"
-        sx={{
-          flexShrink: 0,
-          // The fixed height only fits one row, so a wrapped header grows
-          // instead of covering the list
-          [theme.breakpoints.down('md')]: { height: 'auto' },
-        }}
-      >
+      <StickyHeader p={2} data-testid="MultiPageHeader" sx={headerSx}>
         <StickyHeaderInner>
           <NavListButton
             panelOpen={panelOpen === Panel.Navigation}
@@ -187,7 +195,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
               <NavFilterIcon data-testid="FilterIcon" />
             </Badge>
           </NavListButton>
-          <TitleBox>
+          <TitleBox data-testid="title-box">
             <Box
               display={{ xs: 'contents', sm: 'flex' }}
               alignItems="center"
@@ -197,13 +205,15 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
                 variant="h5"
                 sx={{
                   // Half the row keeps the title beside the menu buttons and
-                  // pushes the legend button and density toggle onto the next
-                  // row; the h6 size fits the title on one line there
+                  // pushes the legend button, density toggle and CSV download
+                  // onto the next row; the h6 size fits the title on one line
+                  // there
                   [theme.breakpoints.down('sm')]: {
                     flexGrow: 1,
                     flexBasis: '50%',
                     fontSize: theme.typography.h6.fontSize,
                   },
+                  [theme.breakpoints.up('md')]: { whiteSpace: 'nowrap' },
                 }}
               >
                 {title}
@@ -241,7 +251,7 @@ export const MpdSupervisorReport: React.FC<MpdSupervisorReportProps> = ({
               </Typography>
             )}
           </TitleBox>
-          <RowDensityToggle />
+          <HeaderActions />
           <TextField
             value={search}
             onChange={(event) => setSearch(event.target.value)}

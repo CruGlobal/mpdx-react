@@ -6,10 +6,18 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  desktopWidth,
+  getStyleAtWidth,
+  phoneWidth,
+} from '__tests__/util/styleAtWidth';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import theme from 'src/theme';
 import { appealInfo } from '../../appealMockData';
 import { AppealHeaderInfo, AppealHeaderInfoProps } from './AppealHeaderInfo';
+
+// MUI's sm breakpoint, where the progress bar moves up next to the name
+const smWidth = theme.breakpoints.values.sm;
 
 const router = {
   query: { accountListId: 'aaa' },
@@ -91,6 +99,48 @@ describe('AppealHeaderInfo', () => {
       expect(
         queryByRole('heading', { name: 'Edit Appeal' }),
       ).not.toBeInTheDocument();
+    });
+  });
+
+  describe('long appeal names', () => {
+    const longName =
+      'Year-end giving campaign for the new ministry center building fund and summer staff support';
+
+    it.each([
+      { width: phoneWidth, minHeight: '144px' },
+      { width: smWidth, minHeight: '72px' },
+      { width: desktopWidth, minHeight: '72px' },
+    ])(
+      'header is at least $minHeight tall but can grow at $width px',
+      async ({ width, minHeight }) => {
+        const { findByText } = render(
+          <Components
+            appealInfo={{ ...appealInfo, name: longName }}
+            loading={false}
+          />,
+        );
+
+        const header = (await findByText(longName)).closest(
+          '.MuiGrid-container',
+        );
+        expect(header).not.toBeNull();
+        expect(getStyleAtWidth(header!, 'min-height', width)).toBe(minHeight);
+        expect(getStyleAtWidth(header!, 'height', width)).toBe('');
+      },
+    );
+
+    it('limits the name to 2 lines and keeps the full name in a tooltip', async () => {
+      const { findByText } = render(
+        <Components
+          appealInfo={{ ...appealInfo, name: longName }}
+          loading={false}
+        />,
+      );
+
+      const name = await findByText(longName);
+      expect(name).toHaveAttribute('title', longName);
+      expect(getStyleAtWidth(name, '-webkit-line-clamp', phoneWidth)).toBe('2');
+      expect(getStyleAtWidth(name, 'overflow', phoneWidth)).toBe('hidden');
     });
   });
 });

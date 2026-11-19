@@ -8,5 +8,9 @@ coverage:
     project:
       default:
         target: 80%
+    # Coverage on the lines a PR changes; informational until we pick a minimum.
+    patch:
+      default:
+        informational: true
 
 comment: false

@@ -42,6 +42,14 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
     currentSalaryCap
     combinedCap
     staffAccountBalance
+    staffAccountDeficitLimit
+    unpaidHouseholdAsrAmount
+    unpaidHouseholdAsrs {
+      amount
+      status
+      submittedAt
+      spouse
+    }
     availableStaffAccountBalance
     ytdAsrAmount
     grossAnnualSalary

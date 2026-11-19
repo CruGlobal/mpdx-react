@@ -97,9 +97,10 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
       </ListItemIcon>
       <Grid container alignItems="center" sx={{ width: '100%' }}>
         <Grid
-          style={{ paddingRight: 16 }}
+          sx={{ pr: { xs: 1, sm: 2 } }}
           size={{
-            xs: 10,
+            xs: 12,
+            sm: 7,
             md: 6,
           }}
         >
@@ -143,8 +144,10 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
           />
         </Grid>
         <Grid
+          sx={{ display: { xs: 'none', sm: 'block' } }}
           size={{
             xs: 2,
+            sm: 5,
             md: 6,
           }}
         >
@@ -159,7 +162,13 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
           />
         </Grid>
       </Grid>
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          '& .MuiIconButton-root': { p: { xs: 1.25, sm: 1 } },
+        }}
+      >
         <Box onClick={(event) => event.preventDefault()}>
           <ContactUncompletedTasksCount
             uncompletedTasksCount={uncompletedTasksCount}

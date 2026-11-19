@@ -11,6 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { helpButtonSpace } from 'src/components/Helpjuice/helpButtonSpace';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -38,7 +39,7 @@ export const SavingsFundTransfer: React.FC<SavingsFundTransferProps> = ({
   const transferLink = `/accountLists/${accountListId}/hrTools/staffSavingFund/transfers`;
 
   return (
-    <Box>
+    <Box sx={helpButtonSpace}>
       <MultiPageHeader
         isNavListOpen={isNavListOpen}
         onNavListToggle={onNavListToggle}

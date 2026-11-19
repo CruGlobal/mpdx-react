@@ -13,6 +13,7 @@ import {
 } from '../../Modals/EditAppealHeaderInfoModal/DynamicEditAppealHeaderInfoModal';
 import AppealProgressBar from '../AppealProgressBar/AppealProgressBar';
 
+// Minimum heights; the header grows when the name wraps
 export const appealHeaderInfoHeight = theme.spacing(9);
 // Below sm the progress bar stacks under the name and goal
 export const appealHeaderInfoMobileHeight = theme.spacing(18);
@@ -35,6 +36,14 @@ const AppealInfo = styled(Typography)(() => ({
   fontWeight: 'bold',
 }));
 
+const AppealName = styled(AppealInfo)(() => ({
+  display: '-webkit-box',
+  WebkitLineClamp: 2,
+  WebkitBoxOrient: 'vertical',
+  overflow: 'hidden',
+  overflowWrap: 'anywhere',
+}));
+
 const AppealInfoContainer = styled(Box)(() => ({
   display: 'flex',
   flexWrap: 'nowrap',
@@ -43,9 +52,9 @@ const AppealInfoContainer = styled(Box)(() => ({
 }));
 
 const GridContainer = styled(Grid)(() => ({
-  height: appealHeaderInfoMobileHeight,
+  minHeight: appealHeaderInfoMobileHeight,
   [theme.breakpoints.up('sm')]: {
-    height: appealHeaderInfoHeight,
+    minHeight: appealHeaderInfoHeight,
   },
   paddingLeft: theme.spacing(2),
   paddingRight: theme.spacing(2),
@@ -100,7 +109,9 @@ export const AppealHeaderInfo: React.FC<AppealHeaderInfoProps> = ({
                   />
                 ) : (
                   <>
-                    <AppealInfo variant="h5">{name}</AppealInfo>
+                    <AppealName variant="h5" title={name}>
+                      {name}
+                    </AppealName>
                     <IconButton
                       onClick={() => setIsEditAppealModalOpen(true)}
                       onMouseOver={preloadEditAppealHeaderInfoModal}

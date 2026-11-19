@@ -1,6 +1,7 @@
 import { ElementType, FC, ReactElement, useEffect } from 'react';
 import { Backdrop, Box, CSSObject } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { helpButtonSpace } from 'src/components/Helpjuice/helpButtonSpace';
 import {
   leftPanelOverlayBreakpoint,
   useLeftPanelOverlays,
@@ -185,6 +186,7 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
         style={{
           transform: rightOpen ? 'none' : 'translate(100%)',
         }}
+        sx={helpButtonSpace}
         id="scrollOverride"
       >
         {rightOpen && rightPanel}

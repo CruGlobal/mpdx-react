@@ -191,6 +191,16 @@ const isHiddenAtWidth = (
   return false;
 };
 
+// Works out each var(--name, fallback) the way the page would, from the
+// values set on the root element
+const resolveCssVariables = (value: string): string =>
+  value.replace(
+    /var\((--[\w-]+),\s*([^)]+)\)/g,
+    (_match, name: string, fallback: string) =>
+      document.documentElement.style.getPropertyValue(name).trim() ||
+      fallback.trim(),
+  );
+
 // A font size in px, from either the rem the theme uses or a px value
 const fontSizePxAtWidth = (element: Element, width: number): number => {
   const fontSize = getStyleAtWidth(element, 'font-size', width);
@@ -949,13 +959,15 @@ describe('MpdSupervisorReport', () => {
     });
 
     it.each([900, desktopWidth])(
-      'keeps the fixed header height at %ipx wide',
+      'keeps at least the standard header height at %ipx wide, growing when wrapped',
       async (width) => {
         const { header } = await renderEmptyReportHeader();
 
-        expect(getStyleAtWidth(header, 'height', width)).toBe(
-          multiPageHeaderHeight,
-        );
+        expect(getStyleAtWidth(header, 'height', width)).toBe('auto');
+        // Never shorter than the shared header's standard one-row 80px
+        expect(
+          resolveCssVariables(getStyleAtWidth(header, 'min-height', width)),
+        ).toBe('80px');
       },
     );
 

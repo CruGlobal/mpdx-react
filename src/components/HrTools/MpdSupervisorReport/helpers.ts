@@ -50,6 +50,9 @@ export const grossSalaryWarning = (
   );
 };
 
+// Floored so a percent just under a cutoff never shows as the next grade's
+export const floorToTenth = (percent: number) => Math.floor(percent * 10) / 10;
+
 /**
  * Build avatar initials from a person's first and last name.
  * Returns the uppercased first letter of each (e.g. "Jane Doe" -> "JD").

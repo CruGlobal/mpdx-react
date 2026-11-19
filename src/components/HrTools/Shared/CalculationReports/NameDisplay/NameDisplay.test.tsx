@@ -1,5 +1,11 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import {
+  desktopWidth,
+  getGridColumnsAtWidth,
+  getStyleAtWidth,
+  phoneWidth,
+} from '__tests__/util/styleAtWidth';
 import theme from 'src/theme';
 import { missingValue } from '../../helpers/missingValue';
 import { NameDisplay, columnLayout } from './NameDisplay';
@@ -11,12 +17,14 @@ interface TestComponentProps {
   names: string;
   showContent?: boolean;
   spouseComponent?: React.ReactNode;
+  titleOneAdornment?: React.ReactNode;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   names,
   showContent,
   spouseComponent,
+  titleOneAdornment,
 }) => {
   return (
     <ThemeProvider theme={theme}>
@@ -24,6 +32,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
         names={names}
         showContent={showContent}
         titleOne={titleOne}
+        titleOneAdornment={titleOneAdornment}
         titleTwo={titleTwo}
         amountOne={1000}
         amountTwo={20000}
@@ -71,11 +80,9 @@ describe('NameDisplay', () => {
     expect(getByTestId('amount-three')).toHaveTextContent('$5,000.00');
   });
 
-  const renderAmounts = (amounts: {
-    amountOne?: number | null;
-    amountTwo?: number | null;
-    amountThree?: number | null;
-  }) =>
+  const renderThreeColumns = (
+    props: Partial<React.ComponentProps<typeof NameDisplay>>,
+  ) =>
     render(
       <ThemeProvider theme={theme}>
         <NameDisplay
@@ -87,7 +94,7 @@ describe('NameDisplay', () => {
           amountOne={1000}
           amountTwo={20000}
           amountThree={5000}
-          {...amounts}
+          {...props}
         />
       </ThemeProvider>,
     );
@@ -99,7 +106,7 @@ describe('NameDisplay', () => {
   ])(
     'shows the missing-value dash, not $0.00, for a null %s',
     (prop, testId) => {
-      const { getByTestId } = renderAmounts({ [prop]: null });
+      const { getByTestId } = renderThreeColumns({ [prop]: null });
 
       expect(getByTestId(testId)).toHaveTextContent(missingValue);
       expect(getByTestId(testId)).not.toHaveTextContent('$');
@@ -107,7 +114,7 @@ describe('NameDisplay', () => {
   );
 
   it('still shows $0.00 for a real zero', () => {
-    const { getByTestId } = renderAmounts({ amountThree: 0 });
+    const { getByTestId } = renderThreeColumns({ amountThree: 0 });
 
     expect(getByTestId('amount-three')).toHaveTextContent('$0.00');
   });
@@ -118,6 +125,41 @@ describe('NameDisplay', () => {
     );
 
     expect(queryByTestId('amount-three')).not.toBeInTheDocument();
+  });
+
+  it('renders the note as a full-width caption under the amounts', () => {
+    const { getByText } = renderThreeColumns({
+      note: 'Requests over $5,000.00 need approval.',
+    });
+
+    const note = getByText('Requests over $5,000.00 need approval.');
+    expect(note).toHaveClass('MuiTypography-caption');
+    expect(note.closest('.MuiCardContent-root')).toBeInTheDocument();
+    // Below the amounts, not inside one of their columns
+    expect(note.closest('.MuiGrid-root')).toBeNull();
+  });
+
+  it('renders no note without one', () => {
+    const { container } = render(
+      <TestComponent names="Doe, John" showContent />,
+    );
+
+    expect(container.querySelector('.MuiTypography-caption')).toBeNull();
+  });
+
+  it('renders the first title adornment next to that title only', () => {
+    const { getByText, getByTestId } = render(
+      <TestComponent
+        names="Doe, John"
+        showContent
+        titleOneAdornment={<span data-testid="adornment" />}
+      />,
+    );
+
+    expect(getByText('TITLE ONE')).toContainElement(getByTestId('adornment'));
+    expect(getByText('TITLE TWO')).not.toContainElement(
+      getByTestId('adornment'),
+    );
   });
 
   it('renders spouseComponent when provided', () => {
@@ -142,7 +184,109 @@ describe('columnLayout', () => {
     });
   });
 
-  it('keeps two side-by-side columns at full size', () => {
-    expect(columnLayout(2)).toEqual({ size: 6, amountVariant: 'h3' });
+  it('stacks two columns below the sm breakpoint and keeps full size amounts from sm up', () => {
+    expect(columnLayout(2)).toMatchObject({
+      size: { xs: 12, sm: 6 },
+      amountVariant: 'h3',
+    });
+  });
+});
+
+describe('NameDisplay amounts on different screen widths', () => {
+  // The 2 phone widths from the audit, a tablet, and a desktop
+  const smallPhoneWidth = 360;
+  const tabletWidth = 768;
+  const phoneWidths = [smallPhoneWidth, phoneWidth];
+  const wideWidths = [tabletWidth, desktopWidth];
+
+  // Each amount sits in its own Grid item, and that item has no role
+  const getColumn = (amount: HTMLElement): Element => {
+    const column = amount.closest('.MuiGrid-root');
+    if (!column) {
+      throw new Error(`No Grid column for "${amount.textContent}"`);
+    }
+    return column;
+  };
+
+  const fontSizeInPx = (element: Element, width: number): number => {
+    const value = getStyleAtWidth(element, 'font-size', width);
+    return value.endsWith('rem') ? parseFloat(value) * 16 : parseFloat(value);
+  };
+
+  describe('with two amounts, like the Salary Calculator card', () => {
+    const renderTwoAmounts = () => {
+      const { getByTestId } = render(
+        <TestComponent names="Doe, John and Jane" showContent />,
+      );
+      return [getByTestId('amount-one'), getByTestId('amount-two')];
+    };
+
+    it.each(phoneWidths)('stacks the amounts one per row at %ipx', (width) => {
+      renderTwoAmounts().forEach((amount) => {
+        expect(getGridColumnsAtWidth(getColumn(amount), width)).toBe(12);
+      });
+    });
+
+    it.each(wideWidths)('keeps the amounts side by side at %ipx', (width) => {
+      renderTwoAmounts().forEach((amount) => {
+        expect(getGridColumnsAtWidth(getColumn(amount), width)).toBe(6);
+      });
+    });
+
+    it.each(phoneWidths)(
+      'uses a smaller amount size at %ipx than on a tablet',
+      (width) => {
+        renderTwoAmounts().forEach((amount) => {
+          expect(fontSizeInPx(amount, width)).toBeLessThan(
+            fontSizeInPx(amount, tabletWidth),
+          );
+        });
+      },
+    );
+
+    it('keeps the same amount size on a tablet and on a desktop', () => {
+      renderTwoAmounts().forEach((amount) => {
+        expect(fontSizeInPx(amount, tabletWidth)).toBeGreaterThan(0);
+        expect(fontSizeInPx(amount, tabletWidth)).toBe(
+          fontSizeInPx(amount, desktopWidth),
+        );
+      });
+    });
+  });
+
+  describe('with three amounts, like the ASR card', () => {
+    const renderThreeAmounts = () => {
+      const { getByTestId } = render(
+        <ThemeProvider theme={theme}>
+          <NameDisplay
+            names="Doe, John"
+            showContent
+            titleOne={titleOne}
+            titleTwo={titleTwo}
+            titleThree="Title Three"
+            amountOne={1000}
+            amountTwo={20000}
+            amountThree={5000}
+          />
+        </ThemeProvider>,
+      );
+      return [
+        getByTestId('amount-one'),
+        getByTestId('amount-two'),
+        getByTestId('amount-three'),
+      ];
+    };
+
+    it('still stacks the amounts one per row on a phone', () => {
+      renderThreeAmounts().forEach((amount) => {
+        expect(getGridColumnsAtWidth(getColumn(amount), phoneWidth)).toBe(12);
+      });
+    });
+
+    it('still shows the amounts in three columns on a desktop', () => {
+      renderThreeAmounts().forEach((amount) => {
+        expect(getGridColumnsAtWidth(getColumn(amount), desktopWidth)).toBe(4);
+      });
+    });
   });
 });

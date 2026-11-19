@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { csvFromUri } from '__tests__/util/csvFromUri';
 import theme from 'src/theme';
 import { FourteenMonthReportCurrencyType } from '../../../FourteenMonthReport';
 import { FourteenMonthReportActions } from './Actions';
@@ -32,6 +33,26 @@ describe('FourteenMonthReportActions', () => {
     expect(getByRole('link', { name: 'Export' })).toHaveAttribute(
       'href',
       'data:text/csv;charset=utf-8,\uFEFF',
+    );
+  });
+
+  it('keeps quotes and commas in one cell and writes formulas as text', () => {
+    const { getByRole } = render(
+      <ThemeProvider theme={theme}>
+        <FourteenMonthReportActions
+          csvData={[['Smith, Robert "Bob"', '=SUM(A1)', -50]]}
+          currencyType={FourteenMonthReportCurrencyType.Salary}
+          isExpanded={false}
+          isMobile={true}
+          onExpandToggle={onExpandToggle}
+          onPrint={onPrint}
+        />
+      </ThemeProvider>,
+    );
+
+    const href = getByRole('link', { name: 'Export' }).getAttribute('href');
+    expect(csvFromUri(href ?? '')).toBe(
+      `"Smith, Robert ""Bob""","'=SUM(A1)","-50"`,
     );
   });
 

@@ -18,8 +18,8 @@ jobs:
     # which is why edited fires too. Only posts by repository writers count,
     # shadow reports never approve, and the report must cover the PR's current
     # head, so an edited report for an older push cannot approve the newer one.
-    # auto_approve here trusts a writer's posted report — a stronger
-    # grant than the CI path, which judges only the bot's own report.
+    # auto_approve here trusts any repository writer's posted report. This repo
+    # runs reviews only locally, so that report is the only approval path.
     if: >-
       github.event_name == 'issue_comment' &&
       github.event.issue.pull_request != null &&

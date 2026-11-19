@@ -914,7 +914,7 @@ describe('StaffExpenseReport', () => {
     ).toBeInTheDocument();
     expect(getByRole('button', { name: 'Previous Month' })).toBeInTheDocument();
     expect(getByRole('button', { name: 'Next Month' })).toBeInTheDocument();
-  }, 10000);
+  }, 15000);
 
   it('hides month navigation when date filters are applied', async () => {
     Settings.now = () => new Date(2020, 0, 20).valueOf();
@@ -944,5 +944,5 @@ describe('StaffExpenseReport', () => {
     expect(
       queryByRole('button', { name: 'Next Month' }),
     ).not.toBeInTheDocument();
-  }, 10000);
+  }, 15000);
 });

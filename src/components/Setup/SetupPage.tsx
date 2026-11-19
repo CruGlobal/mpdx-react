@@ -2,6 +2,7 @@ import React, { ReactNode } from 'react';
 import { CampaignOutlined } from '@mui/icons-material';
 import { Card, CardContent, Divider, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { helpButtonSpace } from 'src/components/Helpjuice/helpButtonSpace';
 
 const PageBackground = styled('div')(({ theme }) => ({
   minWidth: '100vw',
@@ -16,6 +17,7 @@ const PageBackground = styled('div')(({ theme }) => ({
   },
   backgroundColor: theme.palette.primary.main,
   paddingTop: theme.spacing(8),
+  ...helpButtonSpace(theme),
 }));
 
 const PageCard = styled(Card)(({ theme }) => ({

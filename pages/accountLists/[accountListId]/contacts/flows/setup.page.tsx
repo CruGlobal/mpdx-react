@@ -174,7 +174,8 @@ const ContactFlowSetupPage: React.FC = () => {
               resetColumnsMessage={resetColumnsMessage}
             />
             <FlowsScrollHint />
-            {flowOptions && (
+            {/* Wait for the flow columns so phone snapping starts on the first one */}
+            {flowOptions.length > 0 && (
               <Box
                 display="grid"
                 minWidth="100%"

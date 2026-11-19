@@ -165,6 +165,37 @@ describe('PartnerGivingAnalysisReportTable', () => {
       return { ...result, apiRef };
     };
 
+    // jsdom has no layout, so every element reports a width of 0. To see how
+    // the grid sizes its columns, make the grid report the screen width.
+    let boundingRectSpy: jest.SpyInstance | undefined;
+    const setScreenWidth = (width: number) => {
+      matchMediaMock({ width: `${width}px` });
+      boundingRectSpy = jest
+        .spyOn(Element.prototype, 'getBoundingClientRect')
+        .mockReturnValue({
+          width,
+          height: 800,
+          top: 0,
+          left: 0,
+          right: width,
+          bottom: 800,
+          x: 0,
+          y: 0,
+          toJSON: () => ({}),
+        });
+    };
+
+    afterEach(() => {
+      boundingRectSpy?.mockRestore();
+      boundingRectSpy = undefined;
+    });
+
+    // Fields of the columns the grid drew narrower than their full width
+    const squeezedColumns = (apiRef: React.MutableRefObject<GridApi | null>) =>
+      (apiRef.current?.getAllColumns() ?? [])
+        .filter(({ computedWidth, width }) => computedWidth < (width ?? 0))
+        .map(({ field }) => field);
+
     it('keeps columns at their full width on phones so values are not cut off', async () => {
       matchMediaMock({ width: '390px' });
       const { findByRole, apiRef } = renderWithApiRef();
@@ -175,19 +206,93 @@ describe('PartnerGivingAnalysisReportTable', () => {
       expect(apiRef.current?.getColumn('totalDonations').minWidth).toBe(130);
     });
 
-    it('lets columns shrink to fit on desktop', async () => {
-      matchMediaMock({ width: '1024px' });
+    it.each([
+      { device: 'phone', width: 390 },
+      { device: 'small tablet', width: 600 },
+      { device: 'tablet', width: 768 },
+      { device: 'large tablet', width: 834 },
+      { device: 'large tablet in landscape', width: 900 },
+      { device: 'small desktop', width: 1024 },
+      { device: 'desktop', width: 1280 },
+      { device: 'wide desktop', width: 1920 },
+    ])(
+      'sets every column min width to its full width on a $device ($width px)',
+      async ({ width }) => {
+        matchMediaMock({ width: `${width}px` });
+        const { findByRole, apiRef } = renderWithApiRef();
+
+        expect(await findByRole('grid')).toBeInTheDocument();
+        const columns = apiRef.current?.getAllColumns() ?? [];
+        expect(columns).toHaveLength(11);
+        expect(
+          columns.map(({ field, minWidth }) => ({ field, minWidth })),
+        ).toEqual(
+          columns.map(({ field, width }) => ({ field, minWidth: width })),
+        );
+      },
+    );
+
+    it.each([
+      { device: 'phone', width: 390 },
+      { device: 'tablet', width: 768 },
+      { device: 'small desktop', width: 1024 },
+      { device: 'desktop', width: 1280 },
+    ])(
+      'scrolls sideways instead of squeezing the columns on a $device ($width px)',
+      async ({ width }) => {
+        setScreenWidth(width);
+        const { findByRole, apiRef } = renderWithApiRef();
+
+        expect(await findByRole('grid')).toBeInTheDocument();
+        await waitFor(() =>
+          expect(apiRef.current?.getRootDimensions().root.width).toBe(width),
+        );
+        expect(squeezedColumns(apiRef)).toEqual([]);
+        const { columnsTotalWidth, hasScrollX } =
+          apiRef.current?.getRootDimensions() ?? {};
+        expect(columnsTotalWidth).toBeGreaterThan(width);
+        expect(hasScrollX).toBe(true);
+      },
+    );
+
+    it('stretches the columns to fill a wide screen without scrolling', async () => {
+      setScreenWidth(1920);
       const { findByRole, apiRef } = renderWithApiRef();
 
       expect(await findByRole('grid')).toBeInTheDocument();
-      // Desktop keeps the DataGrid default minWidth, below the phone widths
-      expect(apiRef.current?.getColumn('name').minWidth).toBeLessThan(240);
-      expect(
-        apiRef.current?.getColumn('donationPeriodSum').minWidth,
-      ).toBeLessThan(130);
-      expect(apiRef.current?.getColumn('totalDonations').minWidth).toBeLessThan(
-        130,
+      await waitFor(() =>
+        expect(apiRef.current?.getRootDimensions().root.width).toBe(1920),
       );
+      expect(squeezedColumns(apiRef)).toEqual([]);
+      const { columnsTotalWidth, hasScrollX } =
+        apiRef.current?.getRootDimensions() ?? {};
+      expect(columnsTotalWidth).toBeCloseTo(1920, 0);
+      expect(hasScrollX).toBe(false);
+      // A flex column grows past its full width to use the extra space
+      const giftCount = apiRef.current?.getColumn('donationPeriodCount');
+      expect(giftCount?.computedWidth).toBeGreaterThan(giftCount?.width ?? 0);
+    });
+
+    it('renders a header for every column on a tablet', async () => {
+      matchMediaMock({ width: '768px' });
+      const { findByRole, getAllByRole } = renderWithApiRef();
+
+      expect(await findByRole('grid')).toBeInTheDocument();
+      expect(
+        getAllByRole('columnheader').map((header) => header.textContent),
+      ).toEqual([
+        '',
+        'Name',
+        'Status',
+        'Commitment Amount',
+        'Gift Total',
+        'Gift Count',
+        'Gift Average',
+        'First Gift Date',
+        'Last Gift Amount',
+        'Last Gift Date',
+        'Lifetime Total',
+      ]);
     });
   });
 });

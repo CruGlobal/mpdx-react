@@ -2,6 +2,7 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import { Box, Button, CircularProgress, Stack, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { helpButtonSpace } from 'src/components/Helpjuice/helpButtonSpace';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
@@ -16,6 +17,7 @@ import { GoalsListWelcome } from './GoalsListWelcome';
 
 const Container = styled(Box)(({ theme }) => ({
   padding: theme.spacing(3),
+  ...helpButtonSpace(theme),
   // Pad the sides to ensure that the container is never wider than 1200px
   marginInline: `max(0px, (100% - 1200px) / 2)`,
 }));

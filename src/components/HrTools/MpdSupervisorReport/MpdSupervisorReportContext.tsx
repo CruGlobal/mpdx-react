@@ -92,6 +92,8 @@ export interface MpdSupervisorReportContextValue {
   closeLegend: () => void;
   search: string;
   setSearch: (v: string) => void;
+  /** The search box changed and the debounced query has not caught up yet */
+  searchPending: boolean;
   team: string | null;
   setTeam: (v: string | null) => void;
   department: string | null;
@@ -154,6 +156,21 @@ const parseTabFromQuery = (
     : StaffDetailTabEnum.MonthlySummary;
 };
 
+const useRowDensity = (): [RowDensityEnum, (v: RowDensityEnum) => void] => {
+  // The toggle is server-rendered for developers, so the saved density is read
+  // after hydration; reading it sooner leaves the server's pressed button.
+  const [storedDensity, setRowDensity] = useLocalStorage<RowDensityEnum>(
+    rowDensityStorageKey,
+    RowDensityEnum.Comfortable,
+    { readAfterHydration: true },
+  );
+  // A value from an older build (or a hand edit) falls back to the default
+  const rowDensity = Object.values(RowDensityEnum).includes(storedDensity)
+    ? storedDensity
+    : RowDensityEnum.Comfortable;
+  return [rowDensity, setRowDensity];
+};
+
 export const MpdSupervisorReportProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
@@ -179,14 +196,7 @@ export const MpdSupervisorReportProvider: React.FC<{
   const [selectedTabKey, setSelectedTabKey] = useState<StaffDetailTabEnum>(() =>
     parseTabFromQuery(query?.tab),
   );
-  const [storedDensity, setRowDensity] = useLocalStorage<RowDensityEnum>(
-    rowDensityStorageKey,
-    RowDensityEnum.Comfortable,
-  );
-  // A value from an older build (or a hand edit) falls back to the default
-  const rowDensity = Object.values(RowDensityEnum).includes(storedDensity)
-    ? storedDensity
-    : RowDensityEnum.Comfortable;
+  const [rowDensity, setRowDensity] = useRowDensity();
 
   const debouncedSearch = useDebouncedValue(search, searchDebounceMs);
 
@@ -229,14 +239,7 @@ export const MpdSupervisorReportProvider: React.FC<{
   // must not linger over it.
   useEffect(() => {
     setLoadMoreError(undefined);
-  }, [
-    debouncedSearch,
-    team,
-    department,
-    employmentType,
-    userPersonTypes,
-    activeQuickFilter,
-  ]);
+  }, [queryVariables]);
 
   // The spouse merge needs the whole result, so the rest of
   // it is fetched without waiting for the list to be scrolled. A failed page
@@ -370,6 +373,7 @@ export const MpdSupervisorReportProvider: React.FC<{
       closePanel: () => setSelectedMember(undefined),
       search,
       setSearch,
+      searchPending: search !== debouncedSearch,
       team,
       setTeam,
       department,
@@ -405,6 +409,7 @@ export const MpdSupervisorReportProvider: React.FC<{
       selectedMember,
       legendOpen,
       search,
+      debouncedSearch,
       team,
       department,
       employmentType,

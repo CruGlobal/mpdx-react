@@ -40,6 +40,9 @@ const mockRequest = {
   calculations: {
     currentSalaryCap: 50000,
     staffAccountBalance: 10000,
+    staffAccountDeficitLimit: 0,
+    unpaidHouseholdAsrAmount: 0,
+    unpaidHouseholdAsrs: [],
     availableStaffAccountBalance: 10000,
     ytdAsrAmount: 0,
     grossAnnualSalary: 40000,

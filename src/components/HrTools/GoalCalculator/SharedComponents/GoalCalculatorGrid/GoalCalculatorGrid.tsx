@@ -15,6 +15,8 @@ import {
   TextField,
   Typography,
   styled,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import {
   GridActionsCellItem,
@@ -84,6 +86,8 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
   const { label: categoryName } = category;
   const accountListId = useAccountListId();
   const {
@@ -450,8 +454,27 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       : null;
 
     const content = (
-      <Box sx={{ display: 'flex', gap: 1 }}>
-        <span>{params.value}</span>
+      <Box
+        sx={{ display: 'flex', alignItems: 'center', gap: 1, height: '100%' }}
+      >
+        {/* Long names end in an ellipsis so the info button stays in view.
+            Phones wrap them onto a second line first. */}
+        <Box
+          component="span"
+          sx={{
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            ...(isPhone && {
+              display: '-webkit-box',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: 2,
+              whiteSpace: 'normal',
+              lineHeight: theme.typography.body2.lineHeight,
+            }),
+          }}
+        >
+          {params.value}
+        </Box>
         {rightPanelContent && (
           <IconButton
             onClick={() => setRightPanelContent(rightPanelContent)}
@@ -478,12 +501,16 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
     return formattedValue;
   };
 
+  // Phones drop the desktop minimums so name, amount and delete fit on one row,
+  // with the name getting about 2/3 of the room. Amount keeps 84px for totals
+  // like $12,345.67. Use numbers, not undefined, because the grid keeps the old
+  // value when the new one is undefined.
   const columns: GridColDef[] = [
     {
       field: 'label',
       headerName: t('Expense Name'),
-      flex: 1,
-      minWidth: 200,
+      flex: isPhone ? 2 : 1,
+      minWidth: isPhone ? 0 : 200,
       editable: true,
       renderCell: renderLabelCell,
     },
@@ -491,7 +518,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       field: 'amount',
       headerName: t('Amount'),
       flex: 1,
-      minWidth: 150,
+      minWidth: isPhone ? 84 : 150,
       editable: true,
       type: 'number',
       align: 'center',
@@ -506,7 +533,10 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
             field: 'actions',
             type: 'actions',
             headerName: '',
-            width: 60,
+            // On phones the button fills the column as a 44px tap target. The
+            // minWidth overrides the grid's 50px default.
+            width: isPhone ? 44 : 60,
+            minWidth: 44,
             getActions: (params) => {
               // Don't show delete action for total row
               if (params.id === 'total') {
@@ -521,6 +551,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
                     label="forbidden"
                     disabled
                     showInMenu={false}
+                    size={isPhone ? 'large' : 'small'}
                   />,
                 ];
               }
@@ -532,6 +563,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
                   label="Delete"
                   onClick={() => handleDelete(params.id)}
                   showInMenu={false}
+                  size={isPhone ? 'large' : 'small'}
                 />,
               ];
             },
@@ -601,6 +633,11 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
             <BaseGrid
               rows={dataWithTotal}
               columns={columns}
+              // Taller phone rows hold the 44px delete button
+              {...(isPhone && {
+                rowHeight: 48,
+                sx: { '.MuiDataGrid-cell[data-field="actions"]': { p: 0 } },
+              })}
               processRowUpdate={processRowUpdate}
               isCellEditable={(params) => {
                 // Read-only goals reject all edits

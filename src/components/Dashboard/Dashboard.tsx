@@ -2,6 +2,7 @@ import React, { ReactElement, useEffect } from 'react';
 import { Box, Container, Grid } from '@mui/material';
 import { motion } from 'framer-motion';
 import { GetDashboardQuery } from 'pages/accountLists/GetDashboard.generated';
+import { helpButtonSpace } from 'src/components/Helpjuice/helpButtonSpace';
 import { useUserOptionQuery } from 'src/hooks/UserPreference.generated';
 import { ConfirmUserGroupModal } from '../Shared/ConfirmUserGroupModal/ConfirmUserGroupModal';
 import Balance from './Balance';
@@ -52,7 +53,7 @@ const Dashboard = ({ data, accountListId }: Props): ReactElement => {
   return (
     <>
       <Welcome firstName={data.user.firstName ?? undefined} />
-      <Box py={5}>
+      <Box pt={5} sx={helpButtonSpace}>
         <Container>
           <motion.div
             initial="initial"

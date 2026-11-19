@@ -13,8 +13,10 @@ import { ContactInformation } from '../../CompleteForm/ContactInformation/Contac
 import { Deduction } from '../../CompleteForm/Deduction/Deduction';
 import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetAdditionalSalary';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
+import { useApprovalNote } from '../../Shared/useApprovalNote';
 import { useFormUserInfo } from '../../Shared/useFormUserInfo';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
+import { AvailableBalanceTooltip } from '../../SharedComponents/AvailableBalanceTooltip';
 import { MissingLocationAlert } from '../../SharedComponents/MissingLocationAlert';
 import { SpouseComponent } from '../../SharedComponents/SpouseComponent';
 import { ValidationAlert } from '../../SharedComponents/ValidationAlert';
@@ -25,7 +27,8 @@ export const NewForm: React.FC = () => {
   const { t } = useTranslation();
   const { calculations, hcmLoading } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
-  const { name, primaryAccountBalance, remainingCap } = useFormUserInfo();
+  const { name, availableAccountBalance, remainingCap } = useFormUserInfo();
+  const approvalNote = useApprovalNote();
   const individualCap = calculations?.currentSalaryCap ?? 0;
 
   const { exceedsCap } = useSalaryCalculations({
@@ -47,13 +50,15 @@ export const NewForm: React.FC = () => {
         ) : (
           <NameDisplay
             names={name ?? ''}
-            titleOne={t('Primary Account Balance')}
-            amountOne={primaryAccountBalance}
+            titleOne={t('Available for This Request')}
+            titleOneAdornment={<AvailableBalanceTooltip />}
+            amountOne={availableAccountBalance}
             titleTwo={t('Your Maximum Allowable Salary (CAP)')}
             amountTwo={individualCap}
             titleThree={t('Remaining Allowable Salary')}
             amountThree={remainingCap}
             spouseComponent={<SpouseComponent />}
+            note={approvalNote}
             showContent
           />
         )}

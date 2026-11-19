@@ -6,6 +6,11 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { placePromise, setupMocks } from '__tests__/util/googlePlacesMock';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  desktopWidth,
+  getStyleAtWidth,
+  phoneWidth,
+} from '__tests__/util/styleAtWidth';
 import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { CreateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/CreateContactAddress.generated';
 import { StatusEnum } from 'src/graphql/types.generated';
@@ -87,6 +92,198 @@ describe('CreateMultipleContacts', () => {
     ]);
   });
 
+  describe('layout by screen width', () => {
+    // A tablet in portrait, between MUI's sm (600px) and md (900px)
+    const tabletWidth = 768;
+    const columns = [
+      'First',
+      'Spouse',
+      'Last',
+      'Street Address',
+      'Phone',
+      'Email',
+      'Status',
+    ];
+    const wideColumns = ['Street Address', 'Email', 'Status'];
+
+    // jsdom doesn't lay anything out, so every element reports 0 for its
+    // widths and scroll position. Report the sizes a browser would measure for
+    // the element that scrolls the table and leave every other element alone.
+    const scrollMetrics = { scrollWidth: 0, clientWidth: 0, scrollLeft: 0 };
+    type ScrollMetric = keyof typeof scrollMetrics;
+    const metricNames: ScrollMetric[] = [
+      'scrollWidth',
+      'clientWidth',
+      'scrollLeft',
+    ];
+    const metricDescriptors = metricNames.map((name) => ({
+      name,
+      inherited: Object.getOwnPropertyDescriptor(Element.prototype, name),
+      own: Object.getOwnPropertyDescriptor(HTMLElement.prototype, name),
+    }));
+
+    const isTableScroller = (element: Element): boolean =>
+      element.firstElementChild?.tagName === 'TABLE';
+
+    const mockScrollMetrics = (
+      metrics: Pick<typeof scrollMetrics, 'scrollWidth' | 'clientWidth'>,
+    ) => {
+      Object.assign(scrollMetrics, metrics, { scrollLeft: 0 });
+      metricDescriptors.forEach(({ name, inherited }) => {
+        Object.defineProperty(HTMLElement.prototype, name, {
+          configurable: true,
+          get(this: HTMLElement) {
+            return isTableScroller(this)
+              ? scrollMetrics[name]
+              : inherited?.get?.call(this);
+          },
+          set(this: HTMLElement, value: number) {
+            if (isTableScroller(this)) {
+              scrollMetrics[name] = value;
+            } else {
+              inherited?.set?.call(this, value);
+            }
+          },
+        });
+      });
+    };
+
+    afterEach(() => {
+      metricDescriptors.forEach(({ name, own }) => {
+        if (own) {
+          Object.defineProperty(HTMLElement.prototype, name, own);
+        } else {
+          Reflect.deleteProperty(HTMLElement.prototype, name);
+        }
+      });
+    });
+
+    // Swiping the table in a browser moves its scroll position and fires a
+    // scroll event, so do the same here
+    const scrollTable = (table: HTMLElement, scrollLeft: number) => {
+      const scroller = table.parentElement as HTMLElement;
+      act(() => {
+        scroller.scrollLeft = scrollLeft;
+        scroller.dispatchEvent(new Event('scroll'));
+      });
+    };
+
+    const renderOneRow = () =>
+      render(
+        <ThemeProvider theme={theme}>
+          <SnackbarProvider>
+            <TestRouter router={router}>
+              <GqlMockedProvider>
+                <CreateMultipleContacts
+                  accountListId={accountListId}
+                  handleClose={handleClose}
+                  rows={1}
+                />
+              </GqlMockedProvider>
+            </TestRouter>
+          </SnackbarProvider>
+        </ThemeProvider>,
+      );
+
+    it('keeps the 7-column table with its header row on tablets', () => {
+      const { getAllByRole } = renderOneRow();
+      const [headerRow, bodyRow] = getAllByRole('row');
+
+      expect(
+        getAllByRole('columnheader').map((cell) => cell.textContent),
+      ).toEqual(columns);
+      expect(getStyleAtWidth(headerRow, 'display', tabletWidth)).toBe('flex');
+      expect(getStyleAtWidth(bodyRow, 'display', tabletWidth)).toBe('flex');
+      expect(getStyleAtWidth(bodyRow, 'flex-direction', tabletWidth)).not.toBe(
+        'column',
+      );
+    });
+
+    it('gives each tablet field room to read what you type', () => {
+      const { getAllByRole } = renderOneRow();
+      const headerCells = getAllByRole('columnheader');
+      const bodyCells = Array.from(
+        getAllByRole('row')[1].querySelectorAll('td'),
+      );
+
+      expect(bodyCells).toHaveLength(columns.length);
+      bodyCells.forEach((cell, index) => {
+        const column = cell.getAttribute('data-label') ?? '';
+        const minWidth = parseFloat(
+          getStyleAtWidth(cell, 'min-width', tabletWidth),
+        );
+
+        expect(column).toBe(columns[index]);
+        expect(minWidth).toBeGreaterThanOrEqual(
+          wideColumns.includes(column) ? 200 : 160,
+        );
+        // The header cell above it is just as wide, so the columns line up
+        expect(
+          getStyleAtWidth(headerCells[index], 'min-width', tabletWidth),
+        ).toBe(getStyleAtWidth(cell, 'min-width', tabletWidth));
+      });
+    });
+
+    it('still stacks each contact into a labeled card on phones', () => {
+      const { getAllByRole } = renderOneRow();
+      const [headerRow, bodyRow] = getAllByRole('row');
+
+      expect(getStyleAtWidth(bodyRow, 'flex-direction', phoneWidth)).toBe(
+        'column',
+      );
+      expect(getStyleAtWidth(headerRow, 'display', phoneWidth)).toBe('none');
+      expect(
+        Array.from(bodyRow.querySelectorAll('td')).map((cell) =>
+          cell.getAttribute('data-label'),
+        ),
+      ).toEqual(columns);
+    });
+
+    it('fades the edge that has more columns past it', () => {
+      // About how wide the 7 tablet columns are next to a tablet-sized dialog
+      mockScrollMetrics({ scrollWidth: 1350, clientWidth: 700 });
+      const { getByRole, getByTestId, queryByTestId } = renderOneRow();
+
+      expect(getByTestId('TableScrollFadeRight')).toBeInTheDocument();
+      expect(queryByTestId('TableScrollFadeLeft')).not.toBeInTheDocument();
+
+      scrollTable(getByRole('table'), 300);
+      expect(getByTestId('TableScrollFadeLeft')).toBeInTheDocument();
+      expect(getByTestId('TableScrollFadeRight')).toBeInTheDocument();
+
+      scrollTable(getByRole('table'), 650);
+      expect(getByTestId('TableScrollFadeLeft')).toBeInTheDocument();
+      expect(queryByTestId('TableScrollFadeRight')).not.toBeInTheDocument();
+    });
+
+    it('shows no scroll fade when the whole table fits', () => {
+      mockScrollMetrics({ scrollWidth: 1100, clientWidth: 1100 });
+      const { queryByTestId } = renderOneRow();
+
+      expect(queryByTestId('TableScrollFadeLeft')).not.toBeInTheDocument();
+      expect(queryByTestId('TableScrollFadeRight')).not.toBeInTheDocument();
+    });
+
+    it('keeps desktop the same from 900px up', () => {
+      mockScrollMetrics({ scrollWidth: 1350, clientWidth: 700 });
+      const { getAllByRole, getByTestId } = renderOneRow();
+      const [headerRow, bodyRow] = getAllByRole('row');
+      const fade = getByTestId('TableScrollFadeRight');
+      const firstCell = bodyRow.querySelector('td') as HTMLElement;
+
+      expect(getStyleAtWidth(fade, 'display', tabletWidth)).not.toBe('none');
+      expect(getStyleAtWidth(fade, 'display', 900)).toBe('none');
+      expect(getStyleAtWidth(fade, 'display', desktopWidth)).toBe('none');
+
+      expect(getAllByRole('columnheader')).toHaveLength(columns.length);
+      expect(getStyleAtWidth(headerRow, 'display', 900)).toBe('flex');
+      expect(getStyleAtWidth(bodyRow, 'flex-direction', 900)).not.toBe(
+        'column',
+      );
+      // The tablet widths stop at 900px, so desktop keeps its old column size
+      expect(getStyleAtWidth(firstCell, 'min-width', 1000)).toBe('130px');
+    });
+  });
   it('closes menu', () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>

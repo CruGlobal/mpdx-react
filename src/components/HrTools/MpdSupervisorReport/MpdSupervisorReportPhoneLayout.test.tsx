@@ -23,6 +23,10 @@ import {
   managedStaffTeamsMock,
 } from './mpdSupervisorReportMocks';
 
+jest.mock('react-csv/lib/core', () => ({
+  buildURI: jest.fn(() => 'blob:supervisor-report'),
+}));
+
 const renderReport = () =>
   render(
     <TestRouter>
@@ -72,5 +76,33 @@ describe('MpdSupervisorReport month column headers', () => {
     expect(
       getStyleAtWidth(getByTestId('month-headers'), 'display', width),
     ).toBe(display);
+  });
+});
+
+describe('MpdSupervisorReport header', () => {
+  it('offers the loaded rows as a CSV download', async () => {
+    const { findByRole } = renderReport();
+
+    expect(await findByRole('link', { name: 'Download CSV' })).toHaveAttribute(
+      'href',
+      'blob:supervisor-report',
+    );
+  });
+});
+
+// With the filter panel open the header is narrow on desktop, so the title
+// must stay on one line
+describe('MpdSupervisorReport desktop header', () => {
+  it('keeps the title on one line with the summary under it', async () => {
+    const { findByText, getByText, getByTestId } = renderReport();
+    await findByText(/^Showing 1 of 1/);
+    const title = getByText('MPD Supervisor Report');
+    const titleBox = getByTestId('title-box');
+
+    expect(getStyleAtWidth(title, 'white-space', desktopWidth)).toBe('nowrap');
+    expect(getStyleAtWidth(title, 'white-space', phoneWidth)).toBe('');
+    expect(getStyleAtWidth(titleBox, 'flex-direction', desktopWidth)).toBe(
+      'column',
+    );
   });
 });

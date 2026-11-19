@@ -3,9 +3,11 @@ import { ThemeProvider } from '@mui/material/styles';
 import { waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  DeepPartialMock,
+  GqlMockedProvider,
+} from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
 import {
   afterTestResizeObserver,
@@ -39,7 +41,7 @@ interface TestComponentProps {
   requestError?: boolean;
   isSpouse?: boolean;
   cache?: ApolloCache<object>;
-  latestRequest?: DeepPartial<
+  latestRequest?: DeepPartialMock<
     AdditionalSalaryRequestQuery['latestAdditionalSalaryRequest']
   >;
 }
