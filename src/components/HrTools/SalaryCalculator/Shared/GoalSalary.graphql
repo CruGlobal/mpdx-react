@@ -4,6 +4,7 @@ query GoalSalary($accountListId: ID!, $after: String) {
       ...ListGoalCalculation
       firstName
       spouseFirstName
+      currentUserPerson
     }
     pageInfo {
       endCursor

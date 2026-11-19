@@ -21,6 +21,8 @@ export const makeGoal = (
   calculationsYear: currentYear,
   updatedAt: '2020-01-01T00:00:00Z',
   firstName: 'John',
+  // Older goals have no person numbers, so they fall back to matching names
+  currentUserPerson: null,
   familySize: MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren,
   netPaycheckAmount: 2000,
   spouseNetPaycheckAmount: 1000,

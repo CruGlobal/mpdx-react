@@ -2,7 +2,10 @@ import { ReactElement } from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { MpdGoalBenefitsConstantSizeEnum } from 'src/graphql/types.generated';
+import {
+  GoalCalculationPerson,
+  MpdGoalBenefitsConstantSizeEnum,
+} from 'src/graphql/types.generated';
 import { GoalSalaryQuery } from './GoalSalary.generated';
 import {
   GoalMock,
@@ -144,6 +147,38 @@ describe('useGoalSalary', () => {
     expect(
       result.current.getGoalSalaries(calculations, calculations),
     ).toBeNull();
+  });
+
+  it("swaps the salaries when the goal's person numbers say the spouse made it", async () => {
+    const { result } = renderGoalSalary([
+      makeGoal('1', {
+        firstName: 'Bob',
+        spouseFirstName: 'Sue',
+        currentUserPerson: GoalCalculationPerson.Spouse,
+      }),
+    ]);
+    await waitForLoad(result);
+
+    expect(result.current.getGoalSalaries(calculations, calculations)).toEqual({
+      salary: 18000,
+      spouseSalary: 36000,
+    });
+  });
+
+  it("trusts the goal's person numbers over its names", async () => {
+    const { result } = renderGoalSalary([
+      makeGoal('1', {
+        firstName: 'Jane',
+        spouseFirstName: 'John',
+        currentUserPerson: GoalCalculationPerson.User,
+      }),
+    ]);
+    await waitForLoad(result);
+
+    expect(result.current.getGoalSalaries(calculations, calculations)).toEqual({
+      salary: 36000,
+      spouseSalary: 18000,
+    });
   });
 
   it('gives a single goal to the staff member whatever its name', async () => {

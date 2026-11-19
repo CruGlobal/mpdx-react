@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { DateTime } from 'luxon';
+import { GoalCalculationPerson } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import {
@@ -35,8 +36,9 @@ const isNamed = (person: HcmPerson | null, name: string | null | undefined) => {
 
 /**
  * Whether the goal's first person is the staff member's spouse. The goal's first person is whoever
- * created it, and the goal only stores the names typed on it, so match those to HCM. Null when the
- * names don't say who is who.
+ * created it. Newer goals store each person's HCM person number, so the API says which person the
+ * signed-in staff member is. Older goals only store the names typed on them, so match those to HCM.
+ * Null when neither says who is who.
  */
 const isSpouseFirst = (
   goal: Goal,
@@ -45,6 +47,9 @@ const isSpouseFirst = (
 ): boolean | null => {
   if (!hasStaffSpouse(goal.familySize)) {
     return false;
+  }
+  if (goal.currentUserPerson) {
+    return goal.currentUserPerson === GoalCalculationPerson.Spouse;
   }
 
   const userFirst =
