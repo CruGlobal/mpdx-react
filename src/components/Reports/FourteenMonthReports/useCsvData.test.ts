@@ -1,9 +1,6 @@
 import { renderHook } from '@testing-library/react-hooks';
 import { StatusEnum } from 'src/graphql/types.generated';
-import {
-  CurrencyTable,
-  FourteenMonthReportCurrencyType,
-} from './FourteenMonthReport';
+import { CurrencyTable } from './FourteenMonthReport';
 import { Contact } from './Layout/Table/TableHead/TableHead';
 import { buildContact, monthly } from './monthlyEquivalents.mock';
 import { useCsvData } from './useCsvData';
@@ -109,12 +106,11 @@ const mockTables = (): CurrencyTable[] => [
 
 describe('useCsvData', () => {
   it('generates CSV data', async () => {
-    const { result } = renderHook(
-      () => useCsvData(mockTables(), FourteenMonthReportCurrencyType.Donor),
-      {},
-    );
+    const { result } = renderHook(() => useCsvData(mockTables()), {});
 
     expect(result.current).toEqual([
+      ['Solid Monthly Support', 167, 'USD'],
+      ['Solid Monthly Support', 0, 'CAD'],
       ['Currency', 'USD', '$'],
       [
         'Partner',
@@ -245,24 +241,6 @@ describe('useCsvData', () => {
     ]);
   });
 
-  it('puts Solid Monthly Support for each currency at the top of the salary currency export', () => {
-    const { result } = renderHook(
-      () => useCsvData(mockTables(), FourteenMonthReportCurrencyType.Salary),
-      {},
-    );
-
-    // Quarterly: $1,100 / 12 = $92. Annual: $900 / 12 = $75.
-    expect(result.current[0]).toEqual(['Solid Monthly Support', 167, 'USD']);
-    expect(result.current[1]).toEqual(['Solid Monthly Support', 0, 'CAD']);
-
-    // The rest of the file matches the partner currency export
-    const { result: donorResult } = renderHook(
-      () => useCsvData(mockTables(), FourteenMonthReportCurrencyType.Donor),
-      {},
-    );
-    expect(result.current.slice(2)).toEqual(donorResult.current);
-  });
-
   it('names the partners Solid Monthly Support could not convert', () => {
     // Contact names are usually "Last, First"
     const contacts = ['Rivera, Ana', 'Lee, Sam'].map((name) =>
@@ -273,10 +251,7 @@ describe('useCsvData', () => {
       }),
     );
     const tables = [{ ...mockTables()[0], orderedContacts: contacts }];
-    const { result } = renderHook(
-      () => useCsvData(tables, FourteenMonthReportCurrencyType.Salary),
-      {},
-    );
+    const { result } = renderHook(() => useCsvData(tables), {});
 
     expect(result.current[0]).toEqual([
       'Solid Monthly Support',
@@ -286,13 +261,52 @@ describe('useCsvData', () => {
     ]);
   });
 
-  it('leaves Solid Monthly Support off the partner currency export', () => {
-    const { result } = renderHook(
-      () => useCsvData(mockTables(), FourteenMonthReportCurrencyType.Donor),
-      {},
-    );
+  it('puts Solid Monthly Support for each currency at the top of the export', () => {
+    // Partner currency tables hold gifts in the table's own currency
+    const tables = [
+      mockTables()[0],
+      {
+        ...mockTables()[1],
+        orderedContacts: [
+          buildContact({
+            name: 'Canadian Partner',
+            pledgeCurrency: 'CAD',
+            giftCurrency: 'CAD',
+            gifts: [0, ...monthly(80, 12)],
+          }),
+        ],
+      },
+    ];
+    const { result } = renderHook(() => useCsvData(tables), {});
 
-    expect(result.current[0]).toEqual(['Currency', 'USD', '$']);
-    expect(result.current.flat()).not.toContain('Solid Monthly Support');
+    // Quarterly: $1,100 / 12 = $92. Annual: $900 / 12 = $75.
+    expect(result.current[0]).toEqual(['Solid Monthly Support', 167, 'USD']);
+    expect(result.current[1]).toEqual(['Solid Monthly Support', 80, 'CAD']);
+    expect(result.current[2]).toEqual(['Currency', 'USD', '$']);
+  });
+
+  it('names partner currency partners whose commitment is in another currency', () => {
+    // No gift on the CAD table is in USD, so there is no rate for the USD commitment
+    const tables = [
+      {
+        ...mockTables()[1],
+        orderedContacts: [
+          buildContact({
+            name: 'Rivera, Ana',
+            pledgeCurrency: 'USD',
+            giftCurrency: 'CAD',
+            gifts: [0, ...monthly(130, 12)],
+          }),
+        ],
+      },
+    ];
+    const { result } = renderHook(() => useCsvData(tables), {});
+
+    expect(result.current[0]).toEqual([
+      'Solid Monthly Support',
+      0,
+      'CAD',
+      'Not counted, no exchange rate for their commitment currency: Rivera, Ana',
+    ]);
   });
 });

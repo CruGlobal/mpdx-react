@@ -89,7 +89,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
     setOrderBy(property);
   };
 
-  const csvData = useCsvData(currencyTables, currencyType);
+  const csvData = useCsvData(currencyTables);
 
   return (
     <Box>
