@@ -1,4 +1,21 @@
-import { monthlyAverages } from './monthlyAverages';
+import { monthlyAverages, toChartData } from './chartData';
+
+describe('toChartData', () => {
+  it('labels each month and charts missing amounts as zero', () => {
+    expect(
+      toChartData(
+        [
+          { month: '2023-01', contributions: 4000, expenses: 3500, net: 500 },
+          { month: '2023-02', contributions: null, expenses: null, net: null },
+        ],
+        'en-US',
+      ),
+    ).toEqual([
+      { month: 'Jan 2023', income: 4000, expenses: 3500, net: 500 },
+      { month: 'Feb 2023', income: 0, expenses: 0, net: 0 },
+    ]);
+  });
+});
 
 describe('monthlyAverages', () => {
   it('averages contributions and expenses across the months', () => {

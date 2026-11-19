@@ -6,7 +6,6 @@ import {
   BarChart,
   LabelList,
   Legend,
-  ReferenceLine,
   Tooltip,
   XAxis,
   YAxis,
@@ -16,17 +15,16 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { ChartFrame } from '../ChartFrame';
 import { ChartLegendContent } from '../ChartLegendContent/ChartLegendContent';
+import {
+  MonthlySummaryAverages,
+  averageReferenceLines,
+} from './averageReferenceLines';
 
 export interface MonthlySummaryChartData {
   month: string;
   income: number;
   expenses: number;
   net: number;
-}
-
-export interface MonthlySummaryAverages {
-  income?: number;
-  expenses?: number;
 }
 
 interface MonthlySummaryChartProps {
@@ -68,25 +66,6 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
       : currencyFormat(value, currency, locale, { showTrailingZeros: true });
 
   const incomeName = overrideIncomeText ?? t('Income');
-
-  const averageLines = maskAmounts
-    ? []
-    : [
-        {
-          key: 'income',
-          value: averages?.income,
-          name: incomeName,
-          color: chartColors[0],
-          labelPosition: 'insideTopLeft' as const,
-        },
-        {
-          key: 'expenses',
-          value: averages?.expenses,
-          name: t('Expenses'),
-          color: chartColors[1],
-          labelPosition: 'insideBottomLeft' as const,
-        },
-      ];
 
   const monthlyTotals = useMemo(
     (): MonthlyTotal[] =>
@@ -204,26 +183,9 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
                 />
               )}
             </Bar>
-            {averageLines.map(({ key, value, name, color, labelPosition }) =>
-              value === undefined ? null : (
-                <ReferenceLine
-                  key={key}
-                  y={value}
-                  stroke={color}
-                  strokeWidth={2}
-                  strokeDasharray="6 4"
-                  label={{
-                    value: t('{{name}} 12-month avg: {{amount}}', {
-                      name,
-                      amount: formatAmount(value),
-                    }),
-                    position: labelPosition,
-                    fill: color,
-                    fontSize: theme.typography.body2.fontSize,
-                  }}
-                />
-              ),
-            )}
+            {averages &&
+              !maskAmounts &&
+              averageReferenceLines({ t, averages, incomeName, formatAmount })}
             <Legend
               verticalAlign="top"
               align="center"
