@@ -13,6 +13,7 @@ query Hcm(
     usStaffGroup
     staffInfo {
       id
+      firstName
       preferredName
       lastName
       personNumber

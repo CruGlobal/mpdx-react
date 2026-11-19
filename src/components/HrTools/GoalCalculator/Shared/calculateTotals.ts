@@ -85,10 +85,10 @@ export const calculateGoalSubtotals = ({
   };
 };
 
-export const calculateGoalTotals = (
+// The worksheet's salary lines (1A-1J), which depend only on the goal, not on the year's constants
+const calculateGoalSalary = (
   goalCalculation: ListGoalCalculationFragment | null,
-  constants: FormattedConstants,
-): GoalTotals => {
+) => {
   const married = hasStaffSpouse(goalCalculation?.familySize);
   const netPaycheckAmount = goalCalculation?.netPaycheckAmount ?? 0;
   const spouseNetPaycheckAmount =
@@ -98,7 +98,10 @@ export const calculateGoalTotals = (
   const spouseTaxesPercentage = toPercentage(
     married ? goalCalculation?.spouseTaxesPercentage : null,
   );
-  const paySplitPercentage = netPaycheckAmount / totalNetPaycheckAmount || 1;
+  // With no paychecks at all, the staff member's rates apply
+  const paySplitPercentage = totalNetPaycheckAmount
+    ? netPaycheckAmount / totalNetPaycheckAmount
+    : 1;
   const spousePaySplitPercentage = 1 - paySplitPercentage;
   const totalTaxesPercentage =
     paySplitPercentage * taxesPercentage +
@@ -129,10 +132,6 @@ export const calculateGoalTotals = (
     ) *
       spousePaySplitPercentage;
 
-  const ministryExpensesTotal = goalCalculation
-    ? calculateFamilyTotal(goalCalculation.ministryFamily)
-    : 0;
-
   const taxes = netMonthlySalary * totalTaxesPercentage;
   const salaryPreIra = netMonthlySalary + taxes;
 
@@ -142,6 +141,49 @@ export const calculateGoalTotals = (
     salaryPreIra / (1 - traditionalContributionPercentage) - salaryPreIra;
   const grossMonthlySalary =
     salaryPreIra + rothContribution + traditionalContribution;
+
+  return {
+    paySplitPercentage,
+    salary: {
+      monthlyBudget,
+      netMonthlySalary,
+      taxesPercentage: totalTaxesPercentage,
+      taxes,
+      salaryPreIra,
+      rothContributionPercentage,
+      traditionalContributionPercentage,
+      rothContribution,
+      traditionalContribution,
+      grossMonthlySalary,
+    },
+  };
+};
+
+/**
+ * Split the goal's gross annual salary (worksheet line 1J) between the staff member and their spouse
+ * by each one's share of the net paychecks.
+ */
+export const calculateGoalGrossAnnualSalaries = (
+  goalCalculation: ListGoalCalculationFragment | null,
+): { grossAnnualSalary: number; spouseGrossAnnualSalary: number } => {
+  const { paySplitPercentage, salary } = calculateGoalSalary(goalCalculation);
+  const grossAnnualSalary = salary.grossMonthlySalary * 12;
+
+  return {
+    grossAnnualSalary: grossAnnualSalary * paySplitPercentage,
+    spouseGrossAnnualSalary: grossAnnualSalary * (1 - paySplitPercentage),
+  };
+};
+
+export const calculateGoalTotals = (
+  goalCalculation: ListGoalCalculationFragment | null,
+  constants: FormattedConstants,
+): GoalTotals => {
+  const { salary } = calculateGoalSalary(goalCalculation);
+
+  const ministryExpensesTotal = goalCalculation
+    ? calculateFamilyTotal(goalCalculation.ministryFamily)
+    : 0;
 
   const benefitsCharge =
     constants.goalBenefitsPlans.find(
@@ -155,17 +197,9 @@ export const calculateGoalTotals = (
     constants.goalMiscConstants.RATES?.ATTRITION_RATE?.fee ?? 0;
 
   return {
-    monthlyBudget,
-    netMonthlySalary,
-    taxesPercentage: totalTaxesPercentage,
-    taxes,
-    salaryPreIra,
-    rothContributionPercentage,
-    traditionalContributionPercentage,
-    rothContribution,
-    traditionalContribution,
+    ...salary,
     ...calculateGoalSubtotals({
-      grossMonthlySalary,
+      grossMonthlySalary: salary.grossMonthlySalary,
       ministryExpensesTotal,
       benefitsCharge,
       adminRate,
