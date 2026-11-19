@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { GraphQLError } from 'graphql';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
   GoalCalculatorTestWrapper,
@@ -15,14 +16,25 @@ const mutationSpy = jest.fn();
 type TestComponentProps = {
   directInputNull?: boolean;
   readOnly?: boolean;
+  mutationFails?: boolean;
 };
 
 const TestComponent: React.FC<TestComponentProps> = ({
   directInputNull = false,
   readOnly = false,
+  mutationFails = false,
 }) => (
   <GqlMockedProvider<{ GoalCalculation: GoalCalculationQuery }>
     mocks={{
+      ...(mutationFails
+        ? {
+            UpdateHouseholdDirectInput: {
+              updateBudgetFamily: () => {
+                throw new GraphQLError('Server error');
+              },
+            },
+          }
+        : {}),
       GoalCalculation: {
         goalCalculation: {
           ...goalCalculationMock,
@@ -191,6 +203,25 @@ describe('HouseholdExpensesHeader', () => {
           },
         ),
       );
+    });
+
+    it('should not leave an unhandled rejection when the update fails', async () => {
+      const onUnhandled = jest.fn();
+      process.on('unhandledRejection', onUnhandled);
+      const { findByRole } = render(<TestComponent mutationFails />);
+
+      userEvent.click(
+        await findByRole('button', { name: 'Use paycheck amount' }),
+      );
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation(
+          'UpdateHouseholdDirectInput',
+        ),
+      );
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      process.off('unhandledRejection', onUnhandled);
+      expect(onUnhandled).not.toHaveBeenCalled();
     });
   });
 
