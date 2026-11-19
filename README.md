@@ -54,6 +54,16 @@ Alternatively, download from the [official site](https://git-lfs.com/) and run `
 git lfs pull
 ```
 
+### Git hooks
+
+`yarn` installs Git hooks with Husky. Each commit lints and formats the staged files. Each push scans the new commits for secrets, typechecks, and runs the test files next to the files you changed. CI runs the full suite. The secrets scan needs [gitleaks](https://github.com/gitleaks/gitleaks), and skips with a warning if it isn't installed:
+
+```bash
+brew install gitleaks
+```
+
+Known findings in old commits are listed in `.gitleaksignore`.
+
 ### Running the local server
 
 Make sure you get the environment variables necessary for this project from another developer and put them in a `.env` file in the project's root directory.

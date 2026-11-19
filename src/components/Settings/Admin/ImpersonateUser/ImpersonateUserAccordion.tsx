@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import { ReactElement, useCallback, useEffect, useRef } from 'react';
+import { useApolloClient } from '@apollo/client';
 import {
   Alert,
   DialogActions,
@@ -17,6 +18,7 @@ import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { SubmitButton } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import { PaddedBox } from 'src/components/Shared/styledComponents/PaddedBox';
+import { clearSessionData } from 'src/lib/clearSessionData';
 import { getErrorMessage } from 'src/lib/error';
 import { getAppName } from 'src/lib/getAppName';
 import { AccordionProps } from '../../accordionHelper';
@@ -50,6 +52,7 @@ export const ImpersonateUserAccordion: React.FC<
   const { enqueueSnackbar } = useSnackbar();
   const appName = getAppName();
   const { push, query, isReady } = useRouter();
+  const client = useApolloClient();
 
   // Optional query params that prefill and auto-submit the form, ignored
   // entirely in production
@@ -88,6 +91,7 @@ export const ImpersonateUserAccordion: React.FC<
               variant: 'success',
             },
           );
+          await clearSessionData(client);
           push('/login');
         } else {
           setupImpersonateJson.errors.forEach((error) => {
@@ -102,7 +106,7 @@ export const ImpersonateUserAccordion: React.FC<
         });
       }
     },
-    [enqueueSnackbar, push, t],
+    [client, enqueueSnackbar, push, t],
   );
 
   // Auto-submit when both query params are present and valid

@@ -12,6 +12,7 @@ import {
 import { ApolloError } from '@apollo/client';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { useDrawerOpenState } from 'src/components/HrTools/Shared/CalculationReports/PanelLayout/useDrawerOpenState';
 import {
   FormEnum,
   PageEnum,
@@ -54,6 +55,8 @@ export type ContextType = {
   spousePreferredName: string;
   userEligibleForMHA: boolean;
   spouseEligibleForMHA: boolean;
+  userBoardApprovedForMHA: boolean;
+  spouseBoardApprovedForMHA: boolean;
   userApprovedOverallAmount: number | null;
   spouseApprovedOverallAmount: number | null;
   userTakenAmount: number | null;
@@ -198,23 +201,37 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     [spouseHcmData],
   );
 
+  // Who may start, duplicate or submit an MHA request: the IBS certification
+  // passes, or the person already has a board-approved MHA
   const userEligibleForMHA = useMemo(
-    () => userHcmData?.mhaEit?.mhaEligibility ?? false,
+    () => userHcmData?.mhaNewRequest?.mhaEligibility ?? false,
     [userHcmData],
   );
 
   const spouseEligibleForMHA = useMemo(
-    () => spouseHcmData?.mhaEit?.mhaEligibility ?? false,
+    () => spouseHcmData?.mhaNewRequest?.mhaEligibility ?? false,
+    [spouseHcmData],
+  );
+
+  // Board approval based: whether the person has an MHA now. A board approval
+  // date of any age counts, even when the IBS certification has expired.
+  const userBoardApprovedForMHA = useMemo(
+    () => userHcmData?.mhaBoardApproval?.mhaEligibility ?? false,
+    [userHcmData],
+  );
+
+  const spouseBoardApprovedForMHA = useMemo(
+    () => spouseHcmData?.mhaBoardApproval?.mhaEligibility ?? false,
     [spouseHcmData],
   );
 
   const userApprovedOverallAmount = useMemo(
-    () => userHcmData?.mhaRequest.currentApprovedOverallAmount ?? null,
+    () => userHcmData?.mhaRequest.boardApprovedOverallAmount ?? null,
     [userHcmData],
   );
 
   const spouseApprovedOverallAmount = useMemo(
-    () => spouseHcmData?.mhaRequest.currentApprovedOverallAmount ?? null,
+    () => spouseHcmData?.mhaRequest.boardApprovedOverallAmount ?? null,
     [spouseHcmData],
   );
 
@@ -228,7 +245,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     [spouseHcmData],
   );
 
-  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
+  const [isDrawerOpen, setIsDrawerOpen] = useDrawerOpenState();
   const toggleDrawer = useCallback(() => {
     setIsDrawerOpen((prev) => !prev);
   }, []);
@@ -258,6 +275,8 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       spousePreferredName,
       userEligibleForMHA,
       spouseEligibleForMHA,
+      userBoardApprovedForMHA,
+      spouseBoardApprovedForMHA,
       userApprovedOverallAmount,
       spouseApprovedOverallAmount,
       userTakenAmount,
@@ -292,6 +311,8 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       spousePreferredName,
       userEligibleForMHA,
       spouseEligibleForMHA,
+      userBoardApprovedForMHA,
+      spouseBoardApprovedForMHA,
       userApprovedOverallAmount,
       spouseApprovedOverallAmount,
       userTakenAmount,

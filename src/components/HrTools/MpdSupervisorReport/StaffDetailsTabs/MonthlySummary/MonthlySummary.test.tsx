@@ -10,6 +10,7 @@ import {
 import theme from 'src/theme';
 import { MonthlyPayrollSummaryQuery } from './MonthlyPayrollSummary.generated';
 import { StaffTabMonthlySummary } from './MonthlySummary';
+import { mockMonthlySummary } from './monthlySummaryMocks';
 
 type MonthlySummary = MonthlyPayrollSummaryQuery['monthlyPayrollSummary'];
 
@@ -24,30 +25,6 @@ jest.mock('recharts', () => {
     ),
   };
 });
-
-const mockMonthlySummary: MonthlySummary = [
-  {
-    month: '2023-01',
-    contributions: 4000,
-    expenses: 3500,
-    net: 500,
-    endBalance: 10000,
-  },
-  {
-    month: '2023-02',
-    contributions: 4200,
-    expenses: 4500,
-    net: -300,
-    endBalance: 9700,
-  },
-  {
-    month: '2023-03',
-    contributions: 3000,
-    expenses: 3200,
-    net: -200,
-    endBalance: -100,
-  },
-];
 
 interface TestComponentProps {
   monthlySummary: MonthlySummary;
@@ -79,6 +56,9 @@ const TestComponent: React.FC<TestComponentProps> = ({
 const columnHeaders = [
   'Month',
   'Contributions',
+  'Solid Monthly Support',
+  'Monthly Goal',
+  '% of Goal',
   'Expenses',
   'Net',
   'End Balance',
@@ -101,9 +81,36 @@ describe('StaffTabMonthlySummary', () => {
     expect(await findByRole('table')).toHaveTableStructure({
       columnHeaders,
       cells: [
-        ['Mar 2023', '$3,000.00', '($3,200.00)', '($200.00)', '($100.00)'],
-        ['Feb 2023', '$4,200.00', '($4,500.00)', '($300.00)', '$9,700.00'],
-        ['Jan 2023', '$4,000.00', '($3,500.00)', '$500.00', '$10,000.00'],
+        [
+          'Mar 2023',
+          '$3,000.00',
+          '$4,500.00',
+          'No goal set',
+          '—',
+          '($3,200.00)',
+          '($200.00)',
+          '($100.00)',
+        ],
+        [
+          'Feb 2023',
+          '$4,200.00',
+          '$4,500.00',
+          '$4,000.00',
+          '112.5%',
+          '($4,500.00)',
+          '($300.00)',
+          '$9,700.00',
+        ],
+        [
+          'Jan 2023',
+          '$4,000.00',
+          '$3,000.00',
+          '$4,000.00',
+          '75.0%',
+          '($3,500.00)',
+          '$500.00',
+          '$10,000.00',
+        ],
       ],
     });
   });
@@ -127,7 +134,7 @@ describe('StaffTabMonthlySummary', () => {
     expect(queryByText('No data available.')).not.toBeInTheDocument();
   });
 
-  it('renders a blank month and a placeholder in every amount when the summary fields are null', async () => {
+  it('renders a blank month, No goal set, and a placeholder in every amount when the summary fields are null', async () => {
     const { findByRole } = render(
       <TestComponent
         monthlySummary={[
@@ -137,6 +144,9 @@ describe('StaffTabMonthlySummary', () => {
             expenses: null,
             net: null,
             endBalance: null,
+            solidMonthlySupport: null,
+            monthlyGoal: null,
+            percentOfGoal: null,
           },
         ]}
       />,
@@ -144,7 +154,7 @@ describe('StaffTabMonthlySummary', () => {
 
     expect(await findByRole('table')).toHaveTableStructure({
       columnHeaders,
-      cells: [['', '—', '—', '—', '—']],
+      cells: [['', '—', '—', 'No goal set', '—', '—', '—', '—']],
     });
   });
 

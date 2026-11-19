@@ -43,6 +43,15 @@ const StyledInfoRow = styled(Box)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'flex-start',
   gap: theme.spacing(9),
+  paddingLeft: theme.spacing(2),
+  // On phones each label sits above its value, centered like the card title
+  [theme.breakpoints.down('sm')]: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 0,
+    paddingLeft: 0,
+    textAlign: 'center',
+  },
 }));
 
 const StyledActionBox = styled(Box)(({ theme }) => ({
@@ -52,6 +61,9 @@ const StyledActionBox = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(1),
   paddingRight: theme.spacing(1),
   paddingLeft: theme.spacing(1),
+  [theme.breakpoints.down('sm')]: {
+    '& .MuiButton-root': { minHeight: 44 },
+  },
 }));
 
 export interface GoalCardProps {
@@ -129,7 +141,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
         <StyledContentBox>
           <StyledContentInnerBox>
             <StyledInfoRow pb={1}>
-              <Typography variant="body1" fontWeight="bold" pl={2}>
+              <Typography variant="body1" fontWeight="bold">
                 {t('Goal Amount')}
               </Typography>
               <Typography data-testid="goal-amount-value" variant="body1">
@@ -144,7 +156,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
             <Divider />
 
             <StyledInfoRow pt={1}>
-              <Typography variant="body1" fontWeight="bold" pl={2}>
+              <Typography variant="body1" fontWeight="bold">
                 {t('Last Updated')}
               </Typography>
               <Typography data-testid="date-value" variant="body1">

@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import type { FC } from 'react';
 import { Box, Drawer, List, Theme, useMediaQuery } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
@@ -8,6 +8,10 @@ import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { NavPage, useNavPages } from '../../../../hooks/useNavPages';
 import { LogoLink } from '../LogoLink/LogoLink';
+import {
+  AddMenuItemsEnum,
+  renderDialog,
+} from '../TopBar/Items/AddMenu/AddMenu';
 import { NavItem } from './NavItem/NavItem';
 import { NavTools } from './NavTools/NavTools';
 
@@ -104,6 +108,16 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
 
   const { navPages: sections } = useNavPages(isCoaching);
 
+  // The Add dialogs render outside the drawer so they stay open after the drawer closes
+  const [selectedAddMenuItem, setSelectedAddMenuItem] =
+    useState<AddMenuItemsEnum | null>(null);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+
+  const handleOpenAddDialog = (menuItem: AddMenuItemsEnum) => {
+    setSelectedAddMenuItem(menuItem);
+    setAddDialogOpen(true);
+  };
+
   const drawerHidden = useMediaQuery<Theme>((theme) =>
     theme.breakpoints.up('md'),
   );
@@ -115,30 +129,36 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
   }, [pathname, drawerHidden]);
 
   return (
-    <Drawer
-      data-testid="NavBarDrawer"
-      anchor="left"
-      classes={{ paper: classes.mobileDrawer }}
-      onClose={onMobileClose}
-      open={openMobile}
-      variant="temporary"
-      sx={{ display: { xs: 'block', lg: 'none' } }}
-    >
-      <Box p={2} display="flex" justifyContent="center">
-        <LogoLink />
-      </Box>
-      {!onSetupTour && (
-        <Box p={2}>
-          {renderNavItems({
-            accountListId,
-            items: sections,
-            pathname,
-          })}
+    <>
+      <Drawer
+        data-testid="NavBarDrawer"
+        anchor="left"
+        classes={{ paper: classes.mobileDrawer }}
+        onClose={onMobileClose}
+        open={openMobile}
+        variant="temporary"
+        sx={{ display: { xs: 'block', lg: 'none' } }}
+      >
+        <Box p={2} display="flex" justifyContent="center">
+          <LogoLink />
         </Box>
-      )}
-      <Box p={2}>
-        <NavTools />
-      </Box>
-    </Drawer>
+        {!onSetupTour && (
+          <Box p={2}>
+            {renderNavItems({
+              accountListId,
+              items: sections,
+              pathname,
+            })}
+          </Box>
+        )}
+        <Box p={2}>
+          <NavTools
+            onClose={onMobileClose}
+            onOpenAddDialog={handleOpenAddDialog}
+          />
+        </Box>
+      </Drawer>
+      {renderDialog(selectedAddMenuItem, addDialogOpen, setAddDialogOpen)}
+    </>
   );
 };

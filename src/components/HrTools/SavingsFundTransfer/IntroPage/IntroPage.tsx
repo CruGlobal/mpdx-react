@@ -11,6 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { helpButtonSpace } from 'src/components/Helpjuice/helpButtonSpace';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -38,7 +39,7 @@ export const SavingsFundTransfer: React.FC<SavingsFundTransferProps> = ({
   const transferLink = `/accountLists/${accountListId}/hrTools/staffSavingFund/transfers`;
 
   return (
-    <Box>
+    <Box sx={helpButtonSpace}>
       <MultiPageHeader
         isNavListOpen={isNavListOpen}
         onNavListToggle={onNavListToggle}
@@ -129,9 +130,7 @@ export const SavingsFundTransfer: React.FC<SavingsFundTransferProps> = ({
               {t('to check it out and get started saving for future needs!')}
             </Typography>
             <Typography variant="body1" sx={{ mt: 2 }}>
-              {t(
-                'If you have any questions, please contact Staff Services at ',
-              )}
+              {t('If you have any questions, please email HR Services at ')}
               <Link
                 href="mailto:HR@cru.org"
                 underline="hover"
@@ -140,7 +139,7 @@ export const SavingsFundTransfer: React.FC<SavingsFundTransferProps> = ({
               >
                 HR@cru.org
               </Link>
-              .
+              {t(', or call (888) 278-7233 or (407) 826-2287.')}
             </Typography>
           </Box>
         </Container>

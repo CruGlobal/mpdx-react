@@ -8,6 +8,8 @@ import { FundBalancesQuery } from 'src/components/HrTools/SavingsFundTransfer/Re
 import { StaffAccountIdQuery } from 'src/components/HrTools/Shared/StaffAccountId.generated';
 import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { UrlFiltersProvider } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
+import { UsStaffGroupEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { PartnerGivingAnalysisQuery } from './PartnerGivingAnalysis.generated';
 import { PartnerGivingAnalysisReport } from './PartnerGivingAnalysisReport';
@@ -40,11 +42,13 @@ const router = {
 interface TestComponentProps {
   noContacts?: boolean;
   staffAccountId?: string | null;
+  usStaffGroup?: UsStaffGroupEnum;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   noContacts = false,
   staffAccountId = '1000000059',
+  usStaffGroup = UsStaffGroupEnum.SeniorStaff,
 }) => (
   <TestRouter router={router}>
     <ThemeProvider theme={theme}>
@@ -52,10 +56,12 @@ const TestComponent: React.FC<TestComponentProps> = ({
         PartnerGivingAnalysis: PartnerGivingAnalysisQuery;
         StaffAccountId: StaffAccountIdQuery;
         FundBalances: FundBalancesQuery;
+        GetUser: GetUserQuery;
       }>
         mocks={{
           ...(noContacts ? emptyMock : mocks),
           StaffAccountId: { user: { staffAccountId } },
+          GetUser: { user: { usStaffGroup, staffAccountId } },
           FundBalances: {
             reportsStaffExpenses: {
               funds: [{ fundType: 'Primary', endBalance: 1500 }],
@@ -114,6 +120,19 @@ describe('PartnerGivingAnalysisReport', () => {
 
       expect(await findByText('Primary Account Balance')).toBeInTheDocument();
       expect(findOperationCall('StaffAccount')).toBeUndefined();
+    });
+
+    it('is hidden for paid with designation staff with a staff account', async () => {
+      const { findByRole, queryByText } = render(
+        <TestComponent usStaffGroup={UsStaffGroupEnum.PaidWithDesignation} />,
+      );
+
+      expect(await findByRole('grid')).toBeInTheDocument();
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('GetUser'),
+      );
+      expect(queryByText('Primary Account Balance')).not.toBeInTheDocument();
+      expect(findOperationCall('FundBalances')).toBeUndefined();
     });
 
     it('is hidden for a user without a staff account', async () => {

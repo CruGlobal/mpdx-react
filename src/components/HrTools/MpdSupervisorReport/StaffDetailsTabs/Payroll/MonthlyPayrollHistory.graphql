@@ -4,5 +4,6 @@ query MonthlyPayrollHistory($staffAccountId: String!) {
     payroll
     asrAndReimbursements
     percentMaxPay
+    percentOfCap
   }
 }

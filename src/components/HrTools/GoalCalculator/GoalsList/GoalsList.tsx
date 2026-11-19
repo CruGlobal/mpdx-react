@@ -2,6 +2,7 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import { Box, Button, CircularProgress, Stack, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { helpButtonSpace } from 'src/components/Helpjuice/helpButtonSpace';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
@@ -11,10 +12,12 @@ import {
   useCreateGoalCalculationMutation,
   useGoalCalculationsQuery,
 } from './GoalCalculations.generated';
+import { GoalSummaryCards } from './GoalSummaryCards';
 import { GoalsListWelcome } from './GoalsListWelcome';
 
 const Container = styled(Box)(({ theme }) => ({
   padding: theme.spacing(3),
+  ...helpButtonSpace(theme),
   // Pad the sides to ensure that the container is never wider than 1200px
   marginInline: `max(0px, (100% - 1200px) / 2)`,
 }));
@@ -22,6 +25,9 @@ const Container = styled(Box)(({ theme }) => ({
 const PlaceholderImage = styled('img')(({ theme }) => ({
   marginTop: theme.spacing(4),
 }));
+
+// 44px tap targets on phones; desktop keeps the default button height
+const buttonSx = { minHeight: { xs: 44, sm: 'auto' } };
 
 export const GoalsList: React.FC = () => {
   const { t } = useTranslation();
@@ -60,12 +66,16 @@ export const GoalsList: React.FC = () => {
   return (
     <Container>
       <GoalsListWelcome firstName={firstName} />
-      <Stack direction="row" gap={2} pb={3}>
+      <Box pb={3}>
+        <GoalSummaryCards goals={loading ? undefined : goals} />
+      </Box>
+      <Stack direction={{ xs: 'column', sm: 'row' }} gap={2} pb={3}>
         <Button
           variant="contained"
           onClick={handleCreateGoal}
           disabled={creating}
           startIcon={creating && <CircularProgress size={16} color="inherit" />}
+          sx={buttonSx}
         >
           {t('Create a New Goal')}
         </Button>
@@ -75,6 +85,7 @@ export const GoalsList: React.FC = () => {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={t('Learn About Goalsetting (opens in a new tab)')}
+          sx={buttonSx}
         >
           {t('Learn About Goalsetting')}
         </Button>

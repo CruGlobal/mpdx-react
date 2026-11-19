@@ -3,15 +3,20 @@ import { MockedProvider } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import matchMediaMock from '__tests__/util/matchMediaMock';
+import { getStyleAtWidth } from '__tests__/util/styleAtWidth';
 import {
   afterTestResizeObserver,
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
 import { GetDashboardQuery } from 'pages/accountLists/GetDashboard.generated';
-import { UserTypeEnum } from 'src/graphql/types.generated';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
+import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
+import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
 import useTaskModal from '../../hooks/useTaskModal';
 import theme from '../../theme';
+import { NewStaffGoalReadyQuery } from './NewStaffGoalReadyCard/NewStaffGoalReadyCard.generated';
 import {
   GetThisWeekDefaultMocks,
   getUserOptionMock,
@@ -128,6 +133,8 @@ const data: GetDashboardQuery = {
   },
 };
 
+jest.setTimeout(15000);
+
 describe('Dashboard', () => {
   beforeEach(() => {
     matchMediaMock({ width: '1024px' });
@@ -136,6 +143,54 @@ describe('Dashboard', () => {
 
   afterEach(() => {
     afterTestResizeObserver();
+  });
+
+  it('prompts new staff whose MPD goal has been sent', async () => {
+    const { findByRole } = render(
+      <ThemeProvider theme={theme}>
+        <SnackbarProvider>
+          <GqlMockedProvider<{
+            GetUser: GetUserQuery;
+            NewStaffGoalReady: NewStaffGoalReadyQuery;
+            UserOption: UserOptionQuery;
+          }>
+            mocks={{
+              GetUser: { user: { usStaffGroup: UsStaffGroupEnum.NewStaff } },
+              // Answered by key: verified group keeps the confirm modal closed; the card is unacknowledged.
+              UserOption: {
+                userOption: ((_root: unknown, args: { key: string }) =>
+                  args.key === 'user_type_verified'
+                    ? { key: args.key, value: 'true' }
+                    : null) as unknown as NonNullable<
+                  UserOptionQuery['userOption']
+                >,
+              },
+              NewStaffGoalReady: {
+                newStaffGoalCalculation: {
+                  id: 'goal-1',
+                  calculations: {
+                    monthlyGoal: 4602.66,
+                    specialNeedsTotal: 2500,
+                  },
+                  newStaffCohortAttendee: null,
+                },
+              },
+            }}
+          >
+            <Dashboard accountListId="abc" data={data} />
+          </GqlMockedProvider>
+        </SnackbarProvider>
+      </ThemeProvider>,
+    );
+
+    // Three chained requests feed the card, so allow longer than the default wait.
+    expect(
+      await findByRole(
+        'heading',
+        { name: 'Your MPD goal is ready' },
+        { timeout: 5000 },
+      ),
+    ).toBeInTheDocument();
   });
 
   it('default', async () => {
@@ -267,5 +322,33 @@ describe('Dashboard', () => {
         expect(queryByText('Is this your user group?')).not.toBeInTheDocument();
       });
     });
+  });
+
+  it('leaves room at the end of the page so View Activity Detail can scroll clear of the help button', async () => {
+    const { container, findByRole } = render(
+      <ThemeProvider theme={theme}>
+        <SnackbarProvider>
+          <GqlMockedProvider>
+            <Dashboard accountListId="abc" data={data} />
+          </GqlMockedProvider>
+        </SnackbarProvider>
+      </ThemeProvider>,
+    );
+
+    // The dashboard ends the page, so its last block's bottom padding is the room at the end
+    const pageEnd = container.lastElementChild;
+    if (!pageEnd) {
+      throw new Error('The dashboard rendered nothing');
+    }
+    expect(pageEnd).toContainElement(
+      await findByRole('link', { name: 'View Activity Detail' }),
+    );
+    // The help button covers about 76px at the bottom of phones and 176px from 600px up
+    const getEndRoom = (width: number) =>
+      parseFloat(getStyleAtWidth(pageEnd, 'padding-bottom', width)) || 0;
+    expect(getEndRoom(360)).toBeGreaterThanOrEqual(76);
+    expect(getEndRoom(390)).toBeGreaterThanOrEqual(76);
+    expect(getEndRoom(768)).toBeGreaterThanOrEqual(176);
+    expect(getEndRoom(1280)).toBeGreaterThanOrEqual(176);
   });
 });

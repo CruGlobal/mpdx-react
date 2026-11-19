@@ -29,8 +29,11 @@ export const REFRESH_COOLDOWN = Duration.fromObject({ minutes: 3 });
 /** Refresh failures this component explains itself; the global error link toasts any other. */
 const HANDLED_ERROR_CODES = ['HCM_REFRESH_RATE_LIMITED', 'HCM_UNAVAILABLE'];
 
-/** The background sync revisits everyone well inside this, so older data means it has stalled. */
-const STALE_AFTER = Duration.fromObject({ hours: 24 });
+/**
+ * Matches the API's Hcm::UserInfoSnapshot::MAX_AGE. Past it a read fetches from HCM, so the API only
+ * serves older data when HCM could not be reached.
+ */
+const STALE_AFTER = Duration.fromObject({ hours: 36 });
 
 interface HcmSyncStatusProps {
   /**
@@ -42,6 +45,11 @@ interface HcmSyncStatusProps {
   effectiveDate?: string | null;
   /** Hides the status until the page knows which HCM data it loads. */
   skip?: boolean;
+  /**
+   * The Hcm error codes the page handles itself. Apollo sends the page's Hcm reads as one request
+   * carrying whichever read's context started it, so this must match the page's own Hcm query.
+   */
+  suppressErrorCodes?: string[];
 }
 
 const HcmSyncStatusContext = createContext<HcmSyncStatusProps | null>(null);
@@ -70,6 +78,7 @@ const useHcmSync = ({
   personNumber,
   effectiveDate,
   skip,
+  suppressErrorCodes,
 }: HcmSyncStatusProps) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -77,6 +86,7 @@ const useHcmSync = ({
   const { data } = useHcmQuery({
     variables: { personNumber, effectiveDate },
     skip,
+    context: { suppressErrorCodes },
   });
   const [refreshing, setRefreshing] = useState(false);
   const [coolingDown, setCoolingDown] = useState(false);
@@ -150,8 +160,16 @@ const SyncRow: React.FC<{ sync: HcmSync }> = ({ sync }) => {
   const { syncedAt, stale, refreshing, coolingDown, refresh } = sync;
 
   return (
-    <Stack direction="row" alignItems="center" spacing={1.5}>
-      <Stack direction="row" alignItems="center">
+    // On narrow phones Refresh wraps under the sync text instead of running past the edge
+    <Stack
+      direction="row"
+      alignItems="center"
+      flexWrap="wrap"
+      useFlexGap
+      columnGap={1.5}
+      rowGap={1}
+    >
+      <Stack direction="row" alignItems="center" minWidth={0}>
         {syncedAt && (
           <Tooltip
             title={syncedAt.toLocaleString(DateTime.DATETIME_MED, { locale })}

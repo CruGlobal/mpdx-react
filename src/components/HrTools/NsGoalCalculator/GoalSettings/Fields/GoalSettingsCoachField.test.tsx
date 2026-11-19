@@ -188,7 +188,7 @@ describe('GoalSettingsCoachField', () => {
     expect(queryByText('Coach')).not.toBeInTheDocument();
   });
 
-  // The list costs a OneApp lookup, so it must not load until the picker opens.
+  // The list costs a server round trip, so it must not load until the picker opens.
   it('loads the coach list only when the picker opens', async () => {
     const { getByRole } = render(<TestComponent />);
 
@@ -205,7 +205,7 @@ describe('GoalSettingsCoachField', () => {
   });
 
   // Rendered with the app client's own cache-and-network default, since under
-  // that policy an unguarded reopen spends another OneApp lookup.
+  // that policy an unguarded reopen spends another round trip.
   it('loads the coach list once however often the picker is reopened', async () => {
     const { getByRole, findByRole } = render(
       <TestComponent

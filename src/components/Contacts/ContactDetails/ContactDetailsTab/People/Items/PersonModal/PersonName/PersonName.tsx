@@ -11,7 +11,7 @@ import {
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { NewSocial, Person } from '../PersonModal';
 
-const StyledIconButton = styled(IconButton)(() => ({
+const StyledIconButton = styled(IconButton)(({ theme }) => ({
   position: 'absolute',
   top: '50%',
   left: 4,
@@ -19,6 +19,10 @@ const StyledIconButton = styled(IconButton)(() => ({
   zIndex: 1,
   width: '34px',
   height: '34px',
+  // Phones have a narrower gutter, so line the avatar up with the section icons
+  [theme.breakpoints.down('sm')]: {
+    left: 0,
+  },
 }));
 const StyledAvatarIcon = styled(Avatar)(() => ({
   zIndex: 1,
@@ -98,7 +102,11 @@ export const PersonName: React.FC<PersonNameProps> = ({
             ref={fileRef}
             onChange={handleFileChange}
           />
-          <Typography component="span" fontWeight="bold">
+          <Typography
+            component="span"
+            fontWeight="bold"
+            sx={{ pl: { xs: 1, sm: 0 } }}
+          >
             {`${person.firstName || ''} ${person.lastName || ''}`}
           </Typography>
         </ModalSectionContainer>

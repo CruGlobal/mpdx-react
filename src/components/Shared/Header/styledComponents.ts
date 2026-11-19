@@ -7,7 +7,10 @@ export const StickyBox = styled(Box)(({ theme }) => ({
   top: theme.spacing(10),
   borderBottom: '1px solid',
   borderBottomColor: theme.palette.grey[200],
-  height: theme.spacing(10),
+  minHeight: theme.spacing(10),
+  [theme.breakpoints.up('sm')]: {
+    height: theme.spacing(10),
+  },
   zIndex: '700',
   background: theme.palette.common.white,
   paddingTop: theme.spacing(1),

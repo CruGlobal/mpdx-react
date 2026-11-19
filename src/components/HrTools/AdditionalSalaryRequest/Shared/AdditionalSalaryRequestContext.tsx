@@ -20,6 +20,7 @@ import {
 } from 'src/graphql/types.generated';
 import { useStepList } from 'src/hooks/useStepList';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
+import { useDrawerOpenState } from '../../Shared/CalculationReports/PanelLayout/useDrawerOpenState';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { HcmQuery, useHcmQuery } from '../../Shared/HcmData/Hcm.generated';
 import { useHcmUnavailable } from '../../Shared/HcmData/useHcmUnavailable';
@@ -262,7 +263,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     [deleteAdditionalSalaryRequest, enqueueSnackbar, resetSteps, t],
   );
 
-  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
+  const [isDrawerOpen, setIsDrawerOpen] = useDrawerOpenState();
   const toggleDrawer = useCallback(() => {
     setIsDrawerOpen((prev) => !prev);
   }, []);

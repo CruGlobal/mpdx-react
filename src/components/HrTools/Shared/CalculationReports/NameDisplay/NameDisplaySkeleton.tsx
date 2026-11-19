@@ -9,15 +9,19 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
+import { columnLayout } from './NameDisplay';
 
 interface NameDisplaySkeletonProps {
   showContent?: boolean;
+  columns?: 2 | 3;
 }
 
 export const NameDisplaySkeleton: React.FC<NameDisplaySkeletonProps> = ({
   showContent,
+  columns = 2,
 }) => {
   const theme = useTheme();
+  const { size, amountVariant } = columnLayout(columns);
 
   return (
     <Box data-testid="name-display-skeleton">
@@ -42,12 +46,16 @@ export const NameDisplaySkeleton: React.FC<NameDisplaySkeletonProps> = ({
         {showContent && (
           <CardContent data-testid="name-display-skeleton-amounts">
             <Grid container spacing={theme.spacing(2)}>
-              {[0, 1].map((column) => (
-                <Grid size={6} key={column}>
+              {Array.from({ length: columns }, (_, column) => (
+                <Grid
+                  size={size}
+                  key={column}
+                  data-testid="name-display-skeleton-column"
+                >
                   <Typography variant="body1">
                     <Skeleton width={180} />
                   </Typography>
-                  <Typography variant="h3">
+                  <Typography variant={amountVariant}>
                     <Skeleton width={160} />
                   </Typography>
                 </Grid>

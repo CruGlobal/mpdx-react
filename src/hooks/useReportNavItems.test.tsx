@@ -3,7 +3,7 @@ import { renderHook } from '@testing-library/react-hooks';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { mockSession } from '__tests__/util/mockSession';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
-import { UserTypeEnum } from 'src/graphql/types.generated';
+import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
 import { UserOptionQuery } from './UserPreference.generated';
 import { useReportNavItems } from './useReportNavItems';
 
@@ -114,6 +114,43 @@ describe('useReportNavItems', () => {
     expect(ids).not.toContain('mpgaIncomeExpenses');
 
     expect(ids).toContain('financialAccounts');
+  });
+
+  it('hides staff reports for paid with designation staff with a staff account', async () => {
+    const PaidWithDesignationWrapper = ({
+      children,
+    }: {
+      children: ReactElement;
+    }) => (
+      <GqlMockedProvider<{ GetUser: GetUserQuery; UserOption: UserOptionQuery }>
+        mocks={{
+          GetUser: {
+            user: {
+              userType: UserTypeEnum.UsStaff,
+              usStaffGroup: UsStaffGroupEnum.PaidWithDesignation,
+              staffAccountId: 'staff-1',
+            },
+          },
+          UserOption: {
+            userOption: { key: 'user_type_verified', value: 'true' },
+          },
+        }}
+      >
+        {children}
+      </GqlMockedProvider>
+    );
+
+    const { result, waitForNextUpdate } = renderHook(
+      () => useReportNavItems(),
+      { wrapper: PaidWithDesignationWrapper },
+    );
+    await waitForNextUpdate();
+
+    const ids = result.current.map((item) => item.id);
+    expect(ids).not.toContain('staffExpense');
+    expect(ids).not.toContain('mpgaIncomeExpenses');
+
+    expect(ids).toContain('donations');
   });
 
   it('shows responsibility centers for a non-Cru user', async () => {

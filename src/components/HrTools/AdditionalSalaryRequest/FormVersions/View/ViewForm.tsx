@@ -5,6 +5,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { NameDisplay } from 'src/components/HrTools/Shared/CalculationReports/NameDisplay/NameDisplay';
 import { NameDisplaySkeleton } from 'src/components/HrTools/Shared/CalculationReports/NameDisplay/NameDisplaySkeleton';
 import { PageEnum } from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
+import { AsrStatusEnum } from 'src/graphql/types.generated';
 import {
   CompleteFormValues,
   mainContentWidth,
@@ -13,8 +14,10 @@ import { AdditionalSalaryRequest } from '../../CompleteForm/AdditionalSalaryRequ
 import { Deduction } from '../../CompleteForm/Deduction/Deduction';
 import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetAdditionalSalary';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
+import { useApprovalNote } from '../../Shared/useApprovalNote';
 import { useFormUserInfo } from '../../Shared/useFormUserInfo';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
+import { AvailableBalanceTooltip } from '../../SharedComponents/AvailableBalanceTooltip';
 import { ContactInformationSummaryCard } from '../../SharedComponents/ContactInformationSummaryCard';
 import { SpouseComponent } from '../../SharedComponents/SpouseComponent';
 import { ApprovalProcess } from '../../SubmitModalAccordions/ApprovalProcess/ApprovalProcess';
@@ -24,18 +27,29 @@ export const ViewForm: React.FC = () => {
   const { t } = useTranslation();
   const {
     calculations,
+    requestData,
     setPageType,
     pendingPrint,
     setPendingPrint,
     hcmLoading,
   } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
-  const { name, primaryAccountBalance } = useFormUserInfo();
+  const { name, availableAccountBalance, remainingCap } = useFormUserInfo();
   const individualCap = calculations?.currentSalaryCap ?? 0;
+  // The note says when a request would need approval, which only helps while it can still change: a request sent
+  // back for changes. A submitted one has already been checked at submit.
+  const approvalNote = useApprovalNote(
+    requestData?.latestAdditionalSalaryRequest?.status ===
+      AsrStatusEnum.ActionRequired,
+  );
 
   const { exceedsCap } = useSalaryCalculations({
     values,
   });
+  // The API's tier for this request says whether it needs approval. Its threshold can't: once the request is
+  // approved or paid, the threshold counts the request itself as used.
+  const needsApproval =
+    !!requestData?.latestAdditionalSalaryRequest?.progressiveApprovalTier;
 
   useEffect(() => {
     if (!pendingPrint) {
@@ -67,18 +81,28 @@ export const ViewForm: React.FC = () => {
   }, [pendingPrint, setPendingPrint]);
 
   return (
-    <Stack gap={4} padding={4} width={mainContentWidth}>
+    <Stack
+      gap={4}
+      py={4}
+      px={{ xs: 0, sm: 4 }}
+      width="100%"
+      maxWidth={mainContentWidth}
+    >
       <Typography variant="h4">{t('View Your Request')}</Typography>
       {hcmLoading ? (
-        <NameDisplaySkeleton showContent />
+        <NameDisplaySkeleton showContent columns={3} />
       ) : (
         <NameDisplay
           names={name ?? ''}
-          titleOne={t('Primary Account Balance')}
-          amountOne={primaryAccountBalance}
+          titleOne={t('Available for This Request')}
+          titleOneAdornment={<AvailableBalanceTooltip />}
+          amountOne={availableAccountBalance}
           titleTwo={t('Your Maximum Allowable Salary (CAP)')}
           amountTwo={individualCap}
+          titleThree={t('Remaining Allowable Salary')}
+          amountThree={remainingCap}
           spouseComponent={<SpouseComponent />}
+          note={approvalNote}
           showContent
         />
       )}
@@ -95,7 +119,7 @@ export const ViewForm: React.FC = () => {
       <NetAdditionalSalary />
       <ContactInformationSummaryCard />
       {exceedsCap && <TotalSalaryRequested onForm />}
-      <ApprovalProcess onForm exceedsCap={exceedsCap} />
+      <ApprovalProcess onForm needsApproval={needsApproval} />
 
       <Button
         onClick={() => setPageType(PageEnum.Reset)}

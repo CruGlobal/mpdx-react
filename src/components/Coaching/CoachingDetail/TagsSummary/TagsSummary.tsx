@@ -3,7 +3,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
 } from '@mui/material';
@@ -17,6 +16,7 @@ import { ReportsTagHistoriesAssociationEnum } from 'src/graphql/types.generated'
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatMonthOnly, dateFormatWithoutYear } from 'src/lib/intlFormat';
 import { CoachingPeriodEnum } from '../CoachingDetail';
+import { ScrollableTableContainer } from '../ScrollableTableContainer/ScrollableTableContainer';
 import { ContentContainer } from '../styledComponents/styledComponents';
 import { useTagsSummaryQuery } from './TagsSummary.generated';
 
@@ -73,7 +73,7 @@ export const TagsSummary: React.FC<TagsSummaryProps> = ({
             : t('No tags added in last 6 months.'))}
         {!noTags && loading && <MultilineSkeleton lines={4} />}
         {!noTags && !loading && (
-          <TableContainer sx={{ minWidth: 600 }}>
+          <ScrollableTableContainer>
             <StyledTable
               size="small"
               aria-label={
@@ -116,7 +116,7 @@ export const TagsSummary: React.FC<TagsSummaryProps> = ({
                 ))}
               </TableBody>
             </StyledTable>
-          </TableContainer>
+          </ScrollableTableContainer>
         )}
       </ContentContainer>
     </AnimatedCard>

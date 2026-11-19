@@ -64,6 +64,9 @@ const useStyles = makeStyles()(() => ({
   primaryButton: {
     marginTop: '-6px',
     marginLeft: theme.spacing(1),
+    [theme.breakpoints.down('sm')]: {
+      marginTop: 0,
+    },
   },
 }));
 
@@ -101,7 +104,14 @@ const Appeal = ({
     <Box m={1}>
       <AnimatedCard>
         <CardContent className={classes.cardContent}>
-          <Box display="flex" justifyContent="space-between">
+          <Box
+            display="flex"
+            flexDirection={{ xs: 'column', sm: 'row' }}
+            alignItems={{ xs: 'center', sm: 'stretch' }}
+            justifyContent="space-between"
+            columnGap={1}
+            textAlign={{ xs: 'center', sm: 'inherit' }}
+          >
             <Typography
               variant="h6"
               display="inline"
@@ -114,8 +124,12 @@ const Appeal = ({
                 {name}
               </NextLink>
             </Typography>
-            <Box>
-              <Typography variant="h6" display="inline">
+            <Box
+              display={{ xs: 'flex', sm: 'block' }}
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Typography variant="h6" display="inline" sx={{ minWidth: 0 }}>
                 {currencyFormat(given, amountCurrency, locale, {
                   showTrailingZeros: true,
                 })}{' '}
@@ -128,6 +142,7 @@ const Appeal = ({
               <IconButton
                 aria-label={t('Primary Icon')}
                 className={classes.primaryButton}
+                sx={{ flex: 'none' }}
               >
                 {primary ? (
                   <StarIcon className={classes.starPrimary} />
@@ -147,6 +162,7 @@ const Appeal = ({
             received={received}
             amount={amount}
             amountCurrency={amountCurrency}
+            centerValuesOnPhones
           />
         </CardContent>
       </AnimatedCard>

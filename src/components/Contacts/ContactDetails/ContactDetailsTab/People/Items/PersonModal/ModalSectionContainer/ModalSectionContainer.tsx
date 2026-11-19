@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { modalSectionDeleteIconClass } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 
 interface ModalSectionContainerProps {
   children: ReactNode;
@@ -18,6 +19,16 @@ const ModalSectionWrapper = styled(Box)(({ theme }) => ({
   '> .MuiGrid-container': {
     flexGrow: 1,
     minWidth: 0,
+  },
+  // Phones use narrower, equal gutters so the fields stay wide and centered,
+  // and the delete button moves down beside the item's last row instead.
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(0, 4),
+    [`& .${modalSectionDeleteIconClass}`]: {
+      top: 'auto',
+      bottom: 0,
+      transform: 'none',
+    },
   },
 }));
 

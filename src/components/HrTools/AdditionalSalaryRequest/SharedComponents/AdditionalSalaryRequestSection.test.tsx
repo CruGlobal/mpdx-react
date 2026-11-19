@@ -13,6 +13,19 @@ describe('AdditionalSalaryRequestSection', () => {
     expect(getByText('Test Content')).toBeInTheDocument();
   });
 
+  it('caps its width instead of fixing it so it fits on phones', () => {
+    const { container } = render(
+      <AdditionalSalaryRequestSection>
+        <div>Content</div>
+      </AdditionalSalaryRequestSection>,
+    );
+
+    expect(container.firstChild).toHaveStyle({
+      width: '100%',
+      maxWidth: '680px',
+    });
+  });
+
   it('renders title when provided', () => {
     const { getByRole } = render(
       <AdditionalSalaryRequestSection title="Section Title">

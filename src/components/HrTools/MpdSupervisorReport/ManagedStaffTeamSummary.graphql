@@ -1,0 +1,32 @@
+query ManagedStaffTeamSummary(
+  $name: String
+  $departments: [String!]
+  $assignmentCategoryGroup: MpdAssignmentCategoryGroupEnum
+  $userPersonTypes: [MpdUserPersonTypeEnum!]
+  $negativeLastMonth: Boolean
+  $negativeThreeMonths: Boolean
+  $negativeThreeMonthsInPastYear: Boolean
+  $expensesOverIncomeThreeMonths: Boolean
+  $belowNewStaffMonthlySalary: Boolean
+  $capHealth: MpdCapHealthEnum
+) {
+  managedStaffTeamSummary(
+    name: $name
+    departments: $departments
+    assignmentCategoryGroup: $assignmentCategoryGroup
+    userPersonTypes: $userPersonTypes
+    negativeLastMonth: $negativeLastMonth
+    negativeThreeMonths: $negativeThreeMonths
+    negativeThreeMonthsInPastYear: $negativeThreeMonthsInPastYear
+    expensesOverIncomeThreeMonths: $expensesOverIncomeThreeMonths
+    belowNewStaffMonthlySalary: $belowNewStaffMonthlySalary
+    capHealth: $capHealth
+  ) {
+    name
+    staffCount
+    statusCounts {
+      status
+      count
+    }
+  }
+}

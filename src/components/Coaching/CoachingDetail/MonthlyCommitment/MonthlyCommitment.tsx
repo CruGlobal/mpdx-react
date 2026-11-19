@@ -87,50 +87,49 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
   return (
     <AnimatedCard>
       <CardHeader
-        title={
-          <Box textAlign="center">
-            {mpdInfo &&
-            (!mpdInfo.activeMpdStartAt ||
-              !mpdInfo.activeMpdFinishAt ||
-              !mpdInfo.activeMpdMonthlyGoal) ? (
-              <CoachingLink
-                href={`/accountLists/${coachingId}/settings/preferences`}
-                accountListType={accountListType}
-                underline="hover"
-              >
-                {t('MPD info not set up on account list')}
-              </CoachingLink>
-            ) : !mpdInfo || averageLoading ? (
-              <Skeleton
-                variant="text"
-                data-testid="MonthlyCommitmentSkeleton"
-              />
-            ) : (
-              <Typography data-testid="MonthlyCommitmentSummary">
-                {t('Monthly Commitment Average: ')}
-                <strong style={{ color: theme.palette.progressBarOrange.main }}>
-                  {currencyFormat(
-                    Math.round(monthlyCommitmentAverage ?? 0),
-                    currencyCode,
-                    locale,
-                  )}
-                </strong>
-                {' | '}
-                {t('Monthly Commitment Goal: ')}
-                <strong style={{ color: theme.palette.mpdxBlue.main }}>
-                  {currencyFormat(
-                    Math.round(monthlyCommitmentGoal ?? 0),
-                    currencyCode,
-                    locale,
-                  )}
-                </strong>
-              </Typography>
-            )}
-          </Box>
-        }
+        title={t('Monthly Commitments')}
+        subheader={t(
+          'Monthly support commitments from Partner - Financial contacts, split by whether the commitment has been received. These are commitments entered in MPDX, not actual gifts.',
+        )}
       />
-      <CardContent sx={{ overflowX: 'scroll' }}>
-        <ResponsiveContainer minWidth={600}>
+      <Box textAlign="center" px={2}>
+        {mpdInfo &&
+        (!mpdInfo.activeMpdStartAt ||
+          !mpdInfo.activeMpdFinishAt ||
+          !mpdInfo.activeMpdMonthlyGoal) ? (
+          <CoachingLink
+            href={`/accountLists/${coachingId}/settings/preferences`}
+            accountListType={accountListType}
+            underline="hover"
+          >
+            {t('MPD info not set up on account list')}
+          </CoachingLink>
+        ) : !mpdInfo || averageLoading ? (
+          <Skeleton variant="text" data-testid="MonthlyCommitmentSkeleton" />
+        ) : (
+          <Typography data-testid="MonthlyCommitmentSummary">
+            {t('Monthly Commitment Average: ')}
+            <strong style={{ color: theme.palette.progressBarOrange.main }}>
+              {currencyFormat(
+                Math.round(monthlyCommitmentAverage ?? 0),
+                currencyCode,
+                locale,
+              )}
+            </strong>
+            {' | '}
+            {t('Monthly Commitment Goal: ')}
+            <strong style={{ color: theme.palette.mpdxBlue.main }}>
+              {currencyFormat(
+                Math.round(monthlyCommitmentGoal ?? 0),
+                currencyCode,
+                locale,
+              )}
+            </strong>
+          </Typography>
+        )}
+      </Box>
+      <CardContent>
+        <ResponsiveContainer>
           {loading ? (
             <>
               <Skeleton variant="text" />
@@ -176,14 +175,14 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
                 name={t('Received')}
                 dataKey="received"
                 stackId={1}
-                barSize={30}
+                maxBarSize={30}
                 fill={theme.palette.mpdxGreen.main}
               />
               <Bar
                 name={t('Committed')}
                 dataKey="committed"
                 stackId={1}
-                barSize={30}
+                maxBarSize={30}
                 fill={theme.palette.progressBarOrange.main}
               />
             </BarChart>

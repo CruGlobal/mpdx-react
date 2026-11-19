@@ -100,15 +100,15 @@ describe('GoalSettingsHeader', () => {
   it('marks the calculation as incomplete when required fields are unfilled', () => {
     const { getByText, queryByText } = render(<TestComponent />);
 
-    expect(getByText('Incomplete')).toBeInTheDocument();
-    expect(queryByText('Complete')).not.toBeInTheDocument();
+    expect(getByText('Calculation Incomplete')).toBeInTheDocument();
+    expect(queryByText('Calculation Complete')).not.toBeInTheDocument();
   });
 
   it('marks the calculation as complete when required fields are filled', () => {
     const { getByText, queryByText } = render(<TestComponent isComplete />);
 
-    expect(getByText('Complete')).toBeInTheDocument();
-    expect(queryByText('Incomplete')).not.toBeInTheDocument();
+    expect(getByText('Calculation Complete')).toBeInTheDocument();
+    expect(queryByText('Calculation Incomplete')).not.toBeInTheDocument();
   });
 
   it('formats the MPD goal as currency', () => {
@@ -236,7 +236,7 @@ describe('GoalSettingsHeader', () => {
       );
 
       expect(getByText('Scenario Only')).toBeInTheDocument();
-      expect(queryByText('Incomplete')).not.toBeInTheDocument();
+      expect(queryByText('Calculation Incomplete')).not.toBeInTheDocument();
       expect(
         queryByRole('combobox', { name: 'Coach' }),
       ).not.toBeInTheDocument();

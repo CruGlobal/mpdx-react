@@ -506,8 +506,8 @@ const TaskModalLogForm = ({
                   <DateTimeFieldPair
                     render={(dateField, timeField) => (
                       <Grid container spacing={2}>
-                        <Grid size={6}>{dateField}</Grid>
-                        <Grid size={6}>{timeField}</Grid>
+                        <Grid size={{ xs: 12, sm: 6 }}>{dateField}</Grid>
+                        <Grid size={{ xs: 12, sm: 6 }}>{timeField}</Grid>
                       </Grid>
                     )}
                     dateLabel={t('Completed Date')}

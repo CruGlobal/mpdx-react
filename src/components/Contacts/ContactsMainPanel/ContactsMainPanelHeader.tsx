@@ -1,10 +1,23 @@
 import NextLink from 'next/link';
-import React from 'react';
+import React, { useState } from 'react';
+import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
 import FormatListBulleted from '@mui/icons-material/FormatListBulleted';
 import Map from '@mui/icons-material/Map';
 import Settings from '@mui/icons-material/Settings';
 import ViewColumn from '@mui/icons-material/ViewColumn';
-import { Box, Button, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import {
+  Box,
+  Button,
+  Divider,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Theme,
+  ToggleButton,
+  ToggleButtonGroup,
+  useMediaQuery,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import {
@@ -22,6 +35,13 @@ const ViewSettingsButton = styled(Button)(({ theme }) => ({
   height: theme.spacing(6),
   marginLeft: theme.spacing(1),
 }));
+const ViewMenuButton = styled(Button)(({ theme }) => ({
+  height: theme.spacing(6),
+  minWidth: 0,
+  marginLeft: theme.spacing(1),
+  paddingLeft: theme.spacing(1),
+  paddingRight: theme.spacing(0.5),
+}));
 const MapIcon = styled(Map)(({ theme }) => ({
   color: theme.palette.primary.dark,
 }));
@@ -37,6 +57,13 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
 
 export const ContactsMainPanelHeader: React.FC = () => {
   const { t } = useTranslation();
+  const isMobile = useMediaQuery(
+    (theme: Theme) => theme.breakpoints.down('sm'),
+    { noSsr: true },
+  );
+  const [viewMenuAnchor, setViewMenuAnchor] = useState<HTMLElement | null>(
+    null,
+  );
 
   const {
     accountListId,
@@ -49,6 +76,79 @@ export const ContactsMainPanelHeader: React.FC = () => {
     setViewMode,
     selectedIds,
   } = React.useContext(ContactsContext) as ContactsType;
+
+  const viewOptions = [
+    {
+      value: TableViewModeEnum.List,
+      label: t('List View'),
+      Icon: BulletedListIcon,
+    },
+    {
+      value: TableViewModeEnum.Flows,
+      label: t('Column Workflow View'),
+      Icon: ViewColumnIcon,
+    },
+    {
+      value: TableViewModeEnum.Map,
+      label: t('Map View'),
+      Icon: MapIcon,
+    },
+  ];
+  const CurrentViewIcon = viewOptions.find(
+    (option) => option.value === viewMode,
+  )?.Icon;
+  const viewSettingsHref = `/accountLists/${accountListId}/contacts/flows/setup`;
+
+  const closeViewMenu = () => setViewMenuAnchor(null);
+
+  // On phones the full toolbar is wider than the screen, so the view switch
+  // and View Settings collapse into one menu button
+  const mobileViewMenu = (
+    <>
+      <ViewMenuButton
+        variant="outlined"
+        aria-label={t('Change View')}
+        aria-haspopup="menu"
+        aria-expanded={!!viewMenuAnchor}
+        onClick={(event) => setViewMenuAnchor(event.currentTarget)}
+      >
+        {CurrentViewIcon && <CurrentViewIcon />}
+        <ArrowDropDown />
+      </ViewMenuButton>
+      <Menu
+        anchorEl={viewMenuAnchor}
+        open={!!viewMenuAnchor}
+        onClose={closeViewMenu}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        {viewOptions.map(({ value, label, Icon }) => (
+          <MenuItem
+            key={value}
+            selected={viewMode === value}
+            onClick={() => {
+              setViewMode(value);
+              closeViewMenu();
+            }}
+          >
+            <ListItemIcon>
+              <Icon />
+            </ListItemIcon>
+            <ListItemText>{label}</ListItemText>
+          </MenuItem>
+        ))}
+        {viewMode === TableViewModeEnum.Flows && <Divider />}
+        {viewMode === TableViewModeEnum.Flows && (
+          <MenuItem component={NextLink} href={viewSettingsHref}>
+            <ListItemIcon>
+              <Settings />
+            </ListItemIcon>
+            <ListItemText>{t('View Settings')}</ListItemText>
+          </MenuItem>
+        )}
+      </Menu>
+    </>
+  );
 
   return (
     <ListHeader
@@ -63,40 +163,37 @@ export const ContactsMainPanelHeader: React.FC = () => {
       showShowingCount={viewMode === TableViewModeEnum.List}
       buttonGroup={
         <Box alignItems="center" sx={{ display: 'flex' }}>
-          {viewMode === TableViewModeEnum.Flows && (
-            <ViewSettingsButton
-              LinkComponent={NextLink}
-              href={`/accountLists/${accountListId}/contacts/flows/setup`}
-              variant="outlined"
-            >
-              <Settings style={{ marginRight: 8 }} />
-              {t('View Settings')}
-            </ViewSettingsButton>
+          {isMobile ? (
+            mobileViewMenu
+          ) : (
+            <>
+              {viewMode === TableViewModeEnum.Flows && (
+                <ViewSettingsButton
+                  LinkComponent={NextLink}
+                  href={viewSettingsHref}
+                  variant="outlined"
+                >
+                  <Settings style={{ marginRight: 8 }} />
+                  {t('View Settings')}
+                </ViewSettingsButton>
+              )}
+              <StyledToggleButtonGroup
+                exclusive
+                value={viewMode}
+                onChange={(_event, value) => setViewMode(value)}
+              >
+                {viewOptions.map(({ value, label, Icon }) => (
+                  <ToggleButton
+                    key={value}
+                    value={value}
+                    disabled={viewMode === value}
+                  >
+                    <Icon titleAccess={label} />
+                  </ToggleButton>
+                ))}
+              </StyledToggleButtonGroup>
+            </>
           )}
-          <StyledToggleButtonGroup
-            exclusive
-            value={viewMode}
-            onChange={(_event, value) => setViewMode(value)}
-          >
-            <ToggleButton
-              value={TableViewModeEnum.List}
-              disabled={viewMode === TableViewModeEnum.List}
-            >
-              <BulletedListIcon titleAccess={t('List View')} />
-            </ToggleButton>
-            <ToggleButton
-              value={TableViewModeEnum.Flows}
-              disabled={viewMode === TableViewModeEnum.Flows}
-            >
-              <ViewColumnIcon titleAccess={t('Column Workflow View')} />
-            </ToggleButton>
-            <ToggleButton
-              value={TableViewModeEnum.Map}
-              disabled={viewMode === TableViewModeEnum.Map}
-            >
-              <MapIcon titleAccess={t('Map View')} />
-            </ToggleButton>
-          </StyledToggleButtonGroup>
         </Box>
       }
     />

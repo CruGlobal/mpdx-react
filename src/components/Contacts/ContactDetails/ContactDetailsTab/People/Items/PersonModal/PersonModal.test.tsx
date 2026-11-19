@@ -8,6 +8,11 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import {
+  desktopWidth,
+  getStyleAtWidth,
+  phoneWidth,
+} from '__tests__/util/styleAtWidth';
 import { ContactDetailProvider } from 'src/components/Contacts/ContactDetails/ContactDetailContext';
 import theme from '../../../../../../../theme';
 import {
@@ -1710,6 +1715,61 @@ describe('PersonModal', () => {
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith('Profile updated successfully', {
         variant: 'success',
+      });
+    });
+  });
+
+  describe('phone layout', () => {
+    const renderModal = () =>
+      render(
+        <SnackbarProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider>
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={mockPerson}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
+        </SnackbarProvider>,
+      );
+
+    it('uses equal 8px dialog side padding on phones and 24px from 600px up', () => {
+      const { getByRole } = renderModal();
+      const content = getByRole('dialog').querySelector(
+        '.MuiDialogContent-root',
+      ) as Element;
+
+      ['padding-left', 'padding-right'].forEach((side) => {
+        expect(getStyleAtWidth(content, side, phoneWidth)).toBe('8px');
+        expect(getStyleAtWidth(content, side, 600)).toBe('24px');
+        expect(getStyleAtWidth(content, side, desktopWidth)).toBe('24px');
+      });
+    });
+
+    it('lines the avatar up with the section icons and keeps the name clear of it on phones', () => {
+      const { getByTestId, getByText } = renderModal();
+      const avatarButton = getByTestId('UploadIcon').closest(
+        'button',
+      ) as Element;
+      const name = getByText(
+        `${mockPerson.firstName || ''} ${mockPerson.lastName || ''}`,
+      );
+
+      expect(getStyleAtWidth(avatarButton, 'left', phoneWidth)).toBe('0');
+      expect(getStyleAtWidth(name, 'padding-left', phoneWidth)).toBe('8px');
+
+      [600, desktopWidth].forEach((width) => {
+        expect(getStyleAtWidth(avatarButton, 'left', width)).toBe('4px');
+        expect(getStyleAtWidth(name, 'padding-left', width)).toBe('0px');
       });
     });
   });

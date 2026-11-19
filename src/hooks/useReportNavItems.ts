@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import { useDeveloperBypass } from './useDeveloperBypass';
+import { useIneligibleByGroup } from './useIneligibleByGroup';
 import { useReportsDisabled } from './useReportsDisabled';
 
 export type NavItems = {
@@ -17,6 +18,7 @@ export function useReportNavItems(): NavItems[] {
   const { data } = useGetUserQuery();
   const { reportsDisabled } = useReportsDisabled();
   const developerBypass = useDeveloperBypass();
+  const { inStaffAccountIneligibleGroup } = useIneligibleByGroup();
 
   const userType = data?.user.userType;
   const usStaff = userType === UserTypeEnum.UsStaff;
@@ -25,7 +27,10 @@ export function useReportNavItems(): NavItems[] {
   const hasNoStaffAccount =
     data && typeof data.user.staffAccountId !== 'string';
 
-  const hideReport = (!usStaff && !hybridStaff) || hasNoStaffAccount;
+  const hideReport =
+    (!usStaff && !hybridStaff) ||
+    hasNoStaffAccount ||
+    inStaffAccountIneligibleGroup;
 
   const reportNavItems: NavItems[] = [
     {
@@ -86,6 +91,7 @@ export function useReportNavItems(): NavItems[] {
       hybridStaff,
       reportsDisabled,
       hasNoStaffAccount,
+      inStaffAccountIneligibleGroup,
       developerBypass,
     ],
   );

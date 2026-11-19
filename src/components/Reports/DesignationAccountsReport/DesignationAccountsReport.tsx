@@ -7,7 +7,9 @@ import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
+  multiPageHeaderHeight,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import { useIneligibleByGroup } from 'src/hooks/useIneligibleByGroup';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { AccountsList as List } from '../AccountsListLayout/List/List';
@@ -23,7 +25,8 @@ interface Props {
 }
 
 const ScrollBox = styled(Box)(({}) => ({
-  height: 'calc(100vh - 160px)',
+  // Follows the page header, which grows on phones
+  height: `calc(100vh - 80px - ${multiPageHeaderHeight})`,
   overflowY: 'auto',
 }));
 
@@ -35,6 +38,7 @@ export const DesignationAccountsReport: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const { hasNoAccountBalance, userPending } = useIneligibleByGroup();
 
   const { data, loading, error } = useDesignationAccountsQuery({
     variables: {
@@ -78,7 +82,7 @@ export const DesignationAccountsReport: React.FC<Props> = ({
   }, [data?.designationAccounts]);
 
   const balanceNode =
-    totalBalance && totalBalance > 0 ? (
+    !userPending && !hasNoAccountBalance && totalBalance && totalBalance > 0 ? (
       <Typography variant="h6">{`${t('Balance')}: ${currencyFormat(
         totalBalance,
         data?.designationAccounts[0].designationAccounts[0].currency,
@@ -95,7 +99,7 @@ export const DesignationAccountsReport: React.FC<Props> = ({
         rightExtra={balanceNode}
         headerType={HeaderTypeEnum.Report}
       />
-      {loading ? (
+      {loading || userPending ? (
         <Box
           display="flex"
           justifyContent="center"
@@ -121,7 +125,9 @@ export const DesignationAccountsReport: React.FC<Props> = ({
             const accounts: Account[] =
               designationAccountGroup.designationAccounts.map((account) => ({
                 active: account.active,
-                balance: account.convertedBalance,
+                balance: hasNoAccountBalance
+                  ? undefined
+                  : account.convertedBalance,
                 code: account.designationNumber ?? undefined,
                 currency: account.currency,
                 id: account.id,

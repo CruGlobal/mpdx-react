@@ -18,6 +18,11 @@ import { useUpdateContactOtherMutation } from '../ContactDetails/ContactDetailsT
 import { useHasActiveTaskLazyQuery } from './ContactFlow.generated';
 import { ContactFlowColumn } from './ContactFlowColumn/ContactFlowColumn';
 import { ContactFlowDragLayer } from './ContactFlowDragLayer/ContactFlowDragLayer';
+import {
+  FlowsScrollHint,
+  flowsBoardSnapSx,
+  flowsColumnSnapSx,
+} from './FlowsScrollHint/FlowsScrollHint';
 import { getDefaultFlowOptions } from './contactFlowDefaultOptions';
 import { useFlowOptions } from './useFlowOptions';
 
@@ -161,6 +166,7 @@ export const ContactFlow: React.FC<Props> = ({ accountListId }: Props) => {
     flowOptions && (
       <DndProvider backend={HTML5Backend}>
         <ContactFlowDragLayer containerRef={ref} />
+        {flowOptions.length > 1 && <FlowsScrollHint />}
         <Box
           display="grid"
           minWidth="100%"
@@ -170,6 +176,7 @@ export const ContactFlow: React.FC<Props> = ({ accountListId }: Props) => {
           overflow="auto"
           style={{ overflowX: 'auto' }}
           gridAutoColumns="300px"
+          sx={flowsBoardSnapSx}
           data-testid="contactsFlow"
           ref={ref}
         >
@@ -180,6 +187,7 @@ export const ContactFlow: React.FC<Props> = ({ accountListId }: Props) => {
               p={2}
               key={column.name}
               data-testid={`contactsFlow${column.name}`}
+              sx={flowsColumnSnapSx}
             >
               <ContactFlowColumn
                 accountListId={accountListId}

@@ -1,9 +1,20 @@
 import React from 'react';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  desktopWidth,
+  getStyleAtWidth,
+  phoneWidth,
+} from '__tests__/util/styleAtWidth';
+import { multiPageHeaderHeight } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import {
+  GetUserDocument,
+  GetUserQuery,
+} from 'src/components/User/GetUser.generated';
+import { UsStaffGroupEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { DesignationAccountsReport } from './DesignationAccountsReport';
 import {
@@ -25,6 +36,12 @@ const title = 'test title';
 const onNavListToggle = jest.fn();
 
 const mocks = {
+  GetUser: {
+    user: {
+      usStaffGroup: UsStaffGroupEnum.SeniorStaff,
+      spouseUsStaffGroup: null,
+    },
+  },
   DesignationAccounts: {
     designationAccounts: [
       {
@@ -62,7 +79,10 @@ describe('DesignationAccountsReport', () => {
   it('default', async () => {
     const { getByText, getByTestId, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{ DesignationAccounts: DesignationAccountsQuery }>
+        <GqlMockedProvider<{
+          GetUser: GetUserQuery;
+          DesignationAccounts: DesignationAccountsQuery;
+        }>
           mocks={mocks}
         >
           <DesignationAccountsReport
@@ -86,6 +106,72 @@ describe('DesignationAccountsReport', () => {
     expect(queryByTestId('Notification')).not.toBeInTheDocument();
     expect(getByTestId('AccountsGroupList')).toBeInTheDocument();
     expect(getByTestId('DesignationAccountsScrollBox')).toBeInTheDocument();
+  });
+
+  it('hides balances from paid with designation staff', async () => {
+    const { findByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<{
+          GetUser: GetUserQuery;
+          DesignationAccounts: DesignationAccountsQuery;
+        }>
+          mocks={{
+            ...mocks,
+            GetUser: {
+              user: {
+                usStaffGroup: UsStaffGroupEnum.PaidWithDesignation,
+                spouseUsStaffGroup: null,
+              },
+            },
+          }}
+        >
+          <DesignationAccountsReport
+            accountListId={accountListId}
+            isNavListOpen={true}
+            title={title}
+            onNavListToggle={onNavListToggle}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    expect(await findByText('Test Account')).toBeInTheDocument();
+    expect(queryByText(/3,500/)).not.toBeInTheDocument();
+  });
+
+  it('shows no total before the user loads', async () => {
+    const { queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <MockedProvider
+          addTypename={false}
+          mocks={[
+            {
+              request: {
+                query: DesignationAccountsDocument,
+                variables: { accountListId },
+              },
+              result: { data: mocks.DesignationAccounts },
+            },
+            {
+              request: { query: GetUserDocument },
+              delay: 60_000,
+              result: { data: mocks.GetUser },
+            },
+          ]}
+        >
+          <DesignationAccountsReport
+            accountListId={accountListId}
+            isNavListOpen={true}
+            title={title}
+            onNavListToggle={onNavListToggle}
+          />
+        </MockedProvider>
+      </ThemeProvider>,
+    );
+
+    // Let the designation accounts arrive while GetUser is still pending
+    await act(() => new Promise((resolve) => setTimeout(resolve, 100)));
+    expect(queryByText(/Balance:/)).not.toBeInTheDocument();
   });
 
   it('loading', async () => {
@@ -177,4 +263,37 @@ describe('DesignationAccountsReport', () => {
     userEvent.click(getByTestId('ReportsMenuIcon'));
     await waitFor(() => expect(onNavListToggle).toHaveBeenCalled());
   });
+
+  it.each([phoneWidth, desktopWidth])(
+    'fits the account list under the header at %ipx wide',
+    async (width) => {
+      const { findByTestId } = render(
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<{
+            GetUser: GetUserQuery;
+            DesignationAccounts: DesignationAccountsQuery;
+          }>
+            mocks={mocks}
+          >
+            <DesignationAccountsReport
+              accountListId={accountListId}
+              isNavListOpen={true}
+              title={title}
+              onNavListToggle={onNavListToggle}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>,
+      );
+
+      // The header grows on phones, so the list height has to follow it
+      // instead of taking off a fixed amount
+      expect(
+        getStyleAtWidth(
+          await findByTestId('DesignationAccountsScrollBox'),
+          'height',
+          width,
+        ),
+      ).toContain(multiPageHeaderHeight);
+    },
+  );
 });

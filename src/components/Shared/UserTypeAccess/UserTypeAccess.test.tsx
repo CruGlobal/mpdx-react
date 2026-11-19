@@ -193,6 +193,41 @@ describe('UserTypeAccess', () => {
     expect(await findByText('Test Content')).toBeInTheDocument();
   });
 
+  it('should render LimitedAccess when the user is ineligible for staff account tools', async () => {
+    const { findByRole } = render(
+      <TestComponent
+        requireUserGroups={RequiredUserGroupEnum.StaffAccount}
+        usStaffGroup={UsStaffGroupEnum.PaidWithDesignation}
+      />,
+    );
+    expect(
+      await findByRole('heading', {
+        name: 'Access to this feature is limited.',
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it('explains a missing staff account when the user is ineligible for staff account tools', async () => {
+    const { findByText } = render(
+      <TestComponent
+        requireUserGroups={RequiredUserGroupEnum.StaffAccount}
+        usStaffGroup={UsStaffGroupEnum.PaidWithDesignation}
+      />,
+    );
+    expect(
+      await findByText(
+        /our records show that you do not have a staff account/i,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('should render child component when user is eligible for staff account tools', async () => {
+    const { findByText } = render(
+      <TestComponent requireUserGroups={RequiredUserGroupEnum.StaffAccount} />,
+    );
+    expect(await findByText('Test Content')).toBeInTheDocument();
+  });
+
   it('should render LimitedAccess when the user supervises no staff', async () => {
     const { findByRole, getByText } = render(
       <TestComponent

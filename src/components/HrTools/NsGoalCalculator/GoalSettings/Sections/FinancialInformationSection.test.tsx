@@ -161,4 +161,12 @@ describe('FinancialInformationSection', () => {
       getByText("Determines staff's cost-of-living multiplier"),
     ).toBeInTheDocument();
   });
+
+  it('explains that the requested salary defaults when blank', () => {
+    const { getByText } = render(<TestComponent />);
+
+    expect(
+      getByText('Leave blank to use the default salary.'),
+    ).toBeInTheDocument();
+  });
 });

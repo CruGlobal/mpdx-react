@@ -15,6 +15,11 @@ const useStyles = makeStyles()((theme: Theme) => ({
     letterSpacing: '0.25',
     fontWeight: 700,
     whiteSpace: 'nowrap',
+    lineHeight: '24px',
+    // Stays inline so a long list of names is cut mid-name by the ellipsis;
+    // the padding grows the tap target without changing the row layout
+    paddingTop: '3px',
+    paddingBottom: '3px',
     '&:hover': {
       textDecoration: 'underline',
     },

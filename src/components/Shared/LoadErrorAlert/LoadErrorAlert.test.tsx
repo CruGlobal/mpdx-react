@@ -30,4 +30,17 @@ describe('LoadErrorAlert', () => {
 
     expect(onRetry).toHaveBeenCalledTimes(1);
   });
+
+  it('keeps Try Again on one line', () => {
+    const { getByRole } = render(
+      <LoadErrorAlert
+        message="The report could not be loaded."
+        onRetry={jest.fn()}
+      />,
+    );
+
+    expect(getByRole('button', { name: 'Try Again' })).toHaveStyle(
+      'white-space: nowrap',
+    );
+  });
 });

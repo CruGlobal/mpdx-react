@@ -7,13 +7,16 @@ import {
   PeopleGroupSupportTypeEnum,
   QuarterlyPayrollHistory,
 } from 'src/graphql/types.generated';
+import { missingValue } from '../Shared/helpers/missingValue';
 import { ManagedStaffQuery } from './ManagedStaff.generated';
+import { ManagedStaffTeamSummaryQuery } from './ManagedStaffTeamSummary.generated';
+import { ManagedStaffTeamsQuery } from './ManagedStaffTeams.generated';
 
 export type ManagedStaffMember =
   ManagedStaffQuery['managedStaff']['nodes'][number];
 
 /** Rendered in place of a value `managedStaff` returned as null or empty. */
-export const pendingField = '—';
+export const pendingField = missingValue;
 
 /**
  * The MPDX-10069 warning for a staff member whose Monthly Gross Salary is
@@ -46,6 +49,9 @@ export const grossSalaryWarning = (
     },
   );
 };
+
+// Floored so a percent just under a cutoff never shows as the next grade's
+export const floorToTenth = (percent: number) => Math.floor(percent * 10) / 10;
 
 /**
  * Build avatar initials from a person's first and last name.
@@ -131,11 +137,11 @@ export const healthLabel = (
 ): string => {
   switch (health) {
     case MpdHealthStatusEnum.Green:
-      return t('on track');
+      return t('full salary');
     case MpdHealthStatusEnum.Red:
-      return t('at risk');
+      return t('below New Staff salary');
     case MpdHealthStatusEnum.Yellow:
-      return t('needs attention');
+      return t('below salary');
     case MpdHealthStatusEnum.Blue:
       return t('ungraded');
     case MpdHealthStatusEnum.Gray:
@@ -359,15 +365,26 @@ export const getLocalizedUserPersonTypeName = (
  */
 export type StaffRow = ManagedStaffMember & { partner?: ManagedStaffMember };
 
+/** Whether two people's household, buffer and month grades all match. */
+const sameBalanceGrades = (
+  a: ManagedStaffMember,
+  b: ManagedStaffMember,
+): boolean =>
+  a.householdType === b.householdType &&
+  a.balanceBuffer === b.balanceBuffer &&
+  a.monthEndBalances.length === b.monthEndBalances.length &&
+  a.monthEndBalances.every(
+    ({ status }, index) => status === b.monthEndBalances[index].status,
+  );
+
 /**
  * Fold each couple present in the list into one row, keeping the earlier
- * position. Two rows pair only when they share a staff account and a grading
- * group: the API builds every health figure from the staff account and the
- * person's grading group, so such a pair carries identical benchmarks and
- * quarters, and a joint account only ever belongs to a couple (HCM does not
- * always carry the spouse link). Spouses who hold separate staff accounts, or
- * who are graded differently, have their own health each, so they stay on
- * their own rows and name each other via `getRowSpouseName`.
+ * position. A merged row shows only the first person's grades, so two rows
+ * pair only when they share a staff account (a joint account only ever
+ * belongs to a couple; HCM does not always carry the spouse link), a grading
+ * group, and the same household type, buffer and month statuses, which the
+ * API sends per person. Any other spouses stay on their own rows and name
+ * each other via `getRowSpouseName`.
  */
 export const mergeSpouseRows = (nodes: ManagedStaffMember[]): StaffRow[] => {
   const paired = new Set<string>();
@@ -382,7 +399,8 @@ export const mergeSpouseRows = (nodes: ManagedStaffMember[]): StaffRow[] => {
         !paired.has(other.personNumber) &&
         other.staffAccountId === node.staffAccountId &&
         gradingGroup(other.userPersonType) ===
-          gradingGroup(node.userPersonType),
+          gradingGroup(node.userPersonType) &&
+        sameBalanceGrades(node, other),
     );
     if (partner) {
       paired.add(node.personNumber);
@@ -446,14 +464,38 @@ export const getRowInitials = ({
 export const countPeople = (rows: StaffRow[]): number =>
   rows.reduce((total, row) => total + (row.partner ? 2 : 1), 0);
 
-/** Status of the newest completed quarter; Gray when none has completed. */
-export const latestQuarterStatus = ({
-  quarterlyHealth,
-}: Pick<ManagedStaffMember, 'quarterlyHealth'>): MpdHealthStatusEnum => {
-  const [latest] = [...(quarterlyHealth?.completedQuarters ?? [])].sort(
-    (a, b) => b.fiscalYear - a.fiscalYear || b.quarter - a.quarter,
-  );
-  return latest?.status ?? MpdHealthStatusEnum.Gray;
+type TeamOption = ManagedStaffTeamsQuery['managedStaffTeams'][number];
+
+/** The team filter's options: teams with staff in the department, if one is picked. */
+export const teamNamesInDepartment = (
+  teams: TeamOption[],
+  department: string | null,
+): string[] =>
+  teams
+    .filter(
+      ({ departments }) => !department || departments.includes(department),
+    )
+    .map(({ name }) => name)
+    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+
+/** Past this many teams, the picker waits for a department to narrow them. */
+export const maxTeamPickerCards = 50;
+
+/** Whether this many team cards are worth offering as a picker. */
+export const fitsTeamPicker = (count: number): boolean =>
+  count >= 2 && count <= maxTeamPickerCards;
+
+/**
+ * The name-only team cards offered when the reach is too large for the API to
+ * count. Empty when there is nothing to choose between, or too much to show as
+ * cards.
+ */
+export const teamPickerNames = (
+  teams: TeamOption[] | undefined,
+  department: string | null,
+): string[] => {
+  const names = teamNamesInDepartment(teams ?? [], department);
+  return fitsTeamPicker(names.length) ? names : [];
 };
 
 export interface TeamSummaryRow {
@@ -471,46 +513,27 @@ const emptyCounts = (): Record<MpdHealthStatusEnum, number> => ({
 });
 
 /**
- * How each team in the rows is doing: people per latest-quarter status. A
- * person on several teams counts toward each; a merged partner counts on their
- * own teams. Worst teams first: most at risk, then most needing attention.
+ * Each team's people per status of last month's balance, as the API counts
+ * them. Worst teams first: most at risk, then most needing attention.
  */
-export const summarizeTeams = (rows: StaffRow[]): TeamSummaryRow[] => {
-  const teams = new Map<string, TeamSummaryRow>();
-  const add = (member: ManagedStaffMember, teamNames: string[]) => {
-    const status = latestQuarterStatus(member);
-    for (const name of new Set(teamNames)) {
-      const team = teams.get(name) ?? {
-        name,
-        staffCount: 0,
-        counts: emptyCounts(),
-      };
-      team.staffCount += 1;
-      team.counts[status] += 1;
-      teams.set(name, team);
-    }
-  };
-  for (const row of rows) {
-    const { partner, ...member } = row;
-    add(
-      member,
-      member.teams.employee.map(({ name }) => name),
+export const teamSummaryRows = (
+  teams: ManagedStaffTeamSummaryQuery['managedStaffTeamSummary'],
+): TeamSummaryRow[] =>
+  teams
+    .map(({ name, staffCount, statusCounts }) => {
+      const counts = emptyCounts();
+      for (const { status, count } of statusCounts) {
+        counts[status] = count;
+      }
+      return { name, staffCount, counts };
+    })
+    .sort(
+      (a, b) =>
+        b.counts[MpdHealthStatusEnum.Red] - a.counts[MpdHealthStatusEnum.Red] ||
+        b.counts[MpdHealthStatusEnum.Yellow] -
+          a.counts[MpdHealthStatusEnum.Yellow] ||
+        a.name.localeCompare(b.name),
     );
-    if (partner) {
-      add(
-        partner,
-        partner.teams.employee.map(({ name }) => name),
-      );
-    }
-  }
-  return [...teams.values()].sort(
-    (a, b) =>
-      b.counts[MpdHealthStatusEnum.Red] - a.counts[MpdHealthStatusEnum.Red] ||
-      b.counts[MpdHealthStatusEnum.Yellow] -
-        a.counts[MpdHealthStatusEnum.Yellow] ||
-      a.name.localeCompare(b.name),
-  );
-};
 
 export const getLocalizedSupportType = (
   t: TFunction,

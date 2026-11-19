@@ -73,7 +73,7 @@ describe('MhaRequestSection', () => {
     const { findByText } = render(
       <TestComponent
         hcmUser={{
-          mhaEit: { mhaEligibility: false },
+          mhaBoardApproval: { mhaEligibility: false },
         }}
       />,
     );
@@ -81,15 +81,111 @@ describe('MhaRequestSection', () => {
     expect(await findByText('Ineligible')).toBeInTheDocument();
   });
 
+  describe('board approval rule', () => {
+    it('shows the fields when the board approval passes but the IBS-based MHA eligibility fails', async () => {
+      const { findByTestId, queryByText } = render(
+        <TestComponent
+          hasSpouse={false}
+          hcmUser={{
+            mhaEit: {
+              mhaEligibility: false,
+              ineligibilityReasonCode:
+                MinistersHousingIneligibilityReasonEnum.IbsCertificationExpired,
+            },
+            mhaBoardApproval: {
+              mhaEligibility: true,
+              ineligibilityReasonCode: null,
+            },
+            mhaRequest: {
+              currentApprovedOverallAmount: 0,
+              boardApprovedOverallAmount: 18000,
+            },
+          }}
+        />,
+      );
+
+      expect(await findByTestId('board-approved-amount')).toHaveTextContent(
+        'You may request up to your Board Approved MHA Amount of $18,000.',
+      );
+      expect(await findByTestId('current-mha-staff')).toHaveValue('$7,200');
+      expect(queryByText('Ineligible')).not.toBeInTheDocument();
+    });
+
+    it('hides the fields and shows the reason when there is no board approval date', async () => {
+      const { findByRole, queryByTestId } = render(
+        <TestComponent
+          hasSpouse={false}
+          hcmUser={{
+            mhaEit: { mhaEligibility: true, ineligibilityReasonCode: null },
+            mhaBoardApproval: {
+              mhaEligibility: false,
+              ineligibilityReasonCode:
+                MinistersHousingIneligibilityReasonEnum.MissingBoardApprovedOnDate,
+            },
+            mhaRequest: {
+              currentApprovedOverallAmount: 20000,
+              boardApprovedOverallAmount: 0,
+            },
+          }}
+        />,
+      );
+
+      expect(
+        await findByRole('cell', {
+          name: 'Board approval date is missing from your records',
+        }),
+      ).toBeInTheDocument();
+      expect(queryByTestId('current-mha-staff')).not.toBeInTheDocument();
+      expect(queryByTestId('board-approved-amount')).not.toBeInTheDocument();
+    });
+  });
+
+  it('describes eligibility by the Board approval when IBS has expired', async () => {
+    const { findByRole, queryByRole, getByTestId } = render(
+      <TestComponent
+        hcmUser={{
+          mhaEit: {
+            mhaEligibility: false,
+            ineligibilityReasonCode:
+              MinistersHousingIneligibilityReasonEnum.IbsCertificationExpired,
+          },
+          mhaBoardApproval: {
+            mhaEligibility: true,
+            ineligibilityReasonCode: null,
+          },
+        }}
+        hcmSpouse={{
+          mhaBoardApproval: {
+            mhaEligibility: false,
+            ineligibilityReasonCode:
+              MinistersHousingIneligibilityReasonEnum.MissingBoardApprovedOnDate,
+          },
+        }}
+      />,
+    );
+
+    expect(
+      await findByRole('cell', {
+        name: 'MHA has been Board approved',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      queryByRole('cell', { name: 'Completed the required IBS courses' }),
+    ).not.toBeInTheDocument();
+    expect(getByTestId('eligibility-contact-info')).not.toHaveTextContent(
+      /IBS/,
+    );
+  });
+
   describe('no MHA messages', () => {
     it('should render no-MHA message when both user and spouse have no MHA', async () => {
       const { findByTestId } = render(
         <TestComponent
           hcmUser={{
-            mhaRequest: { currentApprovedOverallAmount: 0 },
+            mhaRequest: { boardApprovedOverallAmount: 0 },
           }}
           hcmSpouse={{
-            mhaRequest: { currentApprovedOverallAmount: 0 },
+            mhaRequest: { boardApprovedOverallAmount: 0 },
           }}
         />,
       );
@@ -101,10 +197,10 @@ describe('MhaRequestSection', () => {
       const { findByTestId } = render(
         <TestComponent
           hcmUser={{
-            mhaRequest: { currentApprovedOverallAmount: 0 },
+            mhaRequest: { boardApprovedOverallAmount: 0 },
           }}
           hcmSpouse={{
-            mhaRequest: { currentApprovedOverallAmount: 20000 },
+            mhaRequest: { boardApprovedOverallAmount: 20000 },
           }}
         />,
       );
@@ -116,10 +212,10 @@ describe('MhaRequestSection', () => {
       const { queryByTestId, findByTestId } = render(
         <TestComponent
           hcmUser={{
-            mhaRequest: { currentApprovedOverallAmount: 20000 },
+            mhaRequest: { boardApprovedOverallAmount: 20000 },
           }}
           hcmSpouse={{
-            mhaRequest: { currentApprovedOverallAmount: 20000 },
+            mhaRequest: { boardApprovedOverallAmount: 20000 },
           }}
         />,
       );
@@ -132,7 +228,7 @@ describe('MhaRequestSection', () => {
   describe('MHI labeling for Italian users', () => {
     const italianUser = {
       staffInfo: { country: 'IT' },
-      mhaEit: {
+      mhaBoardApproval: {
         mhaEligibility: false,
         ineligibilityReasonCode:
           MinistersHousingIneligibilityReasonEnum.ItalyMhi,
@@ -158,7 +254,7 @@ describe('MhaRequestSection', () => {
         <TestComponent
           hcmUser={{
             ...italianUser,
-            mhaRequest: { currentApprovedOverallAmount: 0 },
+            mhaRequest: { boardApprovedOverallAmount: 0 },
           }}
           hasSpouse={false}
         />,
@@ -178,7 +274,7 @@ describe('MhaRequestSection', () => {
     it('uses MHI wording when only the Italian spouse field renders (mixed couple)', async () => {
       const { findByText, queryByText } = render(
         <TestComponent
-          hcmUser={{ mhaEit: { mhaEligibility: false } }}
+          hcmUser={{ mhaBoardApproval: { mhaEligibility: false } }}
           hcmSpouse={italianUser}
         />,
       );

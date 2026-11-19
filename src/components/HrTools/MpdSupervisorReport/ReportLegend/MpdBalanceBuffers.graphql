@@ -1,0 +1,6 @@
+query MpdBalanceBuffers {
+  mpdBalanceBuffers {
+    householdType
+    amount
+  }
+}

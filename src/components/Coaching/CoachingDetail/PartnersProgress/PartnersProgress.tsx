@@ -1,12 +1,5 @@
 import { useMemo } from 'react';
-import {
-  Box,
-  CardHeader,
-  Table,
-  TableBody,
-  TableContainer,
-  TableRow,
-} from '@mui/material';
+import { Box, CardHeader, Table, TableBody, TableRow } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from 'src/components/AnimatedCard';
 import { useLocale } from 'src/hooks/useLocale';
@@ -14,6 +7,7 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { CoachingPeriodEnum } from '../CoachingDetail';
 import { HelpButton } from '../HelpButton';
+import { ScrollableTableContainer } from '../ScrollableTableContainer/ScrollableTableContainer';
 import { getMonthOrWeekDateRange } from '../helpers';
 import {
   AlignedTableCell,
@@ -83,7 +77,7 @@ export const PartnersProgress: React.FC<PartnersProgressProps> = ({
         {loading ? (
           <MultilineSkeleton lines={4} />
         ) : (
-          <TableContainer sx={{ minWidth: 600 }}>
+          <ScrollableTableContainer>
             <Table
               size="small"
               aria-label={t('appointments and results table')}
@@ -157,7 +151,7 @@ export const PartnersProgress: React.FC<PartnersProgressProps> = ({
                 </TableRow>
               </TableBody>
             </Table>
-          </TableContainer>
+          </ScrollableTableContainer>
         )}
       </ContentContainer>
     </AnimatedCard>

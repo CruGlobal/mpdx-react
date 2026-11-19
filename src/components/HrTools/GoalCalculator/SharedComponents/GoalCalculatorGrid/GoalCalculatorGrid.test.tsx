@@ -1,7 +1,8 @@
 import React from 'react';
 import { gql, useApolloClient } from '@apollo/client';
-import { act, render, waitFor } from '@testing-library/react';
+import { act, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import matchMediaMock from '__tests__/util/matchMediaMock';
 import {
   GoalCalculationRole,
   PrimaryBudgetCategory,
@@ -64,6 +65,73 @@ const ChangeRoleButton: React.FC = () => {
     >
       Change Role
     </button>
+  );
+};
+
+// jsdom does no layout, so the grid measures itself as 0px wide and every flex
+// column shrinks to nothing. Report the width the grid gets on a real page so it
+// sizes its columns the way a browser would.
+const setGridWidth = (width: number) => {
+  const getBoundingClientRect = HTMLElement.prototype.getBoundingClientRect;
+  jest
+    .spyOn(HTMLElement.prototype, 'getBoundingClientRect')
+    .mockImplementation(function (this: HTMLElement) {
+      return this.classList.contains('MuiDataGrid-main')
+        ? ({
+            x: 0,
+            y: 0,
+            top: 0,
+            left: 0,
+            right: width,
+            bottom: 400,
+            width,
+            height: 400,
+          } as DOMRect)
+        : getBoundingClientRect.call(this);
+    });
+};
+
+// Column widths in px, keyed by column field
+const getColumnWidths = (headers: HTMLElement[]) =>
+  Object.fromEntries(
+    headers.map((header) => [
+      header.dataset.field,
+      parseFloat(header.style.width),
+    ]),
+  );
+
+// jsdom doesn't pass white-space down to child elements, so use the closest
+// element that sets it. Browsers default to normal.
+const getWhiteSpace = (element: Element): string => {
+  for (let node: Element | null = element; node; node = node.parentElement) {
+    const { whiteSpace } = getComputedStyle(node);
+    if (whiteSpace) {
+      return whiteSpace;
+    }
+  }
+  return 'normal';
+};
+
+// jsdom's CSS parser drops properties it doesn't know, like -webkit-line-clamp,
+// so read the declarations Emotion wrote for the element's own class instead
+const getEmotionStyles = (element: Element): Record<string, string> => {
+  const className = Array.from(element.classList).find((name) =>
+    name.startsWith('css-'),
+  );
+  const css = Array.from(document.querySelectorAll('style'))
+    .map((style) => style.textContent ?? '')
+    .join('');
+  const declarations =
+    css.match(new RegExp(`\\.${className}\\{([^}]*)\\}`))?.[1] ?? '';
+
+  return Object.fromEntries(
+    declarations
+      .split(';')
+      .filter(Boolean)
+      .map((declaration) => {
+        const [property, ...value] = declaration.split(':');
+        return [property.trim(), value.join(':').trim()];
+      }),
   );
 };
 
@@ -522,6 +590,115 @@ describe('GoalCalculatorGrid', () => {
       expect(mutationSpy).not.toHaveGraphqlOperation(
         'UpdatePrimaryBudgetCategory',
       );
+    });
+  });
+
+  describe('screen sizes', () => {
+    const renderGrid = async (screenWidth: number, gridWidth: number) => {
+      matchMediaMock({ width: `${screenWidth}px` });
+      setGridWidth(gridWidth);
+
+      const result = render(
+        <GoalCalculatorTestWrapper>
+          <TestComponent />
+        </GoalCalculatorTestWrapper>,
+      );
+      const row = await result.findByRole('row', { name: /Other Ministry/ });
+
+      return { ...result, row };
+    };
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    describe('on phones', () => {
+      // The grid widths the goal page gives the table on each phone
+      it.each([
+        [390, 284],
+        [375, 269],
+        [360, 254],
+      ])(
+        'fits the name, amount and delete columns on a %ipx phone (%ipx grid), with most of the room for the name',
+        async (screenWidth, gridWidth) => {
+          const { getAllByRole, row } = await renderGrid(
+            screenWidth,
+            gridWidth,
+          );
+
+          const { label, amount, actions } = getColumnWidths(
+            getAllByRole('columnheader'),
+          );
+          // No sideways scrolling to reach the amount or the delete button
+          expect(label + amount + actions).toBeLessThanOrEqual(gridWidth);
+          // Amount keeps room for totals like $12,345.67
+          expect(amount).toBeGreaterThanOrEqual(84);
+          // The name gets the bigger share so fewer names are cut off
+          expect(label).toBeGreaterThanOrEqual(1.5 * amount);
+          expect(
+            within(row).getByRole('menuitem', { name: 'Delete' }),
+          ).toBeInTheDocument();
+        },
+      );
+
+      it('gives the name about two thirds of the room beside the Delete button when Amount has room to spare', async () => {
+        const { getAllByRole } = await renderGrid(599, 500);
+
+        const { label, amount } = getColumnWidths(getAllByRole('columnheader'));
+        expect(label / (label + amount)).toBeCloseTo(2 / 3, 1);
+      });
+
+      it('lets a long name wrap onto a second line before it is cut off', async () => {
+        const { row } = await renderGrid(390, 284);
+
+        const name = within(row).getByText('Other Ministry');
+        expect(getWhiteSpace(name)).toBe('normal');
+        expect(getEmotionStyles(name)).toMatchObject({
+          display: '-webkit-box',
+          '-webkit-box-orient': 'vertical',
+          '-webkit-line-clamp': '2',
+        });
+      });
+
+      it.each([390, 599])(
+        'shows a large Delete button that fits inside its row on a %ipx screen',
+        async (screenWidth) => {
+          const { getAllByRole, row } = await renderGrid(screenWidth, 284);
+
+          // Large icon buttons are 44px, the smallest comfortable tap target
+          expect(
+            within(row).getByRole('menuitem', { name: 'Delete' }),
+          ).toHaveClass('MuiIconButton-sizeLarge');
+          expect(parseFloat(row.style.minHeight)).toBeGreaterThanOrEqual(44);
+          expect(
+            getColumnWidths(getAllByRole('columnheader')).actions,
+          ).toBeGreaterThanOrEqual(44);
+        },
+      );
+    });
+
+    describe('on desktop', () => {
+      it('keeps the 200px name, 150px amount and 60px delete columns at 600px, even in a narrow grid', async () => {
+        const { getAllByRole, row } = await renderGrid(600, 284);
+
+        expect(getColumnWidths(getAllByRole('columnheader'))).toEqual({
+          label: 200,
+          amount: 150,
+          actions: 60,
+        });
+        expect(
+          within(row).getByRole('menuitem', { name: 'Delete' }),
+        ).toHaveClass('MuiIconButton-sizeSmall');
+        expect(row).toHaveStyle({ minHeight: '38px' });
+      });
+
+      it('keeps names on one line', async () => {
+        const { row } = await renderGrid(600, 284);
+
+        const name = within(row).getByText('Other Ministry');
+        expect(getWhiteSpace(name)).toBe('nowrap');
+        expect(getEmotionStyles(name)).not.toHaveProperty('-webkit-line-clamp');
+      });
     });
   });
 });

@@ -41,6 +41,12 @@ export const createTableRow = (data: Row, t: TFunction): TableData => ({
   lastDonationCurrency: data.lastDonationCurrency ?? null,
 });
 
+// Flex columns shrink to fit a screen that is too narrow and cut off their
+// values, so keep each column at its full width and let the grid scroll
+// sideways. On wide screens the flex columns still stretch to fill the space.
+const withFullWidthColumns = (columns: GridColDef[]): GridColDef[] =>
+  columns.map((column) => ({ ...column, minWidth: column.width }));
+
 const CustomFooter: React.FC = () => {
   return (
     <GridFooterContainer>
@@ -75,7 +81,7 @@ export const PartnerGivingAnalysisTable: React.FC<
     totalDonations,
   } = usePopulateTableRows(onSelectOne, isRowChecked);
 
-  const columns: GridColDef[] = [
+  const columns = withFullWidthColumns([
     {
       field: 'checkbox',
       headerName: '',
@@ -152,7 +158,7 @@ export const PartnerGivingAnalysisTable: React.FC<
       flex: 1,
       renderCell: totalDonations,
     },
-  ];
+  ]);
 
   return (
     <Box

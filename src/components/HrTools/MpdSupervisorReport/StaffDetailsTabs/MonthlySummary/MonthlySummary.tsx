@@ -23,12 +23,21 @@ import { monthYearFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { pendingField } from '../../helpers';
 import { useMonthlyPayrollSummaryQuery } from './MonthlyPayrollSummary.generated';
+import { SupportVsGoalCells } from './SupportVsGoalCells';
 import { ToggleSummaryView } from './ToggleSummaryView/ToggleSummaryView';
 
 export enum MonthlySummaryView {
   Table = 'table',
   Chart = 'chart',
 }
+
+// Zero and unknown nets keep the default text color.
+const netColor = (net: number | null | undefined) => {
+  if (!net) {
+    return 'inherit';
+  }
+  return net < 0 ? theme.palette.error.main : theme.palette.success.main;
+};
 
 interface StaffTabMonthlySummaryProps {
   staffAccountId: string;
@@ -135,6 +144,9 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
               <TableRow>
                 <TableCell>{t('Month')}</TableCell>
                 <TableCell>{t('Contributions')}</TableCell>
+                <TableCell>{t('Solid Monthly Support')}</TableCell>
+                <TableCell>{t('Monthly Goal')}</TableCell>
+                <TableCell align="right">{t('% of Goal')}</TableCell>
                 <TableCell>{t('Expenses')}</TableCell>
                 <TableCell align="right">{t('Net')}</TableCell>
                 <TableCell align="right">{t('End Balance')}</TableCell>
@@ -143,7 +155,7 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
             <TableBody>
               {tableRows.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} align="center">
+                  <TableCell colSpan={8} align="center">
                     {t('No data available.')}
                   </TableCell>
                 </TableRow>
@@ -151,13 +163,6 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
                 tableRows.map((summary, index) => {
                   const date = DateTime.fromISO(summary.month ?? '');
                   const { contributions, expenses, net, endBalance } = summary;
-
-                  const netColor =
-                    net === null || net === undefined || net === 0
-                      ? 'inherit'
-                      : net < 0
-                        ? theme.palette.error.main
-                        : theme.palette.success.main;
 
                   return (
                     <TableRow key={summary.month ?? index}>
@@ -169,10 +174,11 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
                       <TableCell>
                         {amountOrDash(contributions, formatCurrency)}
                       </TableCell>
+                      <SupportVsGoalCells summary={summary} />
                       <TableCell>
                         {amountOrDash(expenses, formatExpense)}
                       </TableCell>
-                      <TableCell align="right" sx={{ color: netColor }}>
+                      <TableCell align="right" sx={{ color: netColor(net) }}>
                         {amountOrDash(net, formatAccounting)}
                       </TableCell>
                       <TableCell align="right">

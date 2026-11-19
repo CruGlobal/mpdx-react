@@ -14,6 +14,7 @@ import { useUrlFilters } from 'src/components/Shared/UrlFiltersProvider/UrlFilte
 import { PartnerGivingAnalysisFilterSetInput } from 'src/graphql/types.generated';
 import { useGetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
+import { useIneligibleByGroup } from 'src/hooks/useIneligibleByGroup';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import { HeaderActions } from './Actions/HeaderActions';
 import { BalanceCard } from './BalanceCard/BalanceCard';
@@ -85,6 +86,11 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   });
 
   const { data: staffAccountIdData } = useStaffAccountIdQuery();
+  const { inStaffAccountIneligibleGroup, userPending } = useIneligibleByGroup();
+  const showBalanceCard =
+    !!staffAccountIdData?.user.staffAccountId &&
+    !userPending &&
+    !inStaffAccountIneligibleGroup;
 
   const contacts = data?.partnerGivingAnalysis.nodes ?? [];
 
@@ -147,7 +153,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
         selectedIds={ids}
       />
 
-      {staffAccountIdData?.user.staffAccountId ? (
+      {showBalanceCard ? (
         <BalanceCard
           donationPeriodTotalSum={
             data?.partnerGivingAnalysis?.donationPeriodTotalSum

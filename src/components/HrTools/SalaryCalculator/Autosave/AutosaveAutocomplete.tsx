@@ -33,6 +33,7 @@ export const AutosaveAutocomplete: React.FC<AutosaveAutocompleteProps> = ({
   options,
   textFieldProps,
   emptyValue,
+  disabled,
   ...props
 }) => {
   const saveField = useSaveField();
@@ -56,7 +57,7 @@ export const AutosaveAutocomplete: React.FC<AutosaveAutocompleteProps> = ({
       onChange={(_, newValue) =>
         saveField({ [fieldName]: newValue }).catch(() => {})
       }
-      disabled={!calculation}
+      disabled={!calculation || disabled}
       size="small"
       renderInput={(params) => (
         <TextField

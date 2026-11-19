@@ -53,17 +53,32 @@ export const DeleteAppealModal: React.FC<DeleteAppealModalProps> = ({
           id: appealId,
         },
       },
+      context: { suppressErrorCodes: ['NOT_FOUND'] },
       update: (cache) => {
-        cache.evict({ id: `Appeal:${appealId}` });
-        cache.gc();
-        push(`/accountLists/${accountListId}/tools/appeals`);
+        push(`/accountLists/${accountListId}/tools/appeals`).then(() => {
+          cache.evict({ id: `Appeal:${appealId}` });
+          cache.gc();
+        });
       },
       onCompleted: () => {
         enqueueSnackbar(t('Successfully deleted appeal.'), {
           variant: 'success',
         });
       },
-      onError: () => {
+      onError: (error) => {
+        const appealNotFound = error.graphQLErrors.some(
+          ({ extensions }) => extensions?.code === 'NOT_FOUND',
+        );
+        if (appealNotFound) {
+          enqueueSnackbar(
+            t(
+              'That appeal could not be found. It may have already been deleted.',
+            ),
+            { variant: 'error' },
+          );
+          push(`/accountLists/${accountListId}/tools/appeals`);
+          return;
+        }
         enqueueSnackbar(t('There was an error trying to delete the appeal.'), {
           variant: 'error',
         });

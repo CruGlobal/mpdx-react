@@ -2,9 +2,20 @@ import { ParsedUrlQueryInput } from 'querystring';
 import Head from 'next/head';
 import React, { useEffect, useMemo, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
+import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import { Box, Button, ButtonGroup } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Theme,
+  useMediaQuery,
+} from '@mui/material';
+import { alpha, styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
@@ -33,9 +44,10 @@ import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { TaskRow } from 'src/components/Task/TaskRow/TaskRow';
 import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useFilterPanelOpen } from 'src/hooks/useFilterPanelOpen';
+import { useHorizontalScrollEdges } from 'src/hooks/useHorizontalScrollEdges';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import useTaskModal from 'src/hooks/useTaskModal';
-import { useUserPreference } from 'src/hooks/useUserPreference';
 import { getAppName } from 'src/lib/getAppName';
 import {
   TaskFilterTabsTypes,
@@ -67,9 +79,50 @@ const TaskHeaderButton = styled(Button)(({ theme }) => ({
   marginLeft: theme.spacing(1),
 }));
 
+const TaskMenuButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.info.main,
+  minWidth: 0,
+  marginRight: theme.spacing(1),
+  paddingLeft: theme.spacing(1),
+  paddingRight: theme.spacing(0.5),
+}));
+
+const TaskFilterTabsRow = styled(Box)({
+  position: 'relative',
+});
+
+// Fades the buttons out at an edge that has more buttons past it, so it's
+// clear the row scrolls sideways
+const TaskFilterTabsFade = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'side',
+})<{ side: 'left' | 'right' }>(({ theme, side }) => ({
+  position: 'absolute',
+  top: 0,
+  bottom: 0,
+  ...(side === 'left' ? { left: 0 } : { right: 0 }),
+  width: theme.spacing(5),
+  pointerEvents: 'none',
+  background: `linear-gradient(to ${side}, ${alpha(theme.palette.common.white, 0)}, ${theme.palette.common.white})`,
+}));
+
+const TaskFilterTabsWrapper = styled(Box)({
+  height: buttonBarHeight,
+  overflowX: 'auto',
+  overflowY: 'hidden',
+  // A classic scrollbar would eat into the fixed row height and clip the buttons
+  scrollbarWidth: 'none',
+  '&::-webkit-scrollbar': {
+    display: 'none',
+  },
+});
+
 const TaskCurrentHistoryButtonGroup = styled(ButtonGroup)(({ theme }) => ({
   margin: theme.spacing(1),
   color: theme.palette.primary.contrastText,
+  '& .MuiButton-root': {
+    flexShrink: 0,
+    whiteSpace: 'nowrap',
+  },
 }));
 
 const TaskCheckIcon = styled(CheckCircleOutlineIcon)(({ theme }) => ({
@@ -116,10 +169,9 @@ const PageContent: React.FC = () => {
     setActiveFilters,
     combinedFilters: tasksFilter,
   } = useUrlFilters();
-  const [filterPanelOpen, setFilterPanelOpen] = useUserPreference({
-    key: 'tasks_filters_collapse',
-    defaultValue: false,
-  });
+  const [filterPanelOpen, setFilterPanelOpen] = useFilterPanelOpen(
+    'tasks_filters_collapse',
+  );
 
   //#region Filters
 
@@ -128,6 +180,11 @@ const PageContent: React.FC = () => {
   const [taskType, setTaskType] = useState<TaskFilterTabsTypes>(
     taskFiltersTabs[0].name,
   );
+  const {
+    scrollRef: tabsScrollRef,
+    canScrollLeft: canScrollTabsLeft,
+    canScrollRight: canScrollTabsRight,
+  } = useHorizontalScrollEdges();
 
   const setTaskTypeFilter = (type: TaskFilterTabsTypes): void => {
     setTaskType(type);
@@ -204,6 +261,92 @@ const PageContent: React.FC = () => {
   } = useMassSelection(allTaskIds);
   //#endregion
 
+  const isMobile = useMediaQuery(
+    (theme: Theme) => theme.breakpoints.down('sm'),
+    { noSsr: true },
+  );
+  const [taskMenuAnchor, setTaskMenuAnchor] = useState<HTMLElement | null>(
+    null,
+  );
+  const closeTaskMenu = () => setTaskMenuAnchor(null);
+
+  const taskButtons = [
+    {
+      view: TaskModalEnum.Add,
+      shortLabel: t('Add'),
+      label: t('Add Task'),
+      Icon: TaskAddIcon,
+    },
+    {
+      view: TaskModalEnum.Log,
+      shortLabel: t('Log'),
+      label: t('Log Task'),
+      Icon: TaskCheckIcon,
+    },
+  ];
+
+  // On phones the Actions button that appears with a selection doesn't fit
+  // next to Add and Log, so they collapse into one menu button
+  const taskButtonGroup =
+    isMobile && ids.length > 0 ? (
+      <>
+        <TaskMenuButton
+          aria-label={t('Add or Log Task')}
+          aria-haspopup="menu"
+          aria-expanded={!!taskMenuAnchor}
+          onClick={(event) => setTaskMenuAnchor(event.currentTarget)}
+        >
+          <TaskAddIcon />
+          <ArrowDropDown />
+        </TaskMenuButton>
+        <Menu
+          anchorEl={taskMenuAnchor}
+          open={!!taskMenuAnchor}
+          onClose={closeTaskMenu}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        >
+          {taskButtons.map(({ view, label, Icon }) => (
+            <MenuItem
+              key={view}
+              onClick={() => {
+                closeTaskMenu();
+                openTaskModal({ view });
+              }}
+              onMouseEnter={() => preloadTaskModal(view)}
+            >
+              <ListItemIcon>
+                <Icon />
+              </ListItemIcon>
+              <ListItemText>{label}</ListItemText>
+            </MenuItem>
+          ))}
+        </Menu>
+      </>
+    ) : (
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+        {taskButtons.map(({ view, shortLabel, label, Icon }) => (
+          <TaskHeaderButton
+            key={view}
+            onClick={() => openTaskModal({ view })}
+            onMouseEnter={() => preloadTaskModal(view)}
+            variant="text"
+            startIcon={<Icon />}
+          >
+            <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+              {shortLabel}
+            </Box>
+            <Box sx={{ display: { xs: 'none', sm: 'block' } }}>{label}</Box>
+          </TaskHeaderButton>
+        ))}
+      </Box>
+    );
+
   //#region JSX
   return (
     <>
@@ -223,6 +366,7 @@ const PageContent: React.FC = () => {
               ) : undefined
             }
             leftOpen={filterPanelOpen}
+            onLeftClose={() => setFilterPanelOpen(false)}
             leftWidth="290px"
             mainContent={
               <>
@@ -236,67 +380,50 @@ const PageContent: React.FC = () => {
                   massDeselectAll={deselectAll}
                   showShowingCount
                   selectedIds={ids}
-                  buttonGroup={
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <TaskHeaderButton
-                        onClick={() =>
-                          openTaskModal({ view: TaskModalEnum.Add })
-                        }
-                        onMouseEnter={() => preloadTaskModal(TaskModalEnum.Add)}
-                        variant="text"
-                        startIcon={<TaskAddIcon />}
-                      >
-                        <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
-                          {t('Add')}
-                        </Box>
-                        <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-                          {t('Add Task')}
-                        </Box>
-                      </TaskHeaderButton>
-                      <TaskHeaderButton
-                        onClick={() =>
-                          openTaskModal({ view: TaskModalEnum.Log })
-                        }
-                        onMouseEnter={() => preloadTaskModal(TaskModalEnum.Log)}
-                        variant="text"
-                        startIcon={<TaskCheckIcon />}
-                      >
-                        <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
-                          {t('Log')}
-                        </Box>
-                        <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-                          {t('Log Task')}
-                        </Box>
-                      </TaskHeaderButton>
-                    </Box>
-                  }
+                  buttonGroup={taskButtonGroup}
                 />
                 <Box>
-                  <TaskCurrentHistoryButtonGroup
-                    variant="outlined"
-                    size="small"
-                    sx={{
-                      // Subtract out one unit of margin for both the top and the bottom
-                      height: `calc(${buttonBarHeight} - ${theme.spacing(2)})`,
-                    }}
-                  >
-                    {taskFiltersTabs.map((tab) => (
-                      <Button
-                        variant={
-                          taskType === tab.name ? 'contained' : 'outlined'
-                        }
-                        onClick={() => setTaskTypeFilter(tab.name)}
-                        key={`btn-${tab.name}`}
+                  <TaskFilterTabsRow>
+                    <TaskFilterTabsWrapper
+                      ref={tabsScrollRef}
+                      data-testid="TaskFilterTabs"
+                    >
+                      <TaskCurrentHistoryButtonGroup
+                        variant="outlined"
+                        size="small"
+                        sx={{
+                          // Subtract out one unit of margin for both the top and the bottom
+                          height: `calc(${buttonBarHeight} - ${theme.spacing(2)})`,
+                        }}
                       >
-                        {tab.uiName}
-                      </Button>
-                    ))}
-                  </TaskCurrentHistoryButtonGroup>
+                        {taskFiltersTabs.map((tab) => (
+                          <Button
+                            variant={
+                              taskType === tab.name ? 'contained' : 'outlined'
+                            }
+                            onClick={() => setTaskTypeFilter(tab.name)}
+                            key={`btn-${tab.name}`}
+                          >
+                            {tab.uiName}
+                          </Button>
+                        ))}
+                      </TaskCurrentHistoryButtonGroup>
+                    </TaskFilterTabsWrapper>
+                    {canScrollTabsLeft && (
+                      <TaskFilterTabsFade
+                        side="left"
+                        aria-hidden
+                        data-testid="TaskFilterTabsFadeLeft"
+                      />
+                    )}
+                    {canScrollTabsRight && (
+                      <TaskFilterTabsFade
+                        side="right"
+                        aria-hidden
+                        data-testid="TaskFilterTabsFadeRight"
+                      />
+                    )}
+                  </TaskFilterTabsRow>
                   <InfiniteList
                     data-foo="bar"
                     loading={loading}

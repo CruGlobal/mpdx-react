@@ -26,6 +26,7 @@ import {
   getLocalizedUserPersonType,
   getLocalizedUserPersonTypeGroup,
   getLocalizedUserPersonTypeName,
+  teamNamesInDepartment,
 } from '../helpers';
 import {
   ALL_TYPES,
@@ -119,13 +120,7 @@ export const MpdSupervisorReportFilterPanel: React.FC<
   );
 
   const teamOptions = useMemo(
-    () =>
-      allTeams
-        .filter(
-          ({ departments }) => !department || departments.includes(department),
-        )
-        .map(({ name }) => name)
-        .sort((a, b) => a.localeCompare(b, undefined, { numeric: true })),
+    () => teamNamesInDepartment(allTeams, department),
     [allTeams, department],
   );
 

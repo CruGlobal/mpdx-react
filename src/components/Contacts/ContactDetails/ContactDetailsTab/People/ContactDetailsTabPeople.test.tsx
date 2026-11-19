@@ -6,6 +6,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import matchMediaMock from '__tests__/util/matchMediaMock';
 import {
   render,
   waitFor,
@@ -217,6 +218,46 @@ describe('ContactDetailsTabPeople', () => {
       );
       expect(getByText('People')).toBeInTheDocument();
       expect(getByText('Add Person')).toBeInTheDocument();
+    });
+
+    describe('Add Person placement', () => {
+      const renderPeople = () =>
+        render(
+          <TestRouter router={router}>
+            <GqlMockedProvider>
+              <ThemeProvider theme={theme}>
+                <ContactDetailProvider>
+                  <ContactDetailsTabPeople
+                    accountListId={accountListId}
+                    data={data}
+                  />
+                </ContactDetailProvider>
+              </ThemeProvider>
+            </GqlMockedProvider>
+          </TestRouter>,
+        );
+
+      it('renders one Add Person button before the people on large screens', () => {
+        matchMediaMock({ width: '1024px' });
+        const { getAllByText, getByText } = renderPeople();
+
+        const addPerson = getAllByText('Add Person');
+        expect(addPerson).toHaveLength(1);
+        expect(
+          addPerson[0].compareDocumentPosition(getByText('Test Person')),
+        ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+      });
+
+      it('renders one Add Person button after the people on small screens', () => {
+        matchMediaMock({ width: '375px' });
+        const { getAllByText, getByText } = renderPeople();
+
+        const addPerson = getAllByText('Add Person');
+        expect(addPerson).toHaveLength(1);
+        expect(
+          addPerson[0].compareDocumentPosition(getByText('Test Person')),
+        ).toBe(Node.DOCUMENT_POSITION_PRECEDING);
+      });
     });
 
     describe('No primary phone number', () => {

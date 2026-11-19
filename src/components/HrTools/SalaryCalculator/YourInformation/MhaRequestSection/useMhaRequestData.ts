@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import {
-  getEffectiveEligibility,
+  getBoardApprovalEligibility,
   getHousingKind,
   getMhiEligibility,
 } from 'src/components/Reports/Shared/HousingAllowance/housingAllowance';
@@ -16,12 +16,12 @@ export const useMhaRequestData = () => {
   const locale = useLocale();
   const { calculation, hcmUser, hcmSpouse, hasSpouse } = useSalaryCalculator();
 
-  // Effective eligibility: MHI flag for Italian staff, MHA flag otherwise.
-  const userEligible = getEffectiveEligibility(hcmUser);
-  const userHasApprovedMha = !!hcmUser?.mhaRequest.currentApprovedOverallAmount;
-  const spouseEligible = hasSpouse && getEffectiveEligibility(hcmSpouse);
+  // Effective eligibility: MHI flag for Italian staff, salary MHA flag otherwise.
+  const userEligible = getBoardApprovalEligibility(hcmUser);
+  const userHasApprovedMha = !!hcmUser?.mhaRequest.boardApprovedOverallAmount;
+  const spouseEligible = hasSpouse && getBoardApprovalEligibility(hcmSpouse);
   const spouseHasApprovedMha =
-    !!hcmSpouse?.mhaRequest.currentApprovedOverallAmount;
+    !!hcmSpouse?.mhaRequest.boardApprovedOverallAmount;
   // Determine which fields should be shown
   const showUserFields = userEligible && userHasApprovedMha;
   const showSpouseFields = spouseEligible && spouseHasApprovedMha;
@@ -35,9 +35,10 @@ export const useMhaRequestData = () => {
   const spouseKind = getHousingKind(spouseCountry);
   const userMhiEligibility = getMhiEligibility(hcmUser);
   const spouseMhiEligibility = getMhiEligibility(hcmSpouse);
-  const userIneligibilityReasonCode = hcmUser?.mhaEit.ineligibilityReasonCode;
+  const userIneligibilityReasonCode =
+    hcmUser?.mhaBoardApproval.ineligibilityReasonCode;
   const spouseIneligibilityReasonCode =
-    hcmSpouse?.mhaEit.ineligibilityReasonCode;
+    hcmSpouse?.mhaBoardApproval.ineligibilityReasonCode;
   const userMhiIneligibilityReasonCode =
     hcmUser?.mhiEit.ineligibilityReasonCode;
   const spouseMhiIneligibilityReasonCode =
@@ -51,12 +52,12 @@ export const useMhaRequestData = () => {
     (spouseEligible && !spouseHasApprovedMha);
 
   // For Italian (MHI) staff the backend stores the approved MHI amount in
-  // `mhaRequest.currentApprovedOverallAmount` — there is no separate
+  // `mhaRequest.boardApprovedOverallAmount`; there is no separate
   // `mhiRequest` field. This one value is the approved amount for whichever
   // kind (MHA or MHI) applies to the person.
   const approvedAmount = userHasApprovedMha
-    ? (hcmUser?.mhaRequest.currentApprovedOverallAmount ?? 0)
-    : (hcmSpouse?.mhaRequest.currentApprovedOverallAmount ?? 0);
+    ? (hcmUser?.mhaRequest.boardApprovedOverallAmount ?? 0)
+    : (hcmSpouse?.mhaRequest.boardApprovedOverallAmount ?? 0);
 
   const approvedAmountFormatted = useMemo(
     () => currencyFormat(approvedAmount, 'USD', locale),

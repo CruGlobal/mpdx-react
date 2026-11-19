@@ -13,6 +13,7 @@ query Hcm(
     usStaffGroup
     staffInfo {
       id
+      firstName
       preferredName
       lastName
       personNumber
@@ -53,6 +54,14 @@ query Hcm(
       mhaEligibility
       ineligibilityReasonCode
     }
+    mhaBoardApproval {
+      mhaEligibility
+      ineligibilityReasonCode
+    }
+    mhaNewRequest {
+      mhaEligibility
+      ineligibilityReasonCode
+    }
     mhiEit {
       mhiEligibility
       ineligibilityReasonCode
@@ -63,6 +72,7 @@ query Hcm(
     }
     mhaRequest {
       currentApprovedOverallAmount
+      boardApprovedOverallAmount
       currentTakenAmount
       boardApprovedOnDate
     }

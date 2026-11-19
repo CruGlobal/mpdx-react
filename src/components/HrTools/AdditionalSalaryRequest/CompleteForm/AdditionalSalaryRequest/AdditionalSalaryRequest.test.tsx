@@ -1,5 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { useFormikContext } from 'formik';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { AdditionalSalaryRequestTestWrapper } from '../../AdditionalSalaryRequestTestWrapper';
 import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
@@ -9,11 +11,25 @@ interface TestWrapperProps {
   initialValues?: CompleteFormValues;
 }
 
+// Exposes the total error so a test can wait for validation before asserting it is hidden
+const SubmitButton: React.FC = () => {
+  const { submitForm, errors } = useFormikContext<CompleteFormValues>();
+  return (
+    <button
+      onClick={submitForm}
+      data-total-error={!!errors.totalAdditionalSalaryRequested}
+    >
+      Submit
+    </button>
+  );
+};
+
 const TestWrapper: React.FC<TestWrapperProps> = ({
   initialValues = defaultCompleteFormValues,
 }) => (
   <AdditionalSalaryRequestTestWrapper initialValues={initialValues}>
     <AdditionalSalaryRequest />
+    <SubmitButton />
   </AdditionalSalaryRequestTestWrapper>
 );
 
@@ -45,6 +61,17 @@ describe('AdditionalSalaryRequest', () => {
       ).toBeInTheDocument();
       expect(getByText('Adoption')).toBeInTheDocument();
       expect(getByText('Moving Expense')).toBeInTheDocument();
+    });
+
+    it('names each amount input by its category', () => {
+      const { getAllByRole, getByRole } = render(<TestWrapper />);
+
+      const inputs = getAllByRole('textbox');
+      expect(inputs).toHaveLength(14);
+      inputs.forEach((input) => {
+        expect(input).toHaveAccessibleName();
+      });
+      expect(getByRole('textbox', { name: 'Adoption' })).toBeInTheDocument();
     });
 
     it('displays Total Additional Salary Requested section', () => {
@@ -147,6 +174,7 @@ describe('AdditionalSalaryRequest', () => {
     it('shows validation error for asr total amount', async () => {
       const invalidValues: CompleteFormValues = {
         ...defaultCompleteFormValues,
+        movingExpense: '1000000',
         totalAdditionalSalaryRequested: '1000000',
       };
 
@@ -159,6 +187,22 @@ describe('AdditionalSalaryRequest', () => {
           getByText('Exceeds account balance plus deficit limit.'),
         ).toBeInTheDocument();
       });
+    });
+
+    it('waits for a submit before flagging a $0 total', async () => {
+      const { getByRole, findByText, queryByText } = render(<TestWrapper />);
+      const message =
+        'Enter an amount in at least one category before submitting.';
+      const submit = getByRole('button', { name: 'Submit' });
+
+      await waitFor(() =>
+        expect(submit).toHaveAttribute('data-total-error', 'true'),
+      );
+      expect(queryByText(message)).not.toBeInTheDocument();
+
+      userEvent.click(submit);
+
+      expect(await findByText(message)).toBeInTheDocument();
     });
   });
 });

@@ -142,6 +142,20 @@ describe('pagePropsHelpers', () => {
           },
         });
       });
+
+      it('redirects to the account list chooser when there is no default account list', async () => {
+        (makeSsrClient as jest.Mock).mockReturnValue({
+          query: jest.fn().mockResolvedValueOnce({
+            data: { user: { defaultAccountList: null } },
+          }),
+        });
+
+        await expect(
+          ensureSessionAndAccountList(context),
+        ).resolves.toMatchObject({
+          redirect: { destination: '/accountLists' },
+        });
+      });
     });
   });
 

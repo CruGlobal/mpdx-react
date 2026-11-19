@@ -168,6 +168,17 @@ describe('FourteenMonthReportTable', () => {
     expect(contactTotal[0]).toHaveTextContent('150');
   });
 
+  it('shows a sideways scroll hint and keeps contact names as links', async () => {
+    const { findByText, getAllByRole } = render(<TestComponent />);
+
+    expect(
+      await findByText(
+        'Scroll sideways to see every month and the 12 month total.',
+      ),
+    ).toBeInTheDocument();
+    expect(getAllByRole('link', { name: 'test name' })).toHaveLength(2);
+  });
+
   it('should order by name', async () => {
     const { findAllByTestId, queryByTestId } = render(<TestComponent />);
 

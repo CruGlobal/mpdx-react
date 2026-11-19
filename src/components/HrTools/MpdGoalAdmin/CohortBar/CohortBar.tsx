@@ -107,8 +107,11 @@ export const CohortBar: React.FC = () => {
 
   return (
     <Stack
-      direction={{ xs: 'column', md: 'row' }}
-      spacing={4}
+      // On phones the stats share rows under the select instead of stacking tall.
+      direction={{ xs: 'row', sm: 'column', md: 'row' }}
+      useFlexGap
+      flexWrap={{ xs: 'wrap', sm: 'nowrap' }}
+      spacing={{ xs: 2, sm: 4 }}
       alignItems={{ xs: 'flex-start', md: 'center' }}
       sx={{ mb: 2 }}
     >
@@ -118,7 +121,7 @@ export const CohortBar: React.FC = () => {
         size="small"
         value={selectedCohortId}
         onChange={(event) => setSelectedCohortId(event.target.value)}
-        sx={{ minWidth: 220 }}
+        sx={{ minWidth: 220, flexBasis: { xs: '100%', sm: 'auto' } }}
         // An empty value with no matching MenuItem makes MUI warn.
         disabled={!cohorts.length}
       >

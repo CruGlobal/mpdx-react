@@ -516,12 +516,14 @@ describe('TransferModal', () => {
               fundType: FundTypeEnum.ReturnTravel,
               endBalance: 4000,
               deficitLimit: 0,
+              availableBalance: null,
             },
             {
               id: '4',
               fundType: FundTypeEnum.ReEntry,
               endBalance: 3000,
               deficitLimit: 0,
+              availableBalance: null,
             },
           ]}
         />,
@@ -794,6 +796,119 @@ describe('TransferModal', () => {
         );
       },
     );
+
+    it('prefers the API-computed available balance over the local math', async () => {
+      const fundsWithServerValue = [
+        { ...fundsMock[0], availableBalance: 400 },
+        fundsMock[1],
+      ];
+
+      const result = render(<Components funds={fundsWithServerValue} />);
+      const { getByRole, findByText } = result;
+
+      enterTransferDetails(result, '500');
+
+      expect(
+        await findByText(
+          'Amount cannot exceed the available balance of $400.00',
+        ),
+      ).toBeInTheDocument();
+
+      await waitFor(() =>
+        expect(getByRole('button', { name: /submit/i })).toBeDisabled(),
+      );
+    });
+
+    it('hard-blocks a one-time transfer dated today', async () => {
+      const result = render(<Components />);
+      const { getByRole, getByLabelText, findByText } = result;
+
+      // The test clock is frozen at 2020-01-01, so this is exactly today —
+      // the boundary where the future-date exemption must not apply.
+      const transferDate = getByLabelText(/transfer date/i);
+      userEvent.clear(transferDate);
+      userEvent.type(transferDate, '01/01/2020');
+      userEvent.tab();
+
+      enterTransferDetails(result, '20000');
+
+      expect(
+        await findByText(
+          'Amount cannot exceed the available balance of $15,000.00',
+        ),
+      ).toBeInTheDocument();
+      await waitFor(() =>
+        expect(getByRole('button', { name: /submit/i })).toBeDisabled(),
+      );
+    });
+
+    it('does not double-count the edited transfer against the API available balance', async () => {
+      // The API's availableBalance (400) has already netted out this pending
+      // transfer's saved amount (300), so the edit really has 700 to work
+      // with: 800 overshoots by 100 and warns, 600 fits and must not warn.
+      const editedTransfer: TransferModalData['transfer'] = {
+        id: 'transfer-id',
+        transferFrom: 'Staff Account',
+        transferTo: 'Staff Savings',
+        amount: 300,
+        schedule: ScheduleEnum.Monthly,
+        transferDate: DateTime.fromISO('2024-11-01'),
+        endDate: null,
+        note: '',
+        recurringId: 'recurring-id',
+      };
+      const fundsWithServerValue = [
+        { ...fundsMock[0], availableBalance: 400 },
+        fundsMock[1],
+      ];
+
+      const { getByRole, findByRole, queryByRole } = render(
+        <Components
+          transfer={editedTransfer}
+          type={TransferTypeEnum.Edit}
+          funds={fundsWithServerValue}
+        />,
+      );
+
+      const amountField = getByRole('spinbutton', { name: /amount/i });
+      userEvent.clear(amountField);
+      userEvent.type(amountField, '800');
+      userEvent.tab();
+
+      const alert = await findByRole('alert');
+      expect(alert).toHaveTextContent(
+        /projected available balance will be\s*-\$100\.00/i,
+      );
+
+      userEvent.clear(amountField);
+      userEvent.type(amountField, '600');
+      userEvent.tab();
+
+      await waitFor(() => expect(queryByRole('alert')).not.toBeInTheDocument());
+    });
+
+    it('warns but does not hard-block a future-dated one-time transfer', async () => {
+      const result = render(<Components />);
+      const { getByRole, getByLabelText, findByRole, queryByText } = result;
+
+      const transferDate = getByLabelText(/transfer date/i);
+      userEvent.clear(transferDate);
+      userEvent.type(transferDate, '12/01/2030');
+      userEvent.tab();
+
+      enterTransferDetails(result, '20000');
+
+      const alert = await findByRole('alert');
+      expect(alert).toHaveTextContent(
+        /greater than your Staff Account account's available balance/i,
+      );
+      expect(
+        queryByText(/Amount cannot exceed the available balance/i),
+      ).not.toBeInTheDocument();
+      await waitFor(() =>
+        expect(getByRole('button', { name: /submit/i })).not.toBeDisabled(),
+      );
+    });
 
     it('should allow winding down a recurring transfer whose amount exceeds the balance', async () => {
       const overBalanceTransfer: TransferModalData['transfer'] = {

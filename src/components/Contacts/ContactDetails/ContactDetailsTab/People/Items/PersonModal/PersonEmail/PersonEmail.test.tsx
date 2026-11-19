@@ -4,6 +4,11 @@ import { Formik } from 'formik';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  desktopWidth,
+  getGridColumnsAtWidth,
+  phoneWidth,
+} from '__tests__/util/styleAtWidth';
 import theme from 'src/theme';
 import { getPersonSchema } from '../personModalHelper';
 import { PersonEmail } from './PersonEmail';
@@ -94,5 +99,35 @@ describe('PersonEmail', () => {
     expect(
       queryByRole('checkbox', { name: 'Opt-out of Digital Newsletter' }),
     ).not.toBeInTheDocument();
+  });
+
+  describe('Add Email and newsletter opt-out layout', () => {
+    const renderAddRow = () => {
+      const { getByText, getByRole } = render(
+        <Components showOptOutENewsletter />,
+      );
+      return {
+        addEmail: getByText('Add Email').closest('.MuiGrid-root') as Element,
+        optOut: getByRole('checkbox', {
+          name: 'Opt-out of Digital Newsletter',
+        }).closest('.MuiGrid-root') as Element,
+      };
+    };
+
+    it('stacks them in full-width rows on phones', () => {
+      const { addEmail, optOut } = renderAddRow();
+
+      expect(getGridColumnsAtWidth(addEmail, phoneWidth)).toBe(12);
+      expect(getGridColumnsAtWidth(optOut, phoneWidth)).toBe(12);
+    });
+
+    it('keeps them side by side at 600px and up', () => {
+      const { addEmail, optOut } = renderAddRow();
+
+      [600, desktopWidth].forEach((width) => {
+        expect(getGridColumnsAtWidth(addEmail, width)).toBe(6);
+        expect(getGridColumnsAtWidth(optOut, width)).toBe(6);
+      });
+    });
   });
 });

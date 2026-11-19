@@ -2,7 +2,6 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { RowDensityEnum } from '../MpdSupervisorReportContext';
 import { ManagedStaffMember } from '../helpers';
@@ -194,6 +193,7 @@ describe('StaffMember', () => {
       managedStaffMember({
         teams: { employee: [], spouse: [] },
         spouseFirstName: null,
+        householdType: null,
       }),
     );
     expect(getByTestId('person-numbers')).toHaveTextContent(
@@ -217,50 +217,44 @@ describe('StaffMember', () => {
     expect(getByTestId('person-numbers')).toHaveTextContent('Campus, Cru City');
   });
 
-  it('renders a currency-formatted payroll chip for each quarter', () => {
+  it("shows the last four months' ending balances, newest first, instead of quarter pay", () => {
+    const { getByTestId, queryByText } = renderRow();
+    const chips =
+      getByTestId('balance-chips').querySelectorAll('.MuiChip-root');
+
+    expect([...chips].map((chip) => chip.textContent)).toEqual([
+      'Oct 2026, Below $0-$850',
+      'Sep 2026, Below buffer$6,100',
+      'Aug 2026, At or above buffer$9,200',
+      'Jul 2026, No data-',
+    ]);
+    expect(queryByText('$4,600.00')).not.toBeInTheDocument();
+    expect(queryByText(/^FQ\d/)).not.toBeInTheDocument();
+  });
+
+  it('colors each balance chip by its status', () => {
     const { getByText } = renderRow();
-    expect(getByText('$4,600.00')).toBeInTheDocument();
-    expect(getByText('$3,500.00')).toBeInTheDocument();
-    expect(getByText('$2,200.00')).toBeInTheDocument();
-    expect(getByText('$4,500.00')).toBeInTheDocument();
+    expect(getByText('-$850').closest('.MuiChip-root')).toHaveStyle({
+      backgroundColor: theme.palette.chipRedLight.main,
+    });
+    expect(getByText('$9,200').closest('.MuiChip-root')).toHaveStyle({
+      backgroundColor: theme.palette.chipGreenLight.main,
+    });
   });
 
-  it('labels a quarter payroll started partway through as Partial', () => {
-    const { getByText } = renderRow(
-      jest.fn(),
-      managedStaffMember({
-        quarterlyHealth: {
-          monthlyGrossSalary: 4500,
-          completedQuarters: [],
-          startingQuarter: { fiscalYear: 2026, quarter: 3, months: [] },
-        },
-      }),
+  it('names the household buffer in the details line', () => {
+    const { getByTestId } = renderRow();
+    expect(getByTestId('person-numbers')).toHaveTextContent(
+      'Couple buffer $8,000',
     );
-    expect(getByText('Partial')).toBeInTheDocument();
   });
 
-  it('renders a dash instead of $0.00 for a quarter with no payroll data', () => {
-    const { getByText, queryByText } = renderRow(
+  it('leaves the buffer out for staff who are not graded', () => {
+    const { getByTestId } = renderRow(
       jest.fn(),
-      managedStaffMember({
-        quarterlyHealth: {
-          monthlyGrossSalary: 0,
-          startingQuarter: null,
-          completedQuarters: [
-            {
-              fiscalYear: 2025,
-              quarter: 4,
-              averagePayroll: 0,
-              status: MpdHealthStatusEnum.Gray,
-            },
-          ],
-        },
-      }),
+      managedStaffMember({ householdType: null, balanceBuffer: null }),
     );
-
-    expect(getByText('-')).toBeInTheDocument();
-    expect(queryByText('$0.00')).not.toBeInTheDocument();
-    expect(getByText('FQ4 25, no data')).toBeInTheDocument();
+    expect(getByTestId('person-numbers')).not.toHaveTextContent('buffer');
   });
 
   describe('gross salary marker', () => {

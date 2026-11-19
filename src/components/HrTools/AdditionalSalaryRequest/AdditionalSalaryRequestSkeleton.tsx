@@ -10,7 +10,8 @@ export const AdditionalSalaryRequestSkeleton: React.FC = () => {
       sx={{
         gap: theme.spacing(4),
       }}
-      width={mainContentWidth}
+      width="100%"
+      maxWidth={mainContentWidth}
     >
       <Box>
         <Skeleton variant="text" width="60%" height={40} />

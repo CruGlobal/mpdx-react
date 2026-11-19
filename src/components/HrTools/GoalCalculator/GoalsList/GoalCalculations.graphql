@@ -2,6 +2,7 @@ fragment ListGoalCalculation on GoalCalculation {
   id
   name
   readOnly
+  primary
   calculationsYear
   role
   familySize

@@ -2,6 +2,8 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { GraphQLError } from 'graphql';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -17,7 +19,7 @@ import { DeleteAppealModal } from './DeleteAppealModal';
 const mockEnqueue = jest.fn();
 const handleClose = jest.fn();
 const mutationSpy = jest.fn();
-const routerPush = jest.fn();
+const routerPush = jest.fn().mockResolvedValue(true);
 
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -38,12 +40,12 @@ const router = {
   push: routerPush,
 };
 
-const Components = () => (
+const Components = ({ mocks }: { mocks?: ApolloErgonoMockMap }) => (
   <SnackbarProvider>
     <DndProvider backend={HTML5Backend}>
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider onCall={mutationSpy}>
+          <GqlMockedProvider mocks={mocks} onCall={mutationSpy}>
             <AppealsContext.Provider
               value={
                 {
@@ -112,5 +114,62 @@ describe('DeleteAppealModal', () => {
     expect(routerPush).toHaveBeenCalledWith(
       `/accountLists/${accountListId}/tools/appeals`,
     );
+  });
+
+  it('redirects back to the main appeals page when the appeal was already deleted', async () => {
+    const { getByRole } = render(
+      <Components
+        mocks={{
+          DeleteAppeal: {
+            deleteAppeal: () => {
+              throw new GraphQLError('Appeal with id=appealId not found', {
+                extensions: { code: 'NOT_FOUND' },
+              });
+            },
+          },
+        }}
+      />,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Delete Appeal' }));
+
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'That appeal could not be found. It may have already been deleted.',
+        { variant: 'error' },
+      ),
+    );
+    expect(routerPush).toHaveBeenCalledWith(
+      `/accountLists/${accountListId}/tools/appeals`,
+    );
+    expect(mutationSpy.mock.calls[0][0].operation.getContext()).toMatchObject({
+      suppressErrorCodes: ['NOT_FOUND'],
+    });
+  });
+
+  it('stays on the page when the delete fails for another reason', async () => {
+    const { getByRole } = render(
+      <Components
+        mocks={{
+          DeleteAppeal: {
+            deleteAppeal: () => {
+              throw new GraphQLError('Internal server error', {
+                extensions: { code: 'INTERNAL_SERVER_ERROR' },
+              });
+            },
+          },
+        }}
+      />,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Delete Appeal' }));
+
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'There was an error trying to delete the appeal.',
+        { variant: 'error' },
+      ),
+    );
+    expect(routerPush).not.toHaveBeenCalled();
   });
 });

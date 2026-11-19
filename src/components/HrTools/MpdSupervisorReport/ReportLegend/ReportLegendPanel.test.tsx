@@ -64,6 +64,7 @@ describe('ReportLegendPanel', () => {
 
     [
       'Colors',
+      'Quarter colors (staff details)',
       'Numbers',
       'Filters',
       'New Staff Monthly Salary (the goal)',
@@ -73,12 +74,15 @@ describe('ReportLegendPanel', () => {
     );
   });
 
-  it('explains each chip color beside a sample chip', async () => {
+  it('explains each quarter chip color beside a sample chip', async () => {
     const { getByText, getAllByText } = await openLegend();
 
-    ['On track', 'Needs attention', 'At risk', 'No data', 'Ungraded'].forEach(
-      (label) => expect(getByText(label)).toBeInTheDocument(),
-    );
+    [
+      'Full salary',
+      'Below salary',
+      'Below New Staff salary',
+      'Ungraded',
+    ].forEach((label) => expect(getByText(label)).toBeInTheDocument());
     // Sample chips use the row chip's amount formatting
     expect(getByText('$4,250.00')).toBeInTheDocument();
     expect(getAllByText('-').length).toBeGreaterThan(0);
@@ -94,28 +98,91 @@ describe('ReportLegendPanel', () => {
     expect(getByText('$2,000.00')).toBeInTheDocument();
   });
 
-  it('matches the API grading order for red and green', async () => {
-    const { getByText } = await openLegend();
+  it('matches the API grading for red and green', async () => {
+    const { getByText, queryByText } = await openLegend();
 
-    // Green is checked first, so red needs payroll below both benchmarks
-    expect(getByText(/Payroll was below both benchmarks/)).toBeInTheDocument();
+    // MPDX-10112: payroll below the New Staff salary is red even at full gross salary
     expect(
-      getByText(/can show green quarters yet still have negative months/),
+      getByText(
+        /Payroll was below their New Staff Monthly Salary, even if they were paid their full Monthly Gross Salary\. Interns are never graded against the New Staff salary\./,
+      ),
     ).toBeInTheDocument();
+    expect(
+      getByText(
+        /Payroll was at or above their Monthly Gross Salary \(within \$5\) and their New Staff Monthly Salary\. For interns, payroll was at or above their Monthly Gross Salary \(within \$5\)\./,
+      ),
+    ).toBeInTheDocument();
+    expect(queryByText(/below both benchmarks/)).not.toBeInTheDocument();
+    expect(queryByText(/can show green quarters/)).not.toBeInTheDocument();
   });
 
-  it('defines the negative month filters', async () => {
+  it('defines the quick filters', async () => {
     const { getByText } = await openLegend();
 
     expect(getByText('Negative last month')).toBeInTheDocument();
     expect(
       getByText(
-        'Staff whose payroll last month was below their New Staff Monthly Salary.',
+        'Staff whose staff account balance was below zero at the end of last month.',
       ),
     ).toBeInTheDocument();
-    expect(getByText('Negative last 3+ months')).toBeInTheDocument();
+    expect(getByText('Negative last 3 months')).toBeInTheDocument();
     expect(
-      getByText('The current month is never counted.'),
+      getByText(
+        'Staff whose staff account balance was below zero at the end of each of the last three months.',
+      ),
+    ).toBeInTheDocument();
+    expect(getByText('Negative 3+ months in past year')).toBeInTheDocument();
+    expect(
+      getByText(
+        'Staff whose staff account balance was below zero at the end of at least three of the last 12 months.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      getByText('Spending more than income last 3 months'),
+    ).toBeInTheDocument();
+    expect(
+      getByText(
+        'Staff whose expenses were greater than their income in each of the last three months.',
+      ),
+    ).toBeInTheDocument();
+    expect(getByText('Below New Staff Monthly Salary')).toBeInTheDocument();
+    expect(
+      getByText(
+        'Staff whose average monthly payroll in the last completed quarter was below their New Staff Monthly Salary. Their newest quarter is red in their details.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      getByText(
+        "The current month is never counted. Last month's balance can still change for a few weeks as late items post.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('says quarter colors measure pay and live in the staff details', async () => {
+    const { getByText } = await openLegend();
+
+    expect(
+      getByText(
+        "Quarter colors measure pay, not the staff account balance. They show at the top of each staff member's details.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('points red quarters to the New Staff salary filter', async () => {
+    const { getByText } = await openLegend();
+
+    expect(
+      getByText(
+        'To list staff whose newest quarter is red, use the Below New Staff Monthly Salary filter.',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('explains a dash as any value the report does not have', async () => {
+    const { getByText } = await openLegend();
+
+    expect(
+      getByText(/no Personal CAP to measure pay against/),
     ).toBeInTheDocument();
   });
 
@@ -129,17 +196,17 @@ describe('ReportLegendPanel', () => {
     expect(queryByText(/debt/i)).not.toBeInTheDocument();
   });
 
-  it('says in the intro that interns are graded on gross salary only', async () => {
+  it('says interns are graded on gross salary only in the quarter colors', async () => {
     const { getByText } = await openLegend();
 
     expect(
       getByText(
-        /Interns are graded against their Monthly Gross Salary only, and part-time field staff and volunteers aren't graded\./,
+        /^Each quarter chip in a staff member's details .* Interns are graded against their Monthly Gross Salary only, and part-time field staff and volunteers aren't graded\./,
       ),
     ).toBeInTheDocument();
   });
 
-  it('explains what needs attention means for interns', async () => {
+  it('explains what below salary means for interns', async () => {
     const { getByText } = await openLegend();
 
     expect(
@@ -147,12 +214,12 @@ describe('ReportLegendPanel', () => {
     ).toBeInTheDocument();
   });
 
-  it('sorts ungraded staff after graded staff and before no data', async () => {
+  it('sorts by the lowest balance at the end of last month', async () => {
     const { getByText } = await openLegend();
 
     expect(
       getByText(
-        /Ungraded staff come next, and staff with no data are listed last/,
+        'Lowest balance at the end of last month first, across all staff. Staff with No data for that month are listed last. Ties are sorted alphabetically by last name.',
       ),
     ).toBeInTheDocument();
   });
@@ -162,7 +229,7 @@ describe('ReportLegendPanel', () => {
 
     expect(
       getByText(
-        'Interns, part-time field staff and volunteers have no New Staff Monthly Salary, so these filters never include them.',
+        'The Negative and Spending filters leave out interns, part-time field staff and volunteers.',
       ),
     ).toBeInTheDocument();
   });

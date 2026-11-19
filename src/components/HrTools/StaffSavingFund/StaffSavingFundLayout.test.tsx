@@ -133,6 +133,15 @@ describe('StaffSavingFundLayout', () => {
     ).toBeInTheDocument();
   });
 
+  it('shows limited access to paid with designation staff', async () => {
+    const { findByText, queryByText } = render(
+      <Components usStaffGroup={UsStaffGroupEnum.PaidWithDesignation} />,
+    );
+
+    expect(await findByText(/do not have a staff account/)).toBeInTheDocument();
+    expect(queryByText('Test Children')).not.toBeInTheDocument();
+  });
+
   it('should show limited access if user does not have access to page', async () => {
     const { findByText } = render(
       <Components userType={UserTypeEnum.NonCru} />,

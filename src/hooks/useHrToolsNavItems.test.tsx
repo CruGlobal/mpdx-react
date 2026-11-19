@@ -286,6 +286,41 @@ describe('useHrToolsNavItems', () => {
     });
   });
 
+  describe('staffSavingFund', () => {
+    const renderItemIds = async (user: DeepPartial<GetUserQuery['user']>) => {
+      const { result, waitForNextUpdate } = renderHook(
+        () => useHrToolsNavItems(),
+        {
+          wrapper: makeWrapper({
+            GetUser: { user },
+            UserOption: verifiedUserOption,
+          }),
+        },
+      );
+      await waitForNextUpdate();
+      return result.current.items.map((item) => item.id);
+    };
+
+    beforeEach(() => {
+      mockSession({ developer: false });
+    });
+
+    it('is shown to a user with a staff account', async () => {
+      expect(await renderItemIds(mpdGoalEligibleUser)).toContain(
+        'staffSavingFund',
+      );
+    });
+
+    it('is hidden from paid with designation staff with a staff account', async () => {
+      expect(
+        await renderItemIds({
+          ...mpdGoalEligibleUser,
+          usStaffGroup: UsStaffGroupEnum.PaidWithDesignation,
+        }),
+      ).not.toContain('staffSavingFund');
+    });
+  });
+
   describe('partnerReminders', () => {
     const renderItemIds = async (user: DeepPartial<GetUserQuery['user']>) => {
       const { result, waitForNextUpdate } = renderHook(

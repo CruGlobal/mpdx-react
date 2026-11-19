@@ -18,7 +18,6 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { signOut } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { OauthLink } from 'src/components/OauthLink/OauthLink';
@@ -30,7 +29,7 @@ import {
 import { AccountList } from 'src/graphql/types.generated';
 import { useOptionalAccountListId } from 'src/hooks/useAccountListId';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
-import { clearDatadogUser } from 'src/lib/dataDog';
+import { clearSessionData, signOutAndClear } from 'src/lib/clearSessionData';
 import theme from 'src/theme';
 import { useGetTopBarQuery } from '../../GetTopBar.generated';
 import ProfileName from './ProfileName';
@@ -167,7 +166,7 @@ const ProfileMenu = (): ReactElement => {
         variant: 'success',
       },
     );
-    window.localStorage.clear();
+    await clearSessionData(client);
     window.location.href = '/api/stop-impersonating';
   };
 
@@ -404,11 +403,8 @@ const ProfileMenu = (): ReactElement => {
             <MenuButton
               variant="outlined"
               color="inherit"
-              onClick={() => {
-                signOut({ callbackUrl: 'signOut' }).then(() => {
-                  clearDatadogUser();
-                  client.clearStore();
-                });
+              onClick={async () => {
+                await signOutAndClear(client, { callbackUrl: 'signOut' });
               }}
             >
               {t('Sign Out')}

@@ -12,6 +12,7 @@ import {
   SxProps,
   Theme,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
@@ -44,12 +45,14 @@ const ContactPersonContainer = styled(Box)(() => ({
 const ContactPersonTextContainer = styled(Box)(() => ({
   margin: 0,
   flexGrow: 4,
+  minWidth: 0,
   marginBottom: '10px',
 }));
 
 const ContactPersonRowContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(1),
   display: 'flex',
+  flexWrap: 'wrap',
   alignItems: 'center',
 }));
 
@@ -96,6 +99,10 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
     closePersonModal,
   } = React.useContext(ContactDetailContext) as ContactDetailsType;
 
+  const isSmallScreen = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down('sm'),
+  );
+
   const [selecting, setSelectingRaw] = useState(false);
   const [selectedPeople, setSelectedPeople] = useState<string[]>([]);
   const [mergePeopleModalOpen, setMergePeopleModalOpen] = useState(false);
@@ -118,6 +125,13 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
   };
 
   const { primaryPerson, people, id } = data;
+
+  const addPersonButton = (
+    <AddButton onClick={() => setCreatePersonModalOpen(true)}>
+      <AddIcon />
+      <AddText variant="subtitle1">{t('Add Person')}</AddText>
+    </AddButton>
+  );
 
   const personView = (person: ContactPersonFragment) => {
     const selected = selecting && selectedPeople.includes(person.id);
@@ -275,17 +289,21 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
               {t('People')}
             </ContactPersonNameText>
           )}
-          <Box sx={{ position: 'absolute', right: 2, top: 2 }}>
-            <AddButton onClick={() => setCreatePersonModalOpen(true)}>
-              <AddIcon />
-              <AddText variant="subtitle1">{t('Add Person')}</AddText>
-            </AddButton>
-          </Box>
+          {!isSmallScreen && (
+            <Box sx={{ position: 'absolute', right: 2, top: 2 }}>
+              {addPersonButton}
+            </Box>
+          )}
         </Box>
       )}
       {primaryPerson ? personView(primaryPerson) : null}
       {people.nodes.map((person) =>
         person.id !== primaryPerson?.id ? personView(person) : null,
+      )}
+      {!selecting && isSmallScreen && (
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          {addPersonButton}
+        </Box>
       )}
       {people.nodes.length > 1 &&
         (selecting ? (

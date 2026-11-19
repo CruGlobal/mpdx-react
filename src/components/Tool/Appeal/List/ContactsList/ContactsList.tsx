@@ -11,10 +11,7 @@ import { headerHeight } from 'src/components/Shared/Header/ListHeader';
 import { useUrlFilters } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
 import { ContactFilterSetInput } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import {
-  AppealHeaderInfo,
-  appealHeaderInfoHeight,
-} from '../../AppealDetails/AppealHeaderInfo/AppealHeaderInfo';
+import { AppealHeaderInfo } from '../../AppealDetails/AppealHeaderInfo/AppealHeaderInfo';
 import { AppealQuery } from '../../AppealDetails/AppealsMainPanel/AppealInfo.generated';
 import {
   AppealStatusEnum,
@@ -108,79 +105,93 @@ export const ContactsList: React.FC<ContactsListProps> = ({
   return (
     <>
       {tour && <DynamicAppealTour />}
-      <AppealHeaderInfo
-        appealInfo={appealInfo?.appeal}
-        loading={appealInfoLoading}
-      />
-      <Grid container alignItems="center" className={classes.headerContainer}>
-        <Grid
-          className={classes.contactHeader}
-          size={isExcludedContact ? 5 : 6}
-        >
-          <Typography variant="subtitle1" fontWeight={800}>
-            {t('Contact')}
-          </Typography>
-        </Grid>
-        {isExcludedContact && (
+      {/* The appeal header grows with long names, so the list fills the space left */}
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: `calc(100vh - ${navBarHeight} - ${headerHeight})`,
+        }}
+      >
+        <AppealHeaderInfo
+          appealInfo={appealInfo?.appeal}
+          loading={appealInfoLoading}
+        />
+        <Grid container alignItems="center" className={classes.headerContainer}>
           <Grid
-            className={classes.excludedHeader}
-            style={{
-              paddingLeft: '0px',
-            }}
-            size={3}
+            className={classes.contactHeader}
+            size={{ xs: 12, sm: isExcludedContact ? 5 : 6 }}
           >
             <Typography variant="subtitle1" fontWeight={800}>
-              {t('Reason')}
+              {t('Contact')}
             </Typography>
           </Grid>
-        )}
-        <Grid className={classes.givingHeader} size={isExcludedContact ? 4 : 6}>
-          <Box justifyContent={contactPanelOpen ? 'flex-end' : undefined}>
-            <Box>
+          {isExcludedContact && (
+            <Grid
+              className={classes.excludedHeader}
+              style={{
+                paddingLeft: '0px',
+              }}
+              size={3}
+              sx={{ display: { xs: 'none', sm: 'block' } }}
+            >
               <Typography variant="subtitle1" fontWeight={800}>
-                {columnName}
+                {t('Reason')}
               </Typography>
+            </Grid>
+          )}
+          <Grid
+            className={classes.givingHeader}
+            size={isExcludedContact ? 4 : 6}
+            sx={{ display: { xs: 'none', sm: 'block' } }}
+          >
+            <Box justifyContent={contactPanelOpen ? 'flex-end' : undefined}>
+              <Box>
+                <Typography variant="subtitle1" fontWeight={800}>
+                  {columnName}
+                </Typography>
+              </Box>
             </Box>
-          </Box>
+          </Grid>
         </Grid>
-      </Grid>
-      <InfiniteList
-        loading={loading}
-        data={data?.contacts?.nodes ?? []}
-        style={{
-          height: `calc(100vh - ${navBarHeight} - ${headerHeight} - ${appealHeaderInfoHeight})`,
-        }}
-        itemContent={(index, contact) => (
-          <ContactRow
-            key={contact.id}
-            contact={contact}
-            appealStatus={appealStatus}
-            useTopMargin={index === 0}
-            excludedContacts={
-              excludedContacts?.appeal?.excludedAppealContacts ?? []
+        <Box sx={{ flex: 1, minHeight: 0 }}>
+          <InfiniteList
+            loading={loading}
+            data={data?.contacts?.nodes ?? []}
+            style={{ height: '100%' }}
+            itemContent={(index, contact) => (
+              <ContactRow
+                key={contact.id}
+                contact={contact}
+                appealStatus={appealStatus}
+                useTopMargin={index === 0}
+                excludedContacts={
+                  excludedContacts?.appeal?.excludedAppealContacts ?? []
+                }
+              />
+            )}
+            groupBy={(item) => ({ label: item.name[0].toUpperCase() })}
+            endReached={() =>
+              data?.contacts?.pageInfo.hasNextPage &&
+              fetchMore({
+                variables: {
+                  after: data.contacts?.pageInfo.endCursor,
+                },
+              })
+            }
+            EmptyPlaceholder={
+              <Box width="75%" margin="auto" mt={2}>
+                <NullState
+                  page="contact"
+                  totalCount={data?.contacts.totalCount || 0}
+                  title={nullStateTitle}
+                  paragraph={''}
+                />
+              </Box>
             }
           />
-        )}
-        groupBy={(item) => ({ label: item.name[0].toUpperCase() })}
-        endReached={() =>
-          data?.contacts?.pageInfo.hasNextPage &&
-          fetchMore({
-            variables: {
-              after: data.contacts?.pageInfo.endCursor,
-            },
-          })
-        }
-        EmptyPlaceholder={
-          <Box width="75%" margin="auto" mt={2}>
-            <NullState
-              page="contact"
-              totalCount={data?.contacts.totalCount || 0}
-              title={nullStateTitle}
-              paragraph={''}
-            />
-          </Box>
-        }
-      />
+        </Box>
+      </Box>
     </>
   );
 };

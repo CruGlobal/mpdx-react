@@ -98,4 +98,12 @@ describe('ReviewYourCalculationStep', () => {
 
     expect(await findByText('Presenting Your Goal')).toBeInTheDocument();
   });
+
+  it('hides the continue button when printing', async () => {
+    const { findByRole } = render(<TestComponent />);
+
+    expect(await findByRole('button', { name: 'Continue' })).toHaveClass(
+      'print-hidden',
+    );
+  });
 });

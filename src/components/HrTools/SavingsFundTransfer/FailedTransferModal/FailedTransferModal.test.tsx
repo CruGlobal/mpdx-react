@@ -4,6 +4,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
+import { SavingsFundTransferFailureReasonCode } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { ScheduleEnum, StatusEnum, Transfers } from '../mockData';
 import { FailedTransferModal } from './FailedTransferModal';
@@ -22,8 +23,7 @@ const mockTransfer: Transfers = {
   note: 'Test transfer',
   actions: 'edit-delete',
   recurringId: '1',
-  baseAmount: 10,
-  failedCount: 1,
+  recurringAmount: 15,
   summarizedTransfers: new Map([
     [
       '2',
@@ -45,11 +45,9 @@ const mockTransfer: Transfers = {
           recurringStart: DateTime.fromISO('2023-06-15'),
           recurringEnd: DateTime.fromISO('2023-09-15'),
           active: true,
+          failures: [],
         },
-        baseAmount: 10,
-        failedCount: 0,
         summarizedTransfers: null,
-        missingMonths: null,
       },
     ],
     [
@@ -72,11 +70,9 @@ const mockTransfer: Transfers = {
           recurringStart: DateTime.fromISO('2023-06-15'),
           recurringEnd: DateTime.fromISO('2023-09-15'),
           active: true,
+          failures: [],
         },
-        baseAmount: 10,
-        failedCount: 0,
         summarizedTransfers: null,
-        missingMonths: null,
       },
     ],
     [
@@ -99,15 +95,18 @@ const mockTransfer: Transfers = {
           recurringStart: DateTime.fromISO('2023-06-15'),
           recurringEnd: DateTime.fromISO('2023-09-15'),
           active: true,
+          failures: [],
         },
-        baseAmount: 10,
-        failedCount: 0,
         summarizedTransfers: null,
-        missingMonths: null,
       },
     ],
   ]),
-  missingMonths: [DateTime.fromISO('2023-08-15')],
+  failures: [
+    {
+      occurrence: DateTime.fromISO('2023-08-15'),
+      reasonCode: SavingsFundTransferFailureReasonCode.InsufficientFunds,
+    },
+  ],
 };
 
 const TestComponent: React.FC<{ transfer?: Transfers }> = ({
@@ -133,6 +132,7 @@ describe('FailedTransferModal', () => {
     expect(getByText('Transfer Date')).toBeInTheDocument();
     expect(getByText('Status')).toBeInTheDocument();
     expect(getByText('Amount')).toBeInTheDocument();
+    expect(getByText('Reason')).toBeInTheDocument();
 
     const button = getAllByRole('button', { name: 'Close' });
     expect(button[1]).toBeInTheDocument();
@@ -180,5 +180,67 @@ describe('FailedTransferModal', () => {
     const button = getAllByRole('button', { name: 'Close' });
     userEvent.click(button[1]);
     expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('shows the reason for a failed month and leaves completed months blank', () => {
+    const { getByRole } = render(<TestComponent />);
+
+    const reasons = Array.from(
+      getByRole('table').querySelectorAll('tbody tr'),
+    ).map((row) => row.querySelectorAll('td')[3].textContent);
+    expect(reasons).toEqual([
+      '',
+      '',
+      'The fund did not have enough available balance.',
+      '',
+    ]);
+  });
+
+  it('shows the recurring transfer amount for a failed month', () => {
+    const { getByRole } = render(<TestComponent />);
+
+    const amounts = Array.from(
+      getByRole('table').querySelectorAll('tbody tr'),
+    ).map((row) => row.querySelectorAll('td')[0].textContent);
+    expect(amounts).toEqual(['$10.00', '$10.00', '$15.00', '$10.00']);
+  });
+
+  it('shows a row and reason for each failed month', () => {
+    const { getByRole, getByText } = render(
+      <TestComponent
+        transfer={{
+          ...mockTransfer,
+          summarizedTransfers: null,
+          failures: [
+            {
+              occurrence: DateTime.fromISO('2023-12-15'),
+              reasonCode: SavingsFundTransferFailureReasonCode.InactiveAccount,
+            },
+            {
+              occurrence: DateTime.fromISO('2024-02-15'),
+              reasonCode: SavingsFundTransferFailureReasonCode.NotAttempted,
+            },
+          ],
+        }}
+      />,
+    );
+
+    const rows = getByRole('table').querySelectorAll('tbody tr');
+    expect(rows).toHaveLength(2);
+    expect(rows[0].querySelectorAll('td')[2].textContent).toBe('Dec 15, 2023');
+    expect(rows[1].querySelectorAll('td')[2].textContent).toBe('Feb 15, 2024');
+    expect(getByText('The staff account was inactive.')).toBeInTheDocument();
+    expect(
+      getByText('The retry window ended before it could go through.'),
+    ).toBeInTheDocument();
+  });
+
+  it('keeps the HR contact footer', () => {
+    const { getByRole } = render(<TestComponent />);
+
+    expect(getByRole('link', { name: 'HR@cru.org' })).toHaveAttribute(
+      'href',
+      'mailto:HR@cru.org',
+    );
   });
 });

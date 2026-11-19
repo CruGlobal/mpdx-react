@@ -7,8 +7,10 @@ import { NameDisplaySkeleton } from '../../Shared/CalculationReports/NameDisplay
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { getHeader } from '../Shared/Helper/getHeader';
 import { paperVersionLink, progressiveApprovalsLink } from '../Shared/pdfLinks';
+import { useApprovalNote } from '../Shared/useApprovalNote';
 import { useFormUserInfo } from '../Shared/useFormUserInfo';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
+import { AvailableBalanceTooltip } from '../SharedComponents/AvailableBalanceTooltip';
 import { MissingLocationAlert } from '../SharedComponents/MissingLocationAlert';
 import { SpouseComponent } from '../SharedComponents/SpouseComponent';
 
@@ -18,7 +20,8 @@ export const AboutForm: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
 
-  const { name, primaryAccountBalance } = useFormUserInfo();
+  const { name, availableAccountBalance, remainingCap } = useFormUserInfo();
+  const approvalNote = useApprovalNote();
   const latestRequest = requestData?.latestAdditionalSalaryRequest;
   const individualCap = latestRequest?.calculations.currentSalaryCap ?? 0;
 
@@ -88,15 +91,19 @@ export const AboutForm: React.FC = () => {
         </Typography>
       </Trans>
       {hcmLoading ? (
-        <NameDisplaySkeleton showContent={!!latestRequest} />
+        <NameDisplaySkeleton showContent={!!latestRequest} columns={3} />
       ) : (
         <NameDisplay
           names={name ?? ''}
-          titleOne={t('Primary Account Balance')}
-          amountOne={primaryAccountBalance}
+          titleOne={t('Available for This Request')}
+          titleOneAdornment={<AvailableBalanceTooltip />}
+          amountOne={availableAccountBalance}
           titleTwo={t('Your Maximum Allowable Salary (CAP)')}
           amountTwo={individualCap}
+          titleThree={t('Remaining Allowable Salary')}
+          amountThree={remainingCap}
           spouseComponent={<SpouseComponent />}
+          note={approvalNote}
           showContent={!!latestRequest}
         />
       )}

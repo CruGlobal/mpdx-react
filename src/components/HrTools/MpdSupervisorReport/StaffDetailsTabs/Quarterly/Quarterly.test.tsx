@@ -175,7 +175,7 @@ describe('StaffTabQuarterly', () => {
     const table = within(getByRole('table'));
     expect(table.getByText('Feb 2025')).toBeInTheDocument();
     expect(table.getByText('$4,263.25')).toBeInTheDocument();
-    expect(table.getByText('needs attention')).toBeInTheDocument();
+    expect(table.getByText('below salary')).toBeInTheDocument();
   });
 
   it('dashes a gray month in the breakdown rather than showing $0.00', async () => {

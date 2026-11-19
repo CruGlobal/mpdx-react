@@ -12,6 +12,7 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { DialogForm } from 'src/components/Shared/Forms/DialogForm';
 import {
   CancelButton,
   SubmitButton,
@@ -108,12 +109,11 @@ export const EditMailingInfoModal: React.FC<EditMailingInfoModalProps> = ({
         {({
           values: { greeting, envelopeGreeting, sendNewsletter },
           handleChange,
-          handleSubmit,
           setFieldValue,
           isSubmitting,
           isValid,
         }): ReactElement => (
-          <form onSubmit={handleSubmit} noValidate>
+          <DialogForm noValidate>
             <DialogContent dividers>
               <ContactEditContainer>
                 <ContactInputWrapper>
@@ -162,7 +162,7 @@ export const EditMailingInfoModal: React.FC<EditMailingInfoModalProps> = ({
                 {t('Save')}
               </SubmitButton>
             </DialogActions>
-          </form>
+          </DialogForm>
         )}
       </Formik>
     </Modal>

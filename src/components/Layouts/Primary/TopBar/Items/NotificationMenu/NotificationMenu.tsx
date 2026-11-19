@@ -90,14 +90,36 @@ export const NotificationContent = ({
 
   return (
     <>
-      <ListSubheader className={classes.listSubheader}>
+      <ListSubheader
+        className={isInDrawer ? undefined : classes.listSubheader}
+        sx={
+          isInDrawer
+            ? {
+                outline: 0,
+                zIndex: 2,
+                backgroundColor: 'mpdxGrayDark.main',
+                pr: 1,
+              }
+            : undefined
+        }
+      >
         <Box display="flex" flexDirection="row" justifyContent="center">
           <Box flexGrow={1} display="flex" alignItems="center">
-            <Typography>{t('Notifications')}</Typography>
+            {/* The drawer already shows a Notifications item above this panel */}
+            {!isInDrawer && <Typography>{t('Notifications')}</Typography>}
           </Box>
           <Box>
             <Button
               size="small"
+              color={isInDrawer ? 'secondary' : 'primary'}
+              sx={
+                isInDrawer
+                  ? {
+                      minHeight: 44,
+                      '&.Mui-disabled': { color: 'mpdxGrayMedium.main' },
+                    }
+                  : undefined
+              }
               disabled={
                 !data ||
                 data.userNotifications.nodes.filter(({ read }) => !read)
@@ -125,7 +147,7 @@ export const NotificationContent = ({
           <Button
             className={classes.menuButton}
             variant="outlined"
-            color="inherit"
+            color={isInDrawer ? 'secondary' : 'inherit'}
             onClick={onFetchMore}
           >
             {t('Load More')}
@@ -135,7 +157,9 @@ export const NotificationContent = ({
       {!loading && data?.userNotifications.nodes.length === 0 && (
         <ListItem className={classes.listItemEmpty}>
           <img src={illustration13} className={classes.img} alt="empty" />
-          <Typography>{t('No notifications to show.')}</Typography>
+          <Typography sx={isInDrawer ? { color: 'common.white' } : undefined}>
+            {t('No notifications to show.')}
+          </Typography>
         </ListItem>
       )}
       {loading && (

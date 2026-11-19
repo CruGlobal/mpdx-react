@@ -19,6 +19,10 @@ const customJestConfig = {
   testRegex: '.+\\.test\\.m?[jt]sx?$',
   globalSetup: '<rootDir>/__tests__/util/globalSetup.ts',
   setupFilesAfterEnv: ['<rootDir>/__tests__/util/setup.ts'],
+  // Splits `--shard` runs by measured test time (scripts/jest-shards/timings.json)
+  testSequencer: '<rootDir>/scripts/jest-shards/sequencer.js',
+  // Writes per-file times for timings.json when JEST_TIMINGS_FILE is set (CI)
+  reporters: ['default', '<rootDir>/scripts/jest-shards/timingsReporter.js'],
   transform: {
     '\\.(gql|graphql)$': '@graphql-tools/jest-transform',
   },
@@ -39,6 +43,7 @@ const customJestConfig = {
     '__tests__/extensions/**/*.{js,jsx,ts,tsx}',
     'lighthouse/**/*.mjs',
     'scripts/**/*.ts',
+    'scripts/jest-shards/*.js',
     '!pages/api/**',
     '!**/*.generated.ts',
     '!**/*.mock.*',

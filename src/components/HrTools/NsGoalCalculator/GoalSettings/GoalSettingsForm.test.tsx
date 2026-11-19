@@ -123,17 +123,35 @@ describe('GoalSettingsForm', () => {
   it('does not offer the scenario-only Email Worksheet action on a real goal', async () => {
     const { findByRole, queryByRole } = render(<TestComponent />);
 
-    await findByRole('button', { name: 'Save & Share' });
+    await findByRole('button', { name: 'Save' });
     expect(
       queryByRole('button', { name: 'Email Worksheet' }),
     ).not.toBeInTheDocument();
   });
 
-  it('renders Cancel and Save & Share actions', async () => {
+  it('renders Cancel and Save actions', async () => {
     const { findByRole, getByRole } = render(<TestComponent />);
 
     expect(await findByRole('button', { name: 'Cancel' })).toBeInTheDocument();
-    expect(getByRole('button', { name: 'Save & Share' })).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Save' })).toBeInTheDocument();
+  });
+
+  it('labels the save button Save & Share Update once the goal has been sent', async () => {
+    const { findByRole, queryByRole } = render(
+      <TestComponent
+        goalCalculationMock={{
+          newStaffGoalCalculation: {
+            ...defaultMock.newStaffGoalCalculation,
+            newStaffCohortAttendee: { goalSentAt: '2026-08-10T15:40:00Z' },
+          },
+        }}
+      />,
+    );
+
+    expect(
+      await findByRole('button', { name: 'Save & Share Update' }),
+    ).toBeInTheDocument();
+    expect(queryByRole('button', { name: 'Save' })).not.toBeInTheDocument();
   });
 
   it('renders a single shared input for household-level fields', async () => {
@@ -334,7 +352,7 @@ describe('GoalSettingsForm', () => {
   it('saves edits through the updateNewStaffGoalCalculation mutation', async () => {
     const { findByRole } = render(<TestComponent onCall={mutationSpy} />);
 
-    const saveButton = await findByRole('button', { name: 'Save & Share' });
+    const saveButton = await findByRole('button', { name: 'Save' });
     userEvent.click(saveButton);
 
     await waitFor(() =>
@@ -359,7 +377,7 @@ describe('GoalSettingsForm', () => {
     userEvent.clear(salary);
     userEvent.type(salary, '54321');
 
-    userEvent.click(getByRole('button', { name: 'Save & Share' }));
+    userEvent.click(getByRole('button', { name: 'Save' }));
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation(
@@ -413,7 +431,7 @@ describe('GoalSettingsForm', () => {
       />,
     );
 
-    await findByRole('button', { name: 'Save & Share' });
+    await findByRole('button', { name: 'Save' });
     expect(
       await findByText('Total salary is over the standard cap'),
     ).toBeInTheDocument();
@@ -434,7 +452,7 @@ describe('GoalSettingsForm', () => {
       />,
     );
 
-    await findByRole('button', { name: 'Save & Share' });
+    await findByRole('button', { name: 'Save' });
     expect(
       await findByText('Annual debt is over the standard cap'),
     ).toBeInTheDocument();
@@ -445,7 +463,7 @@ describe('GoalSettingsForm', () => {
 
     userEvent.click(await findByRole('combobox', { name: 'Marital Status' }));
     userEvent.click(getByRole('option', { name: 'Single' }));
-    userEvent.click(getByRole('button', { name: 'Save & Share' }));
+    userEvent.click(getByRole('button', { name: 'Save' }));
 
     // Every spouse attribute is sent as null so the save doesn't persist stale
     // spouse data for someone who is no longer married.
@@ -476,7 +494,7 @@ describe('GoalSettingsForm', () => {
   it('shows a spinner on the save button while submitting', async () => {
     const { findByRole } = render(<TestComponent onCall={jest.fn()} />);
 
-    const saveButton = await findByRole('button', { name: 'Save & Share' });
+    const saveButton = await findByRole('button', { name: 'Save' });
     userEvent.click(saveButton);
 
     // Asserted synchronously: the save resolves on the next microtask, so an
@@ -501,9 +519,9 @@ describe('GoalSettingsForm', () => {
     );
   });
 
-  // Save & Share looks ordinary and stays clickable, so nothing should accuse
+  // Save looks ordinary and stays clickable, so nothing should accuse
   // the admin of missing values before they have asked to save.
-  it('holds the missing-value summary back until Save & Share is clicked', async () => {
+  it('holds the missing-value summary back until Save is clicked', async () => {
     const { findByRole, getByRole, queryByRole } = render(<TestComponent />);
 
     const contribution = await findByRole('spinbutton', {
@@ -518,7 +536,7 @@ describe('GoalSettingsForm', () => {
     await waitFor(() => expect(contribution).toBeInvalid());
     expect(queryByRole('status')).not.toBeInTheDocument();
 
-    userEvent.click(getByRole('button', { name: 'Save & Share' }));
+    userEvent.click(getByRole('button', { name: 'Save' }));
 
     expect(await findByRole('status')).toBeInTheDocument();
   });
@@ -526,7 +544,7 @@ describe('GoalSettingsForm', () => {
   // The required fields sit far up a long form, so the summary beside the
   // actions has to say what is missing rather than relying on them turning red
   // off-screen.
-  it('names and flags the missing required fields once Save & Share is clicked', async () => {
+  it('names and flags the missing required fields once Save is clicked', async () => {
     const { findByRole, getByRole } = render(
       <TestComponent
         goalCalculationMock={{
@@ -541,7 +559,7 @@ describe('GoalSettingsForm', () => {
       />,
     );
 
-    const saveButton = await findByRole('button', { name: 'Save & Share' });
+    const saveButton = await findByRole('button', { name: 'Save' });
     expect(getByRole('combobox', { name: 'Benefits Selection' })).toBeValid();
 
     userEvent.click(saveButton);
@@ -563,7 +581,7 @@ describe('GoalSettingsForm', () => {
 
   // Plain and clickable however incomplete the form is: clicking it is how an
   // admin finds out which required fields are still missing.
-  it('leaves Save & Share plain and clickable when it blocks the submit', async () => {
+  it('leaves Save plain and clickable when it blocks the submit', async () => {
     const { findByRole } = render(
       <TestComponent
         goalCalculationMock={{
@@ -575,7 +593,7 @@ describe('GoalSettingsForm', () => {
       />,
     );
 
-    const saveButton = await findByRole('button', { name: 'Save & Share' });
+    const saveButton = await findByRole('button', { name: 'Save' });
     expect(saveButton).toHaveClass('MuiButton-containedPrimary');
 
     userEvent.click(saveButton);
@@ -644,14 +662,10 @@ describe('GoalSettingsForm', () => {
 
     // While loading: the skeleton shows and the form is not yet rendered.
     expect(container.querySelector('.MuiSkeleton-root')).toBeInTheDocument();
-    expect(
-      queryByRole('button', { name: 'Save & Share' }),
-    ).not.toBeInTheDocument();
+    expect(queryByRole('button', { name: 'Save' })).not.toBeInTheDocument();
 
     // Once the query resolves, the form replaces the skeleton.
-    expect(
-      await findByRole('button', { name: 'Save & Share' }),
-    ).toBeInTheDocument();
+    expect(await findByRole('button', { name: 'Save' })).toBeInTheDocument();
   });
 
   describe('status chip', () => {
@@ -675,8 +689,8 @@ describe('GoalSettingsForm', () => {
         <TestComponent goalCalculationMock={completeMock} />,
       );
 
-      expect(await findByText('Complete')).toBeInTheDocument();
-      expect(queryByText('Incomplete')).not.toBeInTheDocument();
+      expect(await findByText('Calculation Complete')).toBeInTheDocument();
+      expect(queryByText('Calculation Incomplete')).not.toBeInTheDocument();
     });
 
     it('shows an Incomplete chip when a required field is missing', async () => {
@@ -691,8 +705,8 @@ describe('GoalSettingsForm', () => {
         />,
       );
 
-      expect(await findByText('Incomplete')).toBeInTheDocument();
-      expect(queryByText('Complete')).not.toBeInTheDocument();
+      expect(await findByText('Calculation Incomplete')).toBeInTheDocument();
+      expect(queryByText('Calculation Complete')).not.toBeInTheDocument();
     });
 
     it('keeps the Complete chip when the benefits plan is unset', async () => {
@@ -708,8 +722,8 @@ describe('GoalSettingsForm', () => {
         />,
       );
 
-      expect(await findByText('Complete')).toBeInTheDocument();
-      expect(queryByText('Incomplete')).not.toBeInTheDocument();
+      expect(await findByText('Calculation Complete')).toBeInTheDocument();
+      expect(queryByText('Calculation Incomplete')).not.toBeInTheDocument();
     });
 
     it('shows an Incomplete chip when the spouse required fields are missing', async () => {
@@ -724,8 +738,8 @@ describe('GoalSettingsForm', () => {
         />,
       );
 
-      expect(await findByText('Incomplete')).toBeInTheDocument();
-      expect(queryByText('Complete')).not.toBeInTheDocument();
+      expect(await findByText('Calculation Incomplete')).toBeInTheDocument();
+      expect(queryByText('Calculation Complete')).not.toBeInTheDocument();
     });
 
     it('flips to Complete when the last required field is filled', async () => {
@@ -740,14 +754,14 @@ describe('GoalSettingsForm', () => {
         />,
       );
 
-      expect(await findByText('Incomplete')).toBeInTheDocument();
+      expect(await findByText('Calculation Incomplete')).toBeInTheDocument();
 
       const tenure = await findByRole('spinbutton', {
         name: 'Full Time Years on Staff — John',
       });
       userEvent.type(tenure, '4');
 
-      expect(await findByText('Complete')).toBeInTheDocument();
+      expect(await findByText('Calculation Complete')).toBeInTheDocument();
     });
   });
 
@@ -814,7 +828,7 @@ describe('GoalSettingsForm', () => {
         await findByRole('combobox', { name: 'Staff Status — Jane' }),
       );
       userEvent.click(getByRole('option', { name: 'Joining Staff' }));
-      userEvent.click(getByRole('button', { name: 'Save & Share' }));
+      userEvent.click(getByRole('button', { name: 'Save' }));
 
       await waitFor(() =>
         expect(mutationSpy).toHaveGraphqlOperation(
@@ -839,7 +853,7 @@ describe('GoalSettingsForm', () => {
   it('does not send identity fields in real (account-list) mode', async () => {
     const { findByRole } = render(<TestComponent />);
 
-    const saveButton = await findByRole('button', { name: 'Save & Share' });
+    const saveButton = await findByRole('button', { name: 'Save' });
     userEvent.click(saveButton);
 
     await waitFor(() =>
@@ -891,7 +905,7 @@ describe('GoalSettingsForm', () => {
       userEvent.clear(firstName);
       userEvent.type(firstName, 'Johnny');
 
-      const saveButton = getByRole('button', { name: 'Save & Share' });
+      const saveButton = getByRole('button', { name: 'Save' });
       userEvent.click(saveButton);
 
       await waitFor(() =>
@@ -908,17 +922,21 @@ describe('GoalSettingsForm', () => {
     });
 
     it('emails the worksheet for the scenario goal being viewed', async () => {
-      const { findByRole, findByText, getByRole, getByText } = render(
+      const { findByRole, findByText, getByRole } = render(
         <ScenarioTestComponent goalCalculationMock={sendableScenarioMock} />,
       );
 
       userEvent.click(await findByRole('button', { name: 'Email Worksheet' }));
 
       expect(
-        getByText(
-          'Email the support goals worksheet for John Doe to john@example.com? This cannot be undone.',
+        await findByText(
+          'Email the support goals worksheet for John Doe to this address. This cannot be undone.',
         ),
       ).toBeInTheDocument();
+      userEvent.type(
+        getByRole('textbox', { name: 'Email address' }),
+        'john@example.com',
+      );
 
       userEvent.click(getByRole('button', { name: 'Send Worksheet' }));
 
@@ -927,6 +945,7 @@ describe('GoalSettingsForm', () => {
       ).toBeInTheDocument();
       expect(mutationSpy).toHaveGraphqlOperation('SendNewStaffScenarioGoal', {
         id: 'scenario-1',
+        emailAddress: 'john@example.com',
       });
     });
 
@@ -955,7 +974,7 @@ describe('GoalSettingsForm', () => {
       userEvent.clear(firstName);
       userEvent.type(firstName, 'Johnny');
 
-      const saveButton = getByRole('button', { name: 'Save & Share' });
+      const saveButton = getByRole('button', { name: 'Save' });
       userEvent.click(saveButton);
 
       await waitFor(() => expect(push).toHaveBeenCalledWith(returnUrl));

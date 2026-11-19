@@ -37,8 +37,8 @@ import {
 import { StaffDetailTabEnum } from '../StaffDetailsTabs/StaffDetailTab';
 import { preloadStaffExpenseReport } from '../StaffDetailsTabs/StaffExpenseReport/DynamicStaffExpenseReport';
 import { StaffTabStaffExpenseReport } from '../StaffDetailsTabs/StaffExpenseReport/StaffExpenseReport';
+import { FiscalYearQuarters } from '../StaffMemberRow/FiscalYearQuarters';
 import { GrossSalaryMarker } from '../StaffMemberRow/GrossSalaryMarker';
-import { FiscalYearQuarters } from '../StaffMemberRow/StaffMember';
 import {
   buildQuarterChips,
   getInitials,

@@ -13,8 +13,11 @@ import { ContactInformation } from '../../CompleteForm/ContactInformation/Contac
 import { Deduction } from '../../CompleteForm/Deduction/Deduction';
 import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetAdditionalSalary';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
+import { useApprovalNote } from '../../Shared/useApprovalNote';
 import { useFormUserInfo } from '../../Shared/useFormUserInfo';
+import { useNeedsApproval } from '../../Shared/useNeedsApproval';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
+import { AvailableBalanceTooltip } from '../../SharedComponents/AvailableBalanceTooltip';
 import { MissingLocationAlert } from '../../SharedComponents/MissingLocationAlert';
 import { SpouseComponent } from '../../SharedComponents/SpouseComponent';
 import { ValidationAlert } from '../../SharedComponents/ValidationAlert';
@@ -25,27 +28,39 @@ export const NewForm: React.FC = () => {
   const { t } = useTranslation();
   const { calculations, hcmLoading } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
-  const { name, primaryAccountBalance } = useFormUserInfo();
+  const { name, availableAccountBalance, remainingCap } = useFormUserInfo();
+  const approvalNote = useApprovalNote();
   const individualCap = calculations?.currentSalaryCap ?? 0;
 
   const { exceedsCap } = useSalaryCalculations({
     values,
   });
+  const needsApproval = useNeedsApproval(values);
 
   return (
-    <Stack gap={4} padding={4} width={mainContentWidth}>
+    <Stack
+      gap={4}
+      py={4}
+      px={{ xs: 0, sm: 4 }}
+      width="100%"
+      maxWidth={mainContentWidth}
+    >
       <Typography variant="h4">{t('Complete the Form')}</Typography>
       <Stack gap={0.5}>
         {hcmLoading ? (
-          <NameDisplaySkeleton showContent />
+          <NameDisplaySkeleton showContent columns={3} />
         ) : (
           <NameDisplay
             names={name ?? ''}
-            titleOne={t('Primary Account Balance')}
-            amountOne={primaryAccountBalance}
+            titleOne={t('Available for This Request')}
+            titleOneAdornment={<AvailableBalanceTooltip />}
+            amountOne={availableAccountBalance}
             titleTwo={t('Your Maximum Allowable Salary (CAP)')}
             amountTwo={individualCap}
+            titleThree={t('Remaining Allowable Salary')}
+            amountThree={remainingCap}
             spouseComponent={<SpouseComponent />}
+            note={approvalNote}
             showContent
           />
         )}
@@ -65,7 +80,7 @@ export const NewForm: React.FC = () => {
       <Deduction />
       <NetAdditionalSalary />
       {exceedsCap && <TotalSalaryRequested onForm />}
-      <ApprovalProcess onForm exceedsCap={exceedsCap} />
+      <ApprovalProcess onForm needsApproval={needsApproval} />
       <Typography variant="body1" paragraph>
         <Trans t={t}>
           If the above information is correct, please confirm your telephone

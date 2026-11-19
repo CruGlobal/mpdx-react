@@ -48,6 +48,14 @@ const SocialSelect = styled(Select, {
   textDecoration: destroyed ? 'line-through' : 'none',
 }));
 
+// Phones stack the two fields, so leave room beside the Type select for the
+// delete button that sits on that row (it also reaches into the right gutter).
+const SocialTypeGrid = styled(Grid)(({ theme }) => ({
+  [theme.breakpoints.down('sm')]: {
+    paddingRight: theme.spacing(2),
+  },
+}));
+
 interface PersonSocialProps {
   formikProps: FormikProps<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
 }
@@ -76,7 +84,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
             <ModalSectionContainer key={index}>
               {index === 0 ? <ModalSectionIcon icon={<Facebook />} /> : null}
               <Grid container spacing={3}>
-                <Grid size={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <SocialsTextField
                     destroyed={account.destroy ?? false}
                     label={t('Username/URL')}
@@ -97,7 +105,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                     fullWidth
                   />
                 </Grid>
-                <Grid size={6}>
+                <SocialTypeGrid size={{ xs: 12, sm: 6 }}>
                   <FormControl fullWidth>
                     <InputLabel id="social-type-label">{t('Type')}</InputLabel>
                     <SocialSelect
@@ -120,7 +128,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                       )
                     }
                   />
-                </Grid>
+                </SocialTypeGrid>
               </Grid>
             </ModalSectionContainer>
           ))
@@ -133,7 +141,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
             <ModalSectionContainer key={index}>
               {index === 0 ? <ModalSectionIcon icon={<Twitter />} /> : null}
               <Grid container spacing={3}>
-                <Grid size={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <SocialsTextField
                     destroyed={account.destroy ?? false}
                     label={t('Username/URL')}
@@ -154,7 +162,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                     fullWidth
                   />
                 </Grid>
-                <Grid size={6}>
+                <SocialTypeGrid size={{ xs: 12, sm: 6 }}>
                   <FormControl fullWidth>
                     <InputLabel id="social-type-label">{t('Type')}</InputLabel>
                     <SocialSelect
@@ -177,7 +185,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                       )
                     }
                   />
-                </Grid>
+                </SocialTypeGrid>
               </Grid>
             </ModalSectionContainer>
           ))
@@ -190,7 +198,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
             <ModalSectionContainer key={index}>
               {index === 0 ? <ModalSectionIcon icon={<LinkedIn />} /> : null}
               <Grid container spacing={3}>
-                <Grid size={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <SocialsTextField
                     destroyed={account.destroy ?? false}
                     label={t('Username/URL')}
@@ -211,7 +219,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                     fullWidth
                   />
                 </Grid>
-                <Grid size={6}>
+                <SocialTypeGrid size={{ xs: 12, sm: 6 }}>
                   <FormControl fullWidth>
                     <InputLabel id="social-type-label">{t('Type')}</InputLabel>
                     <SocialSelect
@@ -234,7 +242,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                       )
                     }
                   />
-                </Grid>
+                </SocialTypeGrid>
               </Grid>
             </ModalSectionContainer>
           ))
@@ -251,7 +259,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                   <ModalSectionIcon icon={<SocialIcon />} />
                 ) : null}
                 <Grid container spacing={3}>
-                  <Grid size={6}>
+                  <Grid size={{ xs: 12, sm: 6 }}>
                     <SocialsTextField
                       destroyed={account.destroy ?? false}
                       label={t('Username/URL')}
@@ -272,7 +280,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                       fullWidth
                     />
                   </Grid>
-                  <Grid size={6}>
+                  <SocialTypeGrid size={{ xs: 12, sm: 6 }}>
                     <FormControl fullWidth>
                       <InputLabel id="social-type-label">
                         {t('Type')}
@@ -297,7 +305,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                         )
                       }
                     />
-                  </Grid>
+                  </SocialTypeGrid>
                 </Grid>
               </ModalSectionContainer>
             </>
@@ -316,7 +324,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                     <ModalSectionIcon icon={<SocialIcon />} />
                   ) : null}
                   <Grid container spacing={3}>
-                    <Grid size={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                       <SocialsTextField
                         destroyed={social.destroy ?? false}
                         label={t('Username/URL')}
@@ -337,7 +345,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                         fullWidth
                       />
                     </Grid>
-                    <Grid size={6}>
+                    <SocialTypeGrid size={{ xs: 12, sm: 6 }}>
                       <FormControl fullWidth>
                         <InputLabel id="social-type-label">
                           {t('Type')}
@@ -373,7 +381,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                           setFieldValue('newSocials', temp);
                         }}
                       />
-                    </Grid>
+                    </SocialTypeGrid>
                   </Grid>
                 </ModalSectionContainer>
               </>

@@ -3,6 +3,7 @@ import { Button } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import mediaQuery from 'css-mediaquery';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -119,6 +120,68 @@ const Components = ({
     </ThemeProvider>
   </TestRouter>
 );
+
+const phoneWidth = 390;
+const desktopWidths = [600, 900, 1280];
+
+// jsdom ignores @media rules when it computes styles, so collect the
+// declarations that would apply to an element at a given screen width
+const stylesAtWidth = (
+  element: Element,
+  width: number,
+): Record<string, string> => {
+  const styles: Record<string, string> = {};
+  const applyRules = (rules: CSSRuleList) => {
+    Array.from(rules).forEach((rule) => {
+      if (rule instanceof CSSMediaRule) {
+        if (mediaQuery.match(rule.media.mediaText, { width })) {
+          applyRules(rule.cssRules);
+        }
+      } else if (rule instanceof CSSStyleRule) {
+        let matches = false;
+        try {
+          matches = element.matches(rule.selectorText);
+        } catch {
+          // jsdom can't parse some vendor pseudo selectors, which never match here
+        }
+        if (matches) {
+          Array.from(rule.style).forEach((property) => {
+            styles[property] = rule.style.getPropertyValue(property);
+          });
+        }
+      }
+    });
+  };
+  Array.from(document.styleSheets).forEach((sheet) =>
+    applyRules(sheet.cssRules),
+  );
+  if (element instanceof HTMLElement) {
+    Array.from(element.style).forEach((property) => {
+      styles[property] = element.style.getPropertyValue(property);
+    });
+  }
+  return styles;
+};
+
+// The box that actually lays an element out, skipping display: contents wrappers
+const layoutParentAtWidth = (element: Element, width: number): Element => {
+  let parent = element.parentElement;
+  while (parent && stylesAtWidth(parent, width).display === 'contents') {
+    parent = parent.parentElement;
+  }
+  if (!parent) {
+    throw new Error('Element has no layout parent');
+  }
+  return parent;
+};
+
+const getSearchField = (searchInput: HTMLElement): Element => {
+  const searchField = searchInput.closest('.MuiTextField-root');
+  if (!searchField) {
+    throw new Error('Search field not found');
+  }
+  return searchField;
+};
 
 const ButtonGroup: React.FC = () => {
   return (
@@ -240,6 +303,126 @@ describe('ListHeader', () => {
         await findByText('Search by subject, tags, contact name, or comments'),
       ).toBeVisible();
     });
+
+    it('gives the search field its own full-width row below the buttons on phones', () => {
+      const { getByPlaceholderText } = render(
+        <Components page={PageEnum.Task} />,
+      );
+
+      const searchField = getSearchField(getByPlaceholderText('Search Tasks'));
+      expect(stylesAtWidth(searchField, phoneWidth)).toMatchObject({
+        'flex-basis': '100%',
+        order: '1',
+      });
+      expect(
+        stylesAtWidth(layoutParentAtWidth(searchField, phoneWidth), phoneWidth),
+      ).toMatchObject({ display: 'flex', 'flex-wrap': 'wrap' });
+    });
+
+    it.each(desktopWidths)(
+      'lays out the header the same as Contacts at %ipx wide',
+      (width) => {
+        const { getByPlaceholderText } = render(
+          <>
+            <Components page={PageEnum.Task} />
+            <Components page={PageEnum.Contact} />
+          </>,
+        );
+
+        const taskSearchField = getSearchField(
+          getByPlaceholderText('Search Tasks'),
+        );
+        const contactSearchField = getSearchField(
+          getByPlaceholderText('Search Contacts'),
+        );
+        expect(stylesAtWidth(taskSearchField, width)).toEqual(
+          stylesAtWidth(contactSearchField, width),
+        );
+        expect(stylesAtWidth(taskSearchField, width)['flex-basis']).toBe(
+          undefined,
+        );
+
+        const taskHeader = layoutParentAtWidth(
+          layoutParentAtWidth(taskSearchField, width),
+          width,
+        );
+        const contactHeader = layoutParentAtWidth(
+          layoutParentAtWidth(contactSearchField, width),
+          width,
+        );
+        expect(stylesAtWidth(taskHeader, width)).toEqual(
+          stylesAtWidth(contactHeader, width),
+        );
+        expect(taskHeader.children).toHaveLength(contactHeader.children.length);
+        Array.from(taskHeader.children).forEach((taskSection, index) => {
+          expect(stylesAtWidth(taskSection, width)).toEqual(
+            stylesAtWidth(contactHeader.children[index], width),
+          );
+        });
+      },
+    );
+
+    it('updates the search term when typing in the search field', async () => {
+      const { getByPlaceholderText } = render(
+        <Components page={PageEnum.Task} />,
+      );
+
+      userEvent.type(getByPlaceholderText('Search Tasks'), 'call');
+
+      await waitFor(() =>
+        expect(replace.mock.lastCall[0].query.searchTerm).toBe('call'),
+      );
+    });
+  });
+
+  describe('search field layout on other pages', () => {
+    it.each([PageEnum.Contact, PageEnum.Appeal, PageEnum.Report])(
+      'keeps the %s search field inline on phones',
+      (page) => {
+        const { getByPlaceholderText } = render(<Components page={page} />);
+
+        const searchInput = getByPlaceholderText('Search Contacts');
+        const searchField = getSearchField(searchInput);
+        const fieldStyles = stylesAtWidth(searchField, phoneWidth);
+        expect(fieldStyles['flex-basis']).toBeUndefined();
+        expect(fieldStyles.order).toBeUndefined();
+        expect(fieldStyles.width).toBeUndefined();
+
+        const inputRoot = searchInput.closest('.MuiInputBase-root');
+        expect(inputRoot && stylesAtWidth(inputRoot, phoneWidth).height).toBe(
+          '48px',
+        );
+
+        const searchRow = layoutParentAtWidth(searchField, phoneWidth);
+        expect(stylesAtWidth(searchRow, phoneWidth).display).toBe('flex');
+        expect(
+          stylesAtWidth(searchRow, phoneWidth)['flex-wrap'],
+        ).toBeUndefined();
+        expect(
+          stylesAtWidth(layoutParentAtWidth(searchRow, phoneWidth), phoneWidth)[
+            'flex-wrap'
+          ],
+        ).toBeUndefined();
+      },
+    );
+
+    it.each([
+      [600, '27ch'],
+      [900, '31ch'],
+      [1280, '31ch'],
+    ])(
+      'keeps the Contacts search field width at %ipx wide',
+      (width, searchWidth) => {
+        const { getByPlaceholderText } = render(<Components />);
+
+        expect(
+          stylesAtWidth(
+            getSearchField(getByPlaceholderText('Search Contacts')),
+            width,
+          ).width,
+        ).toBe(searchWidth);
+      },
+    );
   });
 
   it('checkbox is unchecked', async () => {

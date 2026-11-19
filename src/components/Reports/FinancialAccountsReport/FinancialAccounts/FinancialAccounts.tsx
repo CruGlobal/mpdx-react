@@ -7,6 +7,7 @@ import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
+  multiPageHeaderHeight,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
@@ -26,7 +27,8 @@ import type {
 } from './FinancialAccounts.type';
 
 const ScrollBox = styled(Box)(({}) => ({
-  height: 'calc(100vh - 160px)',
+  // Follows the page header, which grows on phones
+  height: `calc(100vh - 80px - ${multiPageHeaderHeight})`,
   overflowY: 'auto',
 }));
 

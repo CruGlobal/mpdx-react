@@ -1,15 +1,5 @@
 import React, { useMemo } from 'react';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import PrintIcon from '@mui/icons-material/Print';
-import {
-  Alert,
-  Box,
-  Button,
-  Divider,
-  Grid,
-  Typography,
-  styled,
-} from '@mui/material';
+import { Divider, Grid, Typography, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
 import { MonthlyNeedsCard } from '../../Shared/GoalPresentation/MonthlyNeedsCard';
@@ -19,6 +9,7 @@ import { SpecialNeedsCard } from '../../Shared/GoalPresentation/SpecialNeedsCard
 import { SupportNeedsChart } from '../../Shared/GoalPresentation/SupportNeedsChart';
 import { useMonthlyNeedsRows } from '../../Shared/GoalPresentation/useMonthlyNeedsRows';
 import { NsGoalCalculation } from '../Shared/NsGoalCalculatorContext';
+import { PrintGoalControls } from '../Shared/PrintGoalControls';
 import { useSpecialNeedsCategories } from '../Shared/useSpecialNeedsCategories';
 
 const PrintableContent = styled('div')(({ theme }) => ({
@@ -86,10 +77,6 @@ export const PresentingYourGoalContent: React.FC<
     [specialNeeds, calculations, t],
   );
 
-  const handlePrint = () => {
-    window.print();
-  };
-
   return (
     <PrintableContent>
       <Typography variant="h6">{t('Presenting Your Goal')}</Typography>
@@ -100,33 +87,7 @@ export const PresentingYourGoalContent: React.FC<
         )}
       </Typography>
 
-      <Alert
-        severity="info"
-        icon={<InfoOutlinedIcon />}
-        className="print-hidden"
-      >
-        <Typography variant="body1" fontWeight="bold">
-          {t('Some tips for printing:')}
-        </Typography>
-        <Box component="ol" sx={{ my: 1, pl: 3 }}>
-          <li>{t('Toggle off Headers and Footers in your print settings.')}</li>
-          <li>
-            {t(
-              'From your Print settings, you may also save the page as a PDF to share digitally.',
-            )}
-          </li>
-        </Box>
-      </Alert>
-
-      <Button
-        variant="outlined"
-        startIcon={<PrintIcon />}
-        onClick={handlePrint}
-        className="print-hidden"
-        sx={{ alignSelf: 'flex-start' }}
-      >
-        {t('Print Support Needs Presentation')}
-      </Button>
+      <PrintGoalControls buttonLabel={t('Print Support Needs Presentation')} />
 
       <Divider className="print-hidden" />
 

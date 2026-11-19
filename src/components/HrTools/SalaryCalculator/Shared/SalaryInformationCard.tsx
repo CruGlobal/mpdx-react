@@ -41,7 +41,16 @@ export const SalaryInformationCard: React.FC = () => {
   } = useLandingData();
 
   return (
-    <StepCard sx={{ marginBlock: theme.spacing(3) }}>
+    <StepCard
+      sx={{
+        marginBlock: theme.spacing(3),
+        '.MuiTableCell-root': {
+          [theme.breakpoints.down('sm')]: {
+            paddingInline: theme.spacing(1),
+          },
+        },
+      }}
+    >
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: 'success.main' }}>
@@ -82,7 +91,10 @@ export const SalaryInformationCard: React.FC = () => {
             }}
           >
             {salaryCategories.map((row) => (
-              <TableRow key={row.category}>
+              <TableRow
+                key={row.category}
+                sx={row.link ? { verticalAlign: 'top' } : undefined}
+              >
                 <TableCell>
                   <FlexBox>
                     {row.category}
@@ -96,7 +108,7 @@ export const SalaryInformationCard: React.FC = () => {
                   </FlexBox>
                 </TableCell>
                 <TableCell>
-                  <FlexBox>
+                  <FlexBox sx={{ flexWrap: 'wrap', rowGap: 0.5 }}>
                     {row.user}
                     {row.link && (
                       <Link

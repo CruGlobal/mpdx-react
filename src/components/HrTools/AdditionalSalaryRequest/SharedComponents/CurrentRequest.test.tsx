@@ -28,7 +28,7 @@ const mockUseAdditionalSalaryRequest =
 
 const mockHandleDeleteRequest = jest.fn();
 
-const mockRequest: RequestType = {
+const mockRequest = {
   id: 'request-123',
   totalAdditionalSalaryRequested: 5000,
   usingSpouseSalary: false,
@@ -62,7 +62,7 @@ const mockRequest: RequestType = {
     outstandingSalaryRequest: false,
   },
   spouseCalculations: null,
-};
+} as RequestType;
 
 const mockContextValue = {
   staffAccountId: 'staff-1',

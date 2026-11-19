@@ -8,34 +8,30 @@ import {
   Collapse,
   Grid,
   IconButton,
-  Stack,
-  SxProps,
-  Theme,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { visuallyHidden } from '@mui/utils';
-import { useTranslation } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
 import { useFormatters } from 'src/components/HrTools/Shared/useFormatters';
+import { MpdCapHealthEnum } from 'src/graphql/types.generated';
+import { useLocale } from 'src/hooks/useLocale';
 import theme from 'src/theme';
+import { capHealthLabel } from '../Filters/mpdSupervisorReportFilters';
 import { RowDensityEnum } from '../MpdSupervisorReportContext';
+import { formatWholeDollars, householdTypeLabel } from '../balanceHelpers';
 import {
-  QuarterChipData,
   StaffRow,
-  buildQuarterChips,
   getLocalizedAssignmentCategoryGroup,
   getLocalizedUserPersonTypeName,
-  getQuarterLabel,
   getRowInitials,
   getRowName,
   getRowSpouseName,
   getRowTeamNames,
   grossSalaryWarning,
-  healthLabel,
-  quarterAmountLabel,
 } from '../helpers';
+import { CapHealthBadge } from './CapHealthBadge';
 import { GrossSalaryMarker } from './GrossSalaryMarker';
-import { QuarterChip } from './QuarterChip';
+import { MonthEndBalances } from './MonthEndBalances';
 import { QuickGlance } from './QuickGlance';
 
 const StyledCard = styled(Card, {
@@ -55,13 +51,56 @@ const GridItem = styled(Grid)(({ theme }) => ({
   gap: theme.spacing(2),
 }));
 
-const GridQuarter = styled(Grid)(({ theme }) => ({
+const GridBalances = styled(Grid, {
+  shouldForwardProp: (prop) => prop !== 'compact',
+})<{ compact: boolean }>(({ theme, compact }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(3),
   flexWrap: 'wrap',
   justifyContent: 'flex-end',
+  // Stacked under the name below md
+  [theme.breakpoints.down('md')]: {
+    marginTop: theme.spacing(compact ? 0.5 : 1),
+  },
 }));
+
+// The 200px floor only applies beside the balances; stacked, a long name wraps
+const NameColumn = styled(Box)(({ theme }) => ({
+  flexGrow: 1,
+  [theme.breakpoints.up('md')]: { minWidth: 200 },
+}));
+
+// Wraps so a badge after a long name drops to its own line on a phone
+const NameLine = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  flexWrap: 'wrap',
+  gap: theme.spacing(1),
+}));
+
+// The marker and badge inside are not focusable, so the row's own name
+// carries the gross salary warning and the health grade for keyboard and
+// screen-reader users.
+const rowActionLabel = (
+  t: TFunction,
+  names: string,
+  grossWarning: string | null,
+  capHealth: MpdCapHealthEnum | null | undefined,
+): string => {
+  const name = capHealth
+    ? t('{{label}}, {{status}}', {
+        label: names,
+        status: capHealthLabel(t, capHealth),
+      })
+    : names;
+  return grossWarning
+    ? t('View details for {{name}}. {{warning}}', {
+        name,
+        warning: grossWarning,
+      })
+    : t('View details for {{name}}', { name });
+};
 
 interface StaffMemberProps {
   data: StaffRow;
@@ -83,16 +122,20 @@ export const StaffMember: React.FC<StaffMemberProps> = ({
   const { t } = useTranslation();
   const compact = density === RowDensityEnum.Compact;
   const { formatCurrency } = useFormatters();
+  const locale = useLocale();
   const { staffAccountId, assignmentCategoryGroup, userPersonType, partner } =
     data;
   const grossWarning = grossSalaryWarning(t, formatCurrency, data);
 
   const names = getRowName(data);
-
-  const quarters = useMemo(
-    () => buildQuarterChips(data.quarterlyHealth),
-    [data.quarterlyHealth],
-  );
+  const { householdType, balanceBuffer } = data;
+  const buffer =
+    householdType && typeof balanceBuffer === 'number'
+      ? t('{{household}} buffer {{amount}}', {
+          household: householdTypeLabel(t, householdType),
+          amount: formatWholeDollars(balanceBuffer, locale),
+        })
+      : null;
 
   // A member can be on several teams; a merged pair shows both spouses' teams.
   // No team means no segment at all rather than a placeholder.
@@ -126,16 +169,7 @@ export const StaffMember: React.FC<StaffMemberProps> = ({
           </Box>
         )}
         <CardActionArea
-          // The marker inside is not focusable, so the row's own name carries
-          // the gross salary warning for keyboard and screen-reader users.
-          aria-label={
-            grossWarning
-              ? t('View details for {{name}}. {{warning}}', {
-                  name: names,
-                  warning: grossWarning,
-                })
-              : t('View details for {{name}}', { name: names })
-          }
+          aria-label={rowActionLabel(t, names, grossWarning, data.capHealth)}
           onClick={onClick}
           sx={{
             flex: 1,
@@ -146,7 +180,7 @@ export const StaffMember: React.FC<StaffMemberProps> = ({
           }}
         >
           <Grid container>
-            <GridItem size={6}>
+            <GridItem size={{ xs: 12, md: 6 }}>
               {!compact && (
                 <Avatar
                   sx={{ bgcolor: 'mpdxGrayLight.main', color: 'text.primary' }}
@@ -154,7 +188,7 @@ export const StaffMember: React.FC<StaffMemberProps> = ({
                   {getRowInitials(data)}
                 </Avatar>
               )}
-              <Box sx={{ flexGrow: 1, minWidth: 200, ml: compact ? 0 : 1 }}>
+              <NameColumn sx={{ ml: compact ? 0 : 1 }}>
                 <Box
                   sx={{
                     display: 'flex',
@@ -175,15 +209,18 @@ export const StaffMember: React.FC<StaffMemberProps> = ({
                     }
                     team={team}
                     spouse={spouse}
+                    buffer={buffer}
                     grossWarning={grossWarning}
+                    capHealth={data.capHealth}
+                    percentOfCap={data.percentOfCap}
                     compact={compact}
                   />
                 </Box>
-              </Box>
+              </NameColumn>
             </GridItem>
-            <GridQuarter size={6}>
-              <FiscalYearQuarters quarters={quarters} />
-            </GridQuarter>
+            <GridBalances size={{ xs: 12, md: 6 }} compact={compact}>
+              <MonthEndBalances balances={data.monthEndBalances} />
+            </GridBalances>
           </Grid>
         </CardActionArea>
       </Box>
@@ -196,53 +233,6 @@ export const StaffMember: React.FC<StaffMemberProps> = ({
   );
 };
 
-interface FiscalYearQuartersProps {
-  quarters: QuarterChipData[];
-}
-const FiscalYearQuartersBase: React.FC<FiscalYearQuartersProps> = ({
-  quarters,
-}) => {
-  const { t } = useTranslation();
-  const { formatCurrency } = useFormatters();
-
-  return (
-    <Stack direction="row" spacing={2}>
-      {quarters.map(({ fiscalYear, quarter, status, averagePayroll }) => {
-        const label = getQuarterLabel(fiscalYear, quarter);
-        const amount = quarterAmountLabel({
-          t,
-          status,
-          averagePayroll,
-          formatCurrency,
-        });
-
-        return (
-          <QuarterChip
-            key={label}
-            // Health is also conveyed by color, so name it for screen-reader
-            // users (WCAG 1.4.1 — not color alone).
-            label={
-              <>
-                <Box component="span" sx={visuallyHidden as SxProps<Theme>}>
-                  {t('{{label}}, {{status}}', {
-                    label,
-                    status: healthLabel(t, status),
-                  })}
-                </Box>
-                {amount}
-              </>
-            }
-            health={status}
-            size="small"
-          />
-        );
-      })}
-    </Stack>
-  );
-};
-/** The four quarter chips; also shown in the drawer header, which covers the row. */
-export const FiscalYearQuarters = React.memo(FiscalYearQuartersBase);
-
 interface StaffInfoProps {
   names: string;
   staffAccountID: string;
@@ -251,8 +241,12 @@ interface StaffInfoProps {
   team: string;
   /** The spouse's name when they are not merged into this row */
   spouse?: string | null;
+  /** The household's balance buffer, when the member is graded against one */
+  buffer?: string | null;
   /** Set when Monthly Gross Salary is below New Staff Monthly Salary */
   grossWarning: string | null;
+  capHealth?: MpdCapHealthEnum | null;
+  percentOfCap?: number | null;
   /** Puts the details on the same line as the name */
   compact?: boolean;
 }
@@ -263,7 +257,10 @@ const StaffInfoBase: React.FC<StaffInfoProps> = ({
   userPersonType,
   team,
   spouse,
+  buffer,
   grossWarning,
+  capHealth,
+  percentOfCap,
   compact = false,
 }) => {
   const { t } = useTranslation();
@@ -278,7 +275,7 @@ const StaffInfoBase: React.FC<StaffInfoProps> = ({
           columnGap: compact ? 1.5 : 0,
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <NameLine>
           <Typography
             variant={compact ? 'body1' : 'h6'}
             fontWeight={compact ? 600 : undefined}
@@ -288,7 +285,8 @@ const StaffInfoBase: React.FC<StaffInfoProps> = ({
           {grossWarning && (
             <GrossSalaryMarker warning={grossWarning} focusable={false} />
           )}
-        </Box>
+          <CapHealthBadge capHealth={capHealth} percentOfCap={percentOfCap} />
+        </NameLine>
         <Typography
           variant="body2"
           sx={{ color: 'text.secondary' }}
@@ -300,6 +298,7 @@ const StaffInfoBase: React.FC<StaffInfoProps> = ({
           {userPersonType && ` · ${userPersonType}`}
           {team && ` · ${team}`}
           {spouse && ` · ${t('Spouse: {{name}}', { name: spouse })}`}
+          {buffer && ` · ${buffer}`}
         </Typography>
       </Box>
     </Box>

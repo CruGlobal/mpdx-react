@@ -47,12 +47,19 @@ export const StickyConfirmButtons: React.FC<StickyConfirmButtonsProps> = ({
           />
         </Typography>
       </Box>
-      <Box>
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 2,
+          flexDirection: { xs: 'column', sm: 'row' },
+          width: { xs: '100%', sm: 'auto' },
+          mt: { xs: 1, sm: 0 },
+        }}
+      >
         <Button
           variant="contained"
           disabled={disabled}
           onClick={() => handleConfirmAndContinue()}
-          sx={{ mr: 2 }}
         >
           {t('Confirm and Continue')}
         </Button>

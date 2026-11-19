@@ -24,7 +24,7 @@ describe('MinistryDetails', () => {
     ).toBeInTheDocument();
     expect(
       getByRole('textbox', {
-        name: 'What is your expected ministry assignment location?',
+        name: 'What city is your expected ministry assignment in?',
       }),
     ).toBeInTheDocument();
     expect(
@@ -44,7 +44,7 @@ describe('MinistryDetails', () => {
 
     expect(
       getByRole('textbox', {
-        name: 'What is your expected ministry assignment location?',
+        name: 'What city is your expected ministry assignment in?',
       }),
     ).toBeRequired();
   });
@@ -138,11 +138,26 @@ describe('MinistryDetails', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('asks for the city once the empty location field is touched', async () => {
+    const { getByRole, findByText } = render(<TestComponent />);
+
+    userEvent.click(
+      getByRole('textbox', {
+        name: 'What city is your expected ministry assignment in?',
+      }),
+    );
+    userEvent.tab();
+
+    expect(
+      await findByText('Please enter the city of your ministry assignment'),
+    ).toBeInTheDocument();
+  });
+
   it('renders the assignment-location question as a label above the field', () => {
     const { getByText } = render(<TestComponent />);
 
     expect(
-      getByText('What is your expected ministry assignment location?').tagName,
+      getByText('What city is your expected ministry assignment in?').tagName,
     ).toBe('SPAN');
   });
 

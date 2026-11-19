@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import matchMediaMock from '__tests__/util/matchMediaMock';
 import { beforeTestResizeObserver } from '__tests__/util/windowResizeObserver';
 import { NsGoalCalculatorTestWrapper } from '../NsGoalCalculatorTestWrapper';
 import { GoalSettingsView } from './GoalSettingsView';
@@ -103,6 +104,30 @@ describe('GoalSettingsView', () => {
     expect(
       getByRole('button', { name: 'Collapse navigation' }),
     ).not.toHaveFocus();
+    expect(document.body).toHaveFocus();
+  });
+
+  it('starts with the navigation open on large screens', async () => {
+    matchMediaMock({ width: '1024px' });
+    const { findByRole, getByRole, queryByRole } = render(<TestComponent />);
+
+    await findByRole('heading', { name: 'Personal Information' });
+
+    expect(
+      getByRole('button', { name: 'Collapse navigation' }),
+    ).toBeInTheDocument();
+    expect(
+      queryByRole('button', { name: 'Show navigation' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('starts with the navigation collapsed on phones without moving focus', async () => {
+    matchMediaMock({ width: '375px' });
+    const { findByRole, getByRole } = render(<TestComponent />);
+
+    await findByRole('heading', { name: 'Personal Information' });
+
+    expect(getByRole('button', { name: 'Show navigation' })).not.toHaveFocus();
     expect(document.body).toHaveFocus();
   });
 

@@ -17,6 +17,7 @@ interface Props {
 
 const ProgressBarWrapper = styled(Box)(({ theme }) => ({
   width: 450,
+  maxWidth: '100%',
   display: 'flex',
   flexDirection: 'row',
   height: 35,

@@ -14,7 +14,7 @@ import {
   TableRow,
   TextField,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { alpha, styled } from '@mui/material/styles';
 import { Field, FieldArray, FieldProps, Form, Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +34,7 @@ import {
   SubmitButton,
 } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import { PersonCreateInput, StatusEnum } from 'src/graphql/types.generated';
+import { useHorizontalScrollEdges } from 'src/hooks/useHorizontalScrollEdges';
 import theme from '../../../../../../../../theme';
 import { useCreateContactMutation } from '../CreateContact/CreateContact.generated';
 
@@ -45,22 +46,79 @@ const InputRow = styled(TableRow)(() => ({
   '&:last-child .MuiTableCell-root': {
     borderBottom: 'none',
   },
+  // On phones each row becomes a stacked card of labeled fields
+  [theme.breakpoints.down('sm')]: {
+    flexDirection: 'column',
+    padding: theme.spacing(2, 0),
+    borderBottom: `2px solid ${theme.palette.grey[400]}`,
+    '&:last-child': {
+      borderBottom: 'none',
+    },
+    '& .MuiTableCell-root': {
+      borderBottom: 'none',
+    },
+  },
 }));
 
-const InputCell = styled(TableCell)(() => ({
+const InputCell = styled(TableCell, {
+  shouldForwardProp: (prop) => prop !== 'wide',
+})<{ wide?: boolean }>(({ wide }) => ({
   flex: 1,
   width: '1%',
   [theme.breakpoints.down('lg')]: {
     minWidth: '130px',
   },
+  // On tablets the table scrolls sideways, so each field is wide enough to
+  // read what you type. Address, email and status get the most room.
   [theme.breakpoints.down('md')]: {
-    minWidth: '100px',
+    minWidth: wide ? '230px' : '160px',
+  },
+  [theme.breakpoints.down('sm')]: {
+    flex: 'none',
+    width: 'auto',
+    minWidth: 0,
+    padding: theme.spacing(0.5, 2),
+    '&[data-label]::before': {
+      content: 'attr(data-label)',
+      display: 'block',
+      fontWeight: 'bold',
+      marginBottom: theme.spacing(0.5),
+    },
+  },
+}));
+
+const HeaderRow = styled(TableRow)(() => ({
+  display: 'flex',
+  [theme.breakpoints.down('sm')]: {
+    display: 'none',
   },
 }));
 
 const DialogContentCustom = styled(DialogContent)(() => ({
   maxHeight: 'calc(100vh - 200px)',
   overflowX: 'auto',
+}));
+
+const TableScrollArea = styled('div')(() => ({
+  position: 'relative',
+}));
+
+// Fades the table out at an edge that has more columns past it, so it's clear
+// the table scrolls sideways. Matches the contact tab row fade. Desktop has
+// room for every column, so the fades are hidden from md up.
+const TableScrollFade = styled('div', {
+  shouldForwardProp: (prop) => prop !== 'side',
+})<{ side: 'left' | 'right' }>(({ side }) => ({
+  position: 'absolute',
+  top: 0,
+  bottom: 0,
+  ...(side === 'left' ? { left: 0 } : { right: 0 }),
+  width: theme.spacing(5),
+  pointerEvents: 'none',
+  background: `linear-gradient(to ${side}, ${alpha(theme.palette.common.white, 0)}, ${theme.palette.common.white})`,
+  [theme.breakpoints.up('md')]: {
+    display: 'none',
+  },
 }));
 
 interface Props {
@@ -133,6 +191,8 @@ export const CreateMultipleContacts = ({
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { push } = useRouter();
+  const { scrollRef, canScrollLeft, canScrollRight } =
+    useHorizontalScrollEdges();
   const initialContacts: ContactTable = {
     contacts: new Array(rows).fill(defaultContact),
   };
@@ -287,193 +347,218 @@ export const CreateMultipleContacts = ({
       }): ReactElement => (
         <Form>
           <DialogContentCustom dividers sx={{ padding: 0 }}>
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow sx={{ display: 'flex' }}>
-                    <InputCell align="left">{t('First')}</InputCell>
-                    <InputCell align="left">{t('Spouse')}</InputCell>
-                    <InputCell align="left">{t('Last')}</InputCell>
-                    <InputCell align="left">{t('Street Address')}</InputCell>
-                    <InputCell align="left">{t('Phone')}</InputCell>
-                    <InputCell align="left">{t('Email')}</InputCell>
-                    <InputCell align="left">{t('Status')}</InputCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  <FieldArray
-                    name="contacts"
-                    render={() =>
-                      contacts.map((contact, index) => (
-                        <InputRow key={index}>
-                          <InputCell>
-                            <Field name="firstName">
-                              {({ field }: FieldProps) => (
-                                <TextField
-                                  {...field}
-                                  variant="outlined"
-                                  size="small"
-                                  fullWidth
-                                  type="text"
-                                  inputProps={{
-                                    'aria-label': t('First'),
-                                  }}
-                                  value={contact.firstName}
+            <TableScrollArea>
+              <TableContainer ref={scrollRef}>
+                <Table>
+                  <TableHead>
+                    <HeaderRow>
+                      <InputCell align="left">{t('First')}</InputCell>
+                      <InputCell align="left">{t('Spouse')}</InputCell>
+                      <InputCell align="left">{t('Last')}</InputCell>
+                      <InputCell align="left" wide>
+                        {t('Street Address')}
+                      </InputCell>
+                      <InputCell align="left">{t('Phone')}</InputCell>
+                      <InputCell align="left" wide>
+                        {t('Email')}
+                      </InputCell>
+                      <InputCell align="left" wide>
+                        {t('Status')}
+                      </InputCell>
+                    </HeaderRow>
+                  </TableHead>
+                  <TableBody>
+                    <FieldArray
+                      name="contacts"
+                      render={() =>
+                        contacts.map((contact, index) => (
+                          <InputRow key={index}>
+                            <InputCell data-label={t('First')}>
+                              <Field name="firstName">
+                                {({ field }: FieldProps) => (
+                                  <TextField
+                                    {...field}
+                                    variant="outlined"
+                                    size="small"
+                                    fullWidth
+                                    type="text"
+                                    inputProps={{
+                                      'aria-label': t('First'),
+                                    }}
+                                    value={contact.firstName}
+                                    onChange={(e) =>
+                                      setFieldValue(
+                                        `contacts.${index}.firstName`,
+                                        e.target.value,
+                                      )
+                                    }
+                                  />
+                                )}
+                              </Field>
+                            </InputCell>
+                            <InputCell data-label={t('Spouse')}>
+                              <Field name="spouseName">
+                                {({ field }: FieldProps) => (
+                                  <TextField
+                                    {...field}
+                                    variant="outlined"
+                                    size="small"
+                                    fullWidth
+                                    type="text"
+                                    inputProps={{
+                                      'aria-label': t('Spouse'),
+                                    }}
+                                    value={contact.spouseName}
+                                    onChange={(e) =>
+                                      setFieldValue(
+                                        `contacts.${index}.spouseName`,
+                                        e.target.value,
+                                      )
+                                    }
+                                  />
+                                )}
+                              </Field>
+                            </InputCell>
+                            <InputCell data-label={t('Last')}>
+                              <Field name="lastName">
+                                {({ field }: FieldProps) => (
+                                  <TextField
+                                    {...field}
+                                    variant="outlined"
+                                    size="small"
+                                    fullWidth
+                                    type="text"
+                                    inputProps={{
+                                      'aria-label': t('Last'),
+                                    }}
+                                    value={contact.lastName}
+                                    onChange={(e) =>
+                                      setFieldValue(
+                                        `contacts.${index}.lastName`,
+                                        e.target.value,
+                                      )
+                                    }
+                                  />
+                                )}
+                              </Field>
+                            </InputCell>
+                            <InputCell data-label={t('Street Address')} wide>
+                              <Field name="address">
+                                {({ field }: FieldProps) => (
+                                  <StreetAutocomplete
+                                    TextFieldProps={{
+                                      variant: 'outlined',
+                                      size: 'small',
+                                      fullWidth: true,
+                                      'aria-label': t('Street Address'),
+                                      ...field,
+                                    }}
+                                    streetValue={contact.address.street}
+                                    onStreetChange={(street) =>
+                                      setFieldValue(
+                                        `contacts.${index}.address`,
+                                        {
+                                          street,
+                                        },
+                                      )
+                                    }
+                                    onPredictionChosen={(fields) => {
+                                      setFieldValue(
+                                        `contacts.${index}.address`,
+                                        fields,
+                                      );
+                                    }}
+                                  />
+                                )}
+                              </Field>
+                            </InputCell>
+                            <InputCell data-label={t('Phone')}>
+                              <Field name="phone">
+                                {({ field }: FieldProps) => (
+                                  <TextField
+                                    {...field}
+                                    variant="outlined"
+                                    size="small"
+                                    fullWidth
+                                    type="text"
+                                    inputProps={{
+                                      'aria-label': t('Phone'),
+                                    }}
+                                    value={contact.phone}
+                                    onChange={(e) =>
+                                      setFieldValue(
+                                        `contacts.${index}.phone`,
+                                        e.target.value,
+                                      )
+                                    }
+                                  />
+                                )}
+                              </Field>
+                            </InputCell>
+                            <InputCell data-label={t('Email')} wide>
+                              <Field name="email">
+                                {({ field }: FieldProps) => (
+                                  <TextField
+                                    {...field}
+                                    variant="outlined"
+                                    size="small"
+                                    fullWidth
+                                    type="text"
+                                    inputProps={{
+                                      'aria-label': t('Email'),
+                                    }}
+                                    value={contact.email}
+                                    onChange={(e) =>
+                                      setFieldValue(
+                                        `contacts.${index}.email`,
+                                        e.target.value,
+                                      )
+                                    }
+                                  />
+                                )}
+                              </Field>
+                            </InputCell>
+                            <InputCell data-label={t('Status')} wide>
+                              <FormControl size="small" fullWidth>
+                                <ContactStatusSelect
+                                  role="listbox"
+                                  aria-label={t('Status')}
+                                  value={contact.status ?? ''}
                                   onChange={(e) =>
                                     setFieldValue(
-                                      `contacts.${index}.firstName`,
+                                      `contacts.${index}.status`,
                                       e.target.value,
                                     )
                                   }
-                                />
-                              )}
-                            </Field>
-                          </InputCell>
-                          <InputCell>
-                            <Field name="spouseName">
-                              {({ field }: FieldProps) => (
-                                <TextField
-                                  {...field}
-                                  variant="outlined"
-                                  size="small"
-                                  fullWidth
-                                  type="text"
-                                  inputProps={{
-                                    'aria-label': t('Spouse'),
-                                  }}
-                                  value={contact.spouseName}
-                                  onChange={(e) =>
-                                    setFieldValue(
-                                      `contacts.${index}.spouseName`,
-                                      e.target.value,
-                                    )
-                                  }
-                                />
-                              )}
-                            </Field>
-                          </InputCell>
-                          <InputCell>
-                            <Field name="lastName">
-                              {({ field }: FieldProps) => (
-                                <TextField
-                                  {...field}
-                                  variant="outlined"
-                                  size="small"
-                                  fullWidth
-                                  type="text"
-                                  inputProps={{
-                                    'aria-label': t('Last'),
-                                  }}
-                                  value={contact.lastName}
-                                  onChange={(e) =>
-                                    setFieldValue(
-                                      `contacts.${index}.lastName`,
-                                      e.target.value,
-                                    )
-                                  }
-                                />
-                              )}
-                            </Field>
-                          </InputCell>
-                          <InputCell>
-                            <Field name="address">
-                              {({ field }: FieldProps) => (
-                                <StreetAutocomplete
-                                  TextFieldProps={{
-                                    variant: 'outlined',
-                                    size: 'small',
-                                    fullWidth: true,
-                                    'aria-label': t('Street Address'),
-                                    ...field,
-                                  }}
-                                  streetValue={contact.address.street}
-                                  onStreetChange={(street) =>
-                                    setFieldValue(`contacts.${index}.address`, {
-                                      street,
-                                    })
-                                  }
-                                  onPredictionChosen={(fields) => {
-                                    setFieldValue(
-                                      `contacts.${index}.address`,
-                                      fields,
-                                    );
-                                  }}
-                                />
-                              )}
-                            </Field>
-                          </InputCell>
-                          <InputCell>
-                            <Field name="phone">
-                              {({ field }: FieldProps) => (
-                                <TextField
-                                  {...field}
-                                  variant="outlined"
-                                  size="small"
-                                  fullWidth
-                                  type="text"
-                                  inputProps={{
-                                    'aria-label': t('Phone'),
-                                  }}
-                                  value={contact.phone}
-                                  onChange={(e) =>
-                                    setFieldValue(
-                                      `contacts.${index}.phone`,
-                                      e.target.value,
-                                    )
-                                  }
-                                />
-                              )}
-                            </Field>
-                          </InputCell>
-                          <InputCell>
-                            <Field name="email">
-                              {({ field }: FieldProps) => (
-                                <TextField
-                                  {...field}
-                                  variant="outlined"
-                                  size="small"
-                                  fullWidth
-                                  type="text"
-                                  inputProps={{
-                                    'aria-label': t('Email'),
-                                  }}
-                                  value={contact.email}
-                                  onChange={(e) =>
-                                    setFieldValue(
-                                      `contacts.${index}.email`,
-                                      e.target.value,
-                                    )
-                                  }
-                                />
-                              )}
-                            </Field>
-                          </InputCell>
-                          <InputCell>
-                            <FormControl size="small" fullWidth>
-                              <ContactStatusSelect
-                                role="listbox"
-                                aria-label={t('Status')}
-                                value={contact.status ?? ''}
-                                onChange={(e) =>
-                                  setFieldValue(
-                                    `contacts.${index}.status`,
-                                    e.target.value,
-                                  )
-                                }
-                              >
-                                <MenuItem value={''}>
-                                  <em>{t('None')}</em>
-                                </MenuItem>
-                              </ContactStatusSelect>
-                            </FormControl>
-                          </InputCell>
-                        </InputRow>
-                      ))
-                    }
-                  />
-                </TableBody>
-              </Table>
-            </TableContainer>
+                                >
+                                  <MenuItem value={''}>
+                                    <em>{t('None')}</em>
+                                  </MenuItem>
+                                </ContactStatusSelect>
+                              </FormControl>
+                            </InputCell>
+                          </InputRow>
+                        ))
+                      }
+                    />
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              {canScrollLeft && (
+                <TableScrollFade
+                  side="left"
+                  aria-hidden
+                  data-testid="TableScrollFadeLeft"
+                />
+              )}
+              {canScrollRight && (
+                <TableScrollFade
+                  side="right"
+                  aria-hidden
+                  data-testid="TableScrollFadeRight"
+                />
+              )}
+            </TableScrollArea>
           </DialogContentCustom>
           <DialogActions>
             <CancelButton onClick={handleClose} disabled={isSubmitting} />

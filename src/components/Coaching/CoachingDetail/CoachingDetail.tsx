@@ -16,6 +16,7 @@ import { useGetTaskAnalyticsQuery } from 'src/components/Dashboard/ThisWeek/News
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { useGetDonationGraphQuery } from 'src/components/Reports/DonationsReport/GetDonationGraph.generated';
 import { ReportsTagHistoriesAssociationEnum } from 'src/graphql/types.generated';
+import { useIneligibleByGroup } from 'src/hooks/useIneligibleByGroup';
 import { MultilineSkeleton } from '../../Shared/MultilineSkeleton';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
 import { Activity } from './Activity/Activity';
@@ -100,6 +101,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
 
   const loading =
     accountListType === AccountListTypeEnum.Own ? ownLoading : coachingLoading;
+  const { hasNoAccountBalance, userPending } = useIneligibleByGroup();
   const accountListData =
     accountListType === AccountListTypeEnum.Own
       ? ownData?.accountList
@@ -155,6 +157,12 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
       showClose={sidebarDrawer}
       handleClose={handleCloseDrawer}
       loading={loading}
+      hasNoAccountBalance={
+        accountListType === AccountListTypeEnum.Own && hasNoAccountBalance
+      }
+      balanceLoading={
+        accountListType === AccountListTypeEnum.Own && userPending
+      }
       accountListData={accountListData}
       taskAnalyticsData={taskAnalyticsData}
     />

@@ -2,8 +2,8 @@ import React from 'react';
 import { MailOutline } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import { DisabledReasonTooltip } from '../DisabledReasonTooltip';
+import { DynamicSendScenarioGoalDialog } from './DynamicSendScenarioGoalDialog';
 import {
   SendableScenarioGoal,
   scenarioGoalSendBlockedReason,
@@ -23,7 +23,7 @@ export const SendScenarioGoalButton: React.FC<SendScenarioGoalButtonProps> = ({
   disabledReason,
 }) => {
   const { t } = useTranslation();
-  const { requestSend, confirmationProps } = useSendScenarioGoal();
+  const { requestSend, dialogProps } = useSendScenarioGoal();
   const blockedReason =
     disabledReason ?? scenarioGoalSendBlockedReason(goal, t);
 
@@ -39,7 +39,7 @@ export const SendScenarioGoalButton: React.FC<SendScenarioGoalButtonProps> = ({
           {t('Email Worksheet')}
         </Button>
       </DisabledReasonTooltip>
-      <Confirmation {...confirmationProps} />
+      {dialogProps.goal && <DynamicSendScenarioGoalDialog {...dialogProps} />}
     </>
   );
 };

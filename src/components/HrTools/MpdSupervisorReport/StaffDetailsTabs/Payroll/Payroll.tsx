@@ -60,13 +60,14 @@ export const StaffTabPayroll: React.FC<StaffTabPayrollProps> = ({
               <TableCell align="right">
                 {t('Reimbursement / Additional Salary')}
               </TableCell>
-              <TableCell align="right">{t('% Max Pay')}</TableCell>
+              <TableCell align="right">{t('% of Monthly Salary')}</TableCell>
+              <TableCell align="right">{t('% of Personal CAP')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {tableRows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} align="center">
+                <TableCell colSpan={5} align="center">
                   {t('No data available.')}
                 </TableCell>
               </TableRow>
@@ -97,6 +98,12 @@ export const StaffTabPayroll: React.FC<StaffTabPayrollProps> = ({
                       payroll.percentMaxPay === undefined
                         ? pendingField
                         : formatPercentage(payroll.percentMaxPay, 1)}
+                    </TableCell>
+                    <TableCell align="right">
+                      {payroll.percentOfCap === null ||
+                      payroll.percentOfCap === undefined
+                        ? pendingField
+                        : formatPercentage(payroll.percentOfCap, 1)}
                     </TableCell>
                   </TableRow>
                 );

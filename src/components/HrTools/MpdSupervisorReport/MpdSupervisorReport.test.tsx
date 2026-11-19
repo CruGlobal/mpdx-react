@@ -9,12 +9,20 @@ import { SnackbarProvider } from 'notistack';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  desktopWidth,
+  getStyleAtWidth,
+  phoneWidth,
+} from '__tests__/util/styleAtWidth';
+import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
+import { multiPageHeaderHeight } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { MpdHealthStatusEnum } from 'src/graphql/types.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
 import { MpdSupervisorReportFilterPanel } from './Filters/MpdSupervisorReportFilterPanel';
 import { UpdateStaffGeographicLocationMutation } from './GeographicLocationSelect/UpdateStaffGeographicLocation.generated';
 import { ManagedStaffQuery } from './ManagedStaff.generated';
+import { ManagedStaffTeamSummaryQuery } from './ManagedStaffTeamSummary.generated';
 import { ManagedStaffTeamsQuery } from './ManagedStaffTeams.generated';
 import { MpdSupervisorReport } from './MpdSupervisorReport';
 import {
@@ -25,7 +33,9 @@ import { StaffMemberDrawer } from './StaffMemberDrawer/StaffMemberDrawer';
 import {
   managedStaffMember,
   managedStaffMock,
+  managedStaffTeamSummaryMock,
   managedStaffTeamsMock,
+  teamSummary,
 } from './mpdSupervisorReportMocks';
 
 const onNavListToggle = jest.fn();
@@ -97,6 +107,7 @@ const renderReport = ({
             <GqlMockedProvider<{
               ManagedStaff: ManagedStaffQuery;
               ManagedStaffTeams: ManagedStaffTeamsQuery;
+              ManagedStaffTeamSummary: ManagedStaffTeamSummaryQuery;
               GoalCalculatorConstants: GoalCalculatorConstantsQuery;
               UpdateStaffGeographicLocation: UpdateStaffGeographicLocationMutation;
             }>
@@ -104,6 +115,12 @@ const renderReport = ({
                 {
                   ManagedStaff: managedStaff,
                   ManagedStaffTeams: managedStaffTeamsMock(),
+                  ManagedStaffTeamSummary: managedStaffTeamSummaryMock([
+                    teamSummary('Campus', { [MpdHealthStatusEnum.Green]: 2 }),
+                    teamSummary('Central Team', {
+                      [MpdHealthStatusEnum.Red]: 1,
+                    }),
+                  ]),
                   GoalCalculatorConstants: geographicConstants,
                   UpdateStaffGeographicLocation: {
                     updateManagedStaffGeographicLocation: {
@@ -135,6 +152,117 @@ const renderReport = ({
       </ThemeProvider>
     </TestRouter>,
   );
+
+// The box that actually lays an element out, skipping display: contents wrappers
+const layoutParentAtWidth = (element: Element, width: number): Element => {
+  let parent = element.parentElement;
+  while (parent && getStyleAtWidth(parent, 'display', width) === 'contents') {
+    parent = parent.parentElement;
+  }
+  if (!parent) {
+    throw new Error('Element has no layout parent');
+  }
+  return parent;
+};
+
+// jsdom keeps the flex shorthand as written, so read the grow factor from either
+const flexGrowAtWidth = (element: Element, width: number): number => {
+  const grow = getStyleAtWidth(element, 'flex-grow', width);
+  if (grow) {
+    return Number(grow);
+  }
+  const flex = getStyleAtWidth(element, 'flex', width);
+  return flex === 'auto' ? 1 : Number.parseFloat(flex) || 0;
+};
+
+// Whether the element or any wrapper up to the header is display: none
+const isHiddenAtWidth = (
+  element: Element,
+  header: Element,
+  width: number,
+): boolean => {
+  let current: Element | null = element;
+  while (current && current !== header) {
+    if (getStyleAtWidth(current, 'display', width) === 'none') {
+      return true;
+    }
+    current = current.parentElement;
+  }
+  return false;
+};
+
+// Works out each var(--name, fallback) the way the page would, from the
+// values set on the root element
+const resolveCssVariables = (value: string): string =>
+  value.replace(
+    /var\((--[\w-]+),\s*([^)]+)\)/g,
+    (_match, name: string, fallback: string) =>
+      document.documentElement.style.getPropertyValue(name).trim() ||
+      fallback.trim(),
+  );
+
+// A font size in px, from either the rem the theme uses or a px value
+const fontSizePxAtWidth = (element: Element, width: number): number => {
+  const fontSize = getStyleAtWidth(element, 'font-size', width);
+  const size = Number.parseFloat(fontSize);
+  return fontSize.endsWith('rem') ? size * theme.typography.htmlFontSize : size;
+};
+
+// What decides where a button's icon sits inside it
+const buttonBoxAtWidth = (button: Element, width: number) => ({
+  display: getStyleAtWidth(button, 'display', width),
+  alignItems: getStyleAtWidth(button, 'align-items', width),
+  justifyContent: getStyleAtWidth(button, 'justify-content', width),
+  width: getStyleAtWidth(button, 'width', width),
+  height: getStyleAtWidth(button, 'height', width),
+});
+
+// The ticket's case: a supervisor with no staff, so "No staff members found"
+// sits right under the header
+const renderEmptyReportHeader = async () => {
+  const { findByText, getByTestId } = renderReport({
+    managedStaff: managedStaffMock([]),
+  });
+  const emptyState = await findByText('No staff members found');
+  const header = getByTestId('MultiPageHeader');
+  const { getByRole } = within(header);
+
+  const searchField = getByRole('textbox', { name: 'Search name' }).closest(
+    '.MuiTextField-root',
+  );
+  if (!searchField) {
+    throw new Error('Search field not found');
+  }
+
+  // The header's sibling that holds the empty state
+  let listArea: Element = emptyState;
+  while (listArea.parentElement && !listArea.parentElement.contains(header)) {
+    listArea = listArea.parentElement;
+  }
+  if (!listArea.parentElement) {
+    throw new Error('List area not found beside the header');
+  }
+
+  return {
+    header,
+    emptyState,
+    listArea,
+    // In reading order
+    controls: {
+      menuButton: getByRole('button', { name: 'Toggle HR Tools Menu' }),
+      filterButton: getByRole('button', { name: 'Toggle Filters Panel' }),
+      title: getByRole('heading', { name: 'MPD Supervisor Report' }),
+      legendButton: getByRole('button', { name: 'How this report works' }),
+      densityToggle: getByRole('group', { name: 'Row density' }),
+      searchField,
+    },
+  };
+};
+
+// Rows also label their months (shown below md), so match only the headers
+const monthHeader = { selector: '[data-testid="month-headers"] p' };
+
+jest.setTimeout(15000);
 
 describe('MpdSupervisorReport', () => {
   it('renders a row per staff member the query returns', async () => {
@@ -243,7 +371,6 @@ describe('MpdSupervisorReport', () => {
       expect(
         getByRole('heading', { name: /too many to list at once/ }),
       ).toBeInTheDocument();
-      expect(queryByRole('region', { name: 'Teams' })).not.toBeInTheDocument();
       await waitFor(() =>
         expect(
           queryByRole('progressbar', { name: 'Refreshing staff' }),
@@ -286,12 +413,15 @@ describe('MpdSupervisorReport', () => {
       userEvent.click(getByRole('combobox', { name: 'Person type' }));
       userEvent.click(await findByRole('option', { name: 'Employee - Staff' }));
 
-      await findByRole('region', { name: 'Teams' });
+      // The cards keep counting the staff once the list fits
+      expect(await findByRole('button', { name: /Campus/ })).toHaveTextContent(
+        '2 staff',
+      );
       expect(
         queryByRole('heading', { name: /too many to list at once/ }),
       ).not.toBeInTheDocument();
       await act(() => new Promise((resolve) => setTimeout(resolve, 100)));
-      // The summary shares the list's request instead of sending its own after it
+      // The cards count through their own query, so the list is asked for once
       expect(
         managedStaffOperations().filter(
           ({ variables }) => variables.userPersonTypes,
@@ -528,7 +658,7 @@ describe('MpdSupervisorReport', () => {
     expect(queryByText('Jane Smith')).not.toBeInTheDocument();
     // The couple shares a row, so the header says so
     expect(
-      await findByText('Showing 2 of 2 in one row · sorted by MPD health'),
+      await findByText('Showing 2 of 2 in one row · sorted by lowest balance'),
     ).toBeInTheDocument();
   });
 
@@ -551,12 +681,47 @@ describe('MpdSupervisorReport', () => {
     );
   });
 
-  it('hides the team summary while the filter guard is showing', async () => {
-    const { findByRole, queryByRole } = renderReport({
+  it('offers the teams with their counts above the filter guard', async () => {
+    const { findByRole, getByRole, getByText } = renderReport({
       mocks: filterGuard(false),
     });
     await findByRole('heading', { name: /too many to list at once/ });
 
+    const region = await findByRole('region', { name: 'Teams' });
+    expect(
+      within(region).getByRole('button', { name: 'Teams (2)' }),
+    ).toBeInTheDocument();
+    expect(
+      within(region).getByRole('button', { name: /Central Team/ }),
+    ).toHaveTextContent('Below $0 (1)');
+    expect(
+      getByText(
+        'Pick a team above to list its staff, or use the filters to narrow the list.',
+      ),
+    ).toBeInTheDocument();
+    // The picker comes before the message
+    expect(
+      region.compareDocumentPosition(
+        getByRole('heading', { name: /too many to list at once/ }),
+      ) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
+  it('keeps the filter hint when there are no teams to pick from', async () => {
+    const { findByText, queryByRole } = renderReport({
+      mocks: {
+        ...filterGuard(false),
+        ManagedStaffTeams: managedStaffTeamsMock([
+          { name: 'Central Team', departments: ['US Technology'] },
+        ]),
+      },
+    });
+
+    expect(
+      await findByText(
+        'Search by name, or pick a team, department, employment type, person type or one of the Negative, Spending, New Staff salary or health filters.',
+      ),
+    ).toBeInTheDocument();
     expect(queryByRole('region', { name: 'Teams' })).not.toBeInTheDocument();
   });
 
@@ -588,7 +753,7 @@ describe('MpdSupervisorReport', () => {
     const { findByText } = renderReport();
 
     expect(
-      await findByText('Showing 2 of 2 · sorted by MPD health'),
+      await findByText('Showing 2 of 2 · sorted by lowest balance'),
     ).toBeInTheDocument();
   });
 
@@ -622,7 +787,8 @@ describe('MpdSupervisorReport', () => {
       name: 'Geographic Location',
     });
     await waitFor(() => expect(location).not.toBeDisabled());
-    userEvent.type(location, 'New York');
+    // Click, don't type: typing re-positions the popup per keystroke and times out
+    userEvent.click(location);
     userEvent.click(await findByRole('option', { name: 'New York, NY (12%)' }));
     userEvent.click(getByRole('button', { name: 'Save' }));
 
@@ -641,27 +807,21 @@ describe('MpdSupervisorReport', () => {
 
     expect(await findByText('No staff members found')).toBeInTheDocument();
     expect(
-      getByText('Showing 0 of 0 · sorted by MPD health'),
+      getByText('Showing 0 of 0 · sorted by lowest balance'),
     ).toBeInTheDocument();
   });
 
-  it('labels the quarter columns from the first row', async () => {
-    const { findByText, getByText } = renderReport();
-    await findByText('John Smith');
-
-    expect(getByText('FQ4 25')).toBeInTheDocument();
-    expect(getByText('FQ3 26')).toBeInTheDocument();
-  });
-
-  it('orders the quarter columns newest first', async () => {
+  it('labels the month columns from the first row, newest first', async () => {
     const { findByText, getAllByText } = renderReport();
     await findByText('John Smith');
 
-    const headers = getAllByText(/^FQ\d \d\d$/).map((el) => el.textContent);
-    expect(headers).toEqual(['FQ3 26', 'FQ2 26', 'FQ1 26', 'FQ4 25']);
+    const headers = getAllByText(/^\w{3} \d{4}$/, monthHeader).map(
+      (el) => el.textContent,
+    );
+    expect(headers).toEqual(['Oct 2026', 'Sep 2026', 'Aug 2026', 'Jul 2026']);
   });
 
-  it('shows the chip color key beside the quarter columns', async () => {
+  it('shows the balance color key beside the month columns', async () => {
     const { findByText, getByRole, queryByRole } = renderReport();
     // The key only makes sense once there are chips to decode
     expect(
@@ -670,10 +830,11 @@ describe('MpdSupervisorReport', () => {
     await findByText('John Smith');
 
     const key = getByRole('list', { name: 'Chip colors' });
-    expect(key).toHaveTextContent('On track');
-    expect(key).toHaveTextContent('Needs attention');
-    expect(key).toHaveTextContent('At risk');
+    expect(key).toHaveTextContent('At or above buffer');
+    expect(key).toHaveTextContent('Below buffer');
+    expect(key).toHaveTextContent('Below $0');
     expect(key).toHaveTextContent('No data');
+    expect(key).not.toHaveTextContent('Below New Staff salary');
   });
 
   it('labels the How this report works button in the header', async () => {
@@ -685,20 +846,20 @@ describe('MpdSupervisorReport', () => {
     ).toHaveTextContent('How this report works');
   });
 
-  it('explains a fiscal quarter header on hover', async () => {
+  it('explains a month header on hover', async () => {
     const { findByText, findByRole } = renderReport();
-    const header = await findByText('FQ1 26');
+    const header = await findByText('Oct 2026', monthHeader);
     // The tooltip describes the header rather than replacing its label
     expect(header).not.toHaveAttribute('aria-label');
 
     userEvent.hover(header);
 
     expect(await findByRole('tooltip')).toHaveTextContent(
-      'Fiscal quarter 1, FY26: Sep 2025 – Nov 2025',
+      'Staff account balance at the end of October 2026',
     );
   });
 
-  it('explains a fiscal quarter header on keyboard focus', async () => {
+  it('explains a month header on keyboard focus', async () => {
     // jsdom has no :focus-visible, so MUI's Tooltip would never open on focus.
     // Treat the focused element as focus-visible, as a browser does for keyboard focus.
     const matches = Element.prototype.matches;
@@ -711,45 +872,16 @@ describe('MpdSupervisorReport', () => {
       });
     try {
       const { findByText, findByRole } = renderReport();
-      const header = await findByText('FQ4 25');
+      const header = await findByText('Jul 2026', monthHeader);
 
       act(() => header.focus());
 
       expect(await findByRole('tooltip')).toHaveTextContent(
-        'Fiscal quarter 4, FY25: Jun 2025 – Aug 2025',
+        'Staff account balance at the end of July 2026',
       );
     } finally {
       matchesSpy.mockRestore();
     }
-  });
-
-  it('marks the starting quarter header as partial', async () => {
-    const baseHealth = managedStaffMember().quarterlyHealth;
-    const newStaff = managedStaffMember({
-      quarterlyHealth: {
-        ...baseHealth,
-        startingQuarter: {
-          fiscalYear: 2025,
-          quarter: 3,
-          months: [
-            {
-              month: '2025-05',
-              payroll: 3000,
-              status: MpdHealthStatusEnum.Green,
-            },
-          ],
-        },
-      },
-    });
-    const { findByText, findByRole } = renderReport({
-      managedStaff: managedStaffMock([newStaff]),
-    });
-
-    userEvent.hover(await findByText('FQ3 25'));
-
-    expect(await findByRole('tooltip')).toHaveTextContent(
-      'Fiscal quarter 3, FY25: Mar 2025 – May 2025 Partial quarter: payroll started during this quarter.',
-    );
   });
 
   // The card and the drawer both display the same name, so the drawer is
@@ -785,5 +917,207 @@ describe('MpdSupervisorReport', () => {
     const { findByText } = renderReport({ panelOpen: Panel.Navigation });
 
     expect(await findByText('John Smith')).toBeInTheDocument();
+  });
+
+  // jsdom can't measure layout, so these read the CSS that applies at each width
+  describe('header layout', () => {
+    it('shows the title and controls in reading order above the list', async () => {
+      const { header, emptyState, controls } = await renderEmptyReportHeader();
+
+      const everything = Array.from(header.querySelectorAll('*'));
+      const positions = Object.values(controls).map((control) =>
+        everything.indexOf(control),
+      );
+      expect(positions).toEqual([...positions].sort((a, b) => a - b));
+      expect(header).not.toContainElement(emptyState);
+      expect(header.compareDocumentPosition(emptyState)).toBe(
+        Node.DOCUMENT_POSITION_FOLLOWING,
+      );
+    });
+
+    it('keeps the title and every control showing, in order, on phones', async () => {
+      const { header, controls } = await renderEmptyReportHeader();
+
+      const hidden = Object.entries(controls)
+        .filter(([, control]) => isHiddenAtWidth(control, header, phoneWidth))
+        .map(([name]) => name);
+      expect(hidden).toEqual([]);
+      // Without a CSS order the controls wrap in reading order
+      const reordered = Object.entries(controls)
+        .filter(([, control]) => getStyleAtWidth(control, 'order', phoneWidth))
+        .map(([name]) => name);
+      expect(reordered).toEqual([]);
+    });
+
+    it('lets the header grow on phones so a wrapped title stays off the list', async () => {
+      const { header } = await renderEmptyReportHeader();
+
+      // An unset height falls back to auto
+      expect(getStyleAtWidth(header, 'height', phoneWidth) || 'auto').toBe(
+        'auto',
+      );
+    });
+
+    it.each([900, desktopWidth])(
+      'keeps at least the standard header height at %ipx wide, growing when wrapped',
+      async (width) => {
+        const { header } = await renderEmptyReportHeader();
+
+        expect(getStyleAtWidth(header, 'height', width)).toBe('auto');
+        // Never shorter than the shared header's standard one-row 80px
+        expect(
+          resolveCssVariables(getStyleAtWidth(header, 'min-height', width)),
+        ).toBe('80px');
+      },
+    );
+
+    it('wraps the title and legend button as their own items of the header row on phones', async () => {
+      const { controls } = await renderEmptyReportHeader();
+
+      const headerRow = layoutParentAtWidth(controls.searchField, phoneWidth);
+      expect(getStyleAtWidth(headerRow, 'display', phoneWidth)).toBe('flex');
+      expect(getStyleAtWidth(headerRow, 'flex-wrap', phoneWidth)).toBe('wrap');
+      const lockedInOwnRow = Object.entries(controls)
+        .filter(
+          ([, control]) =>
+            layoutParentAtWidth(control, phoneWidth) !== headerRow,
+        )
+        .map(([name]) => name);
+      expect(lockedInOwnRow).toEqual([]);
+    });
+
+    it.each([600, desktopWidth])(
+      'keeps the title and legend button side by side at %ipx wide',
+      async (width) => {
+        const { controls } = await renderEmptyReportHeader();
+
+        const titleRow = layoutParentAtWidth(controls.title, width);
+        expect(getStyleAtWidth(titleRow, 'display', width)).toBe('flex');
+        expect(layoutParentAtWidth(controls.legendButton, width)).toBe(
+          titleRow,
+        );
+        expect(layoutParentAtWidth(controls.searchField, width)).not.toBe(
+          titleRow,
+        );
+      },
+    );
+
+    it.each([phoneWidth, desktopWidth])(
+      'stacks the header above the list in one column at %ipx wide',
+      async (width) => {
+        const { header, listArea } = await renderEmptyReportHeader();
+
+        const column = layoutParentAtWidth(header, width);
+        expect(layoutParentAtWidth(listArea, width)).toBe(column);
+        expect(getStyleAtWidth(column, 'display', width)).toBe('flex');
+        expect(getStyleAtWidth(column, 'flex-direction', width)).toBe('column');
+        // The page still fills the screen under the nav bar
+        expect(getStyleAtWidth(column, 'height', width)).toBe(
+          `calc(100vh - ${navBarHeight})`,
+        );
+        // A taller header keeps its height instead of squeezing over the list
+        expect(getStyleAtWidth(header, 'flex-shrink', width)).toBe('0');
+      },
+    );
+
+    it.each([phoneWidth, desktopWidth])(
+      'gives the list the space left under the header at %ipx wide',
+      async (width) => {
+        const { listArea } = await renderEmptyReportHeader();
+
+        // A height that subtracts a fixed header leaves a taller header
+        // overflowing the page
+        expect(getStyleAtWidth(listArea, 'height', width)).not.toContain(
+          multiPageHeaderHeight,
+        );
+        expect(flexGrowAtWidth(listArea, width)).toBeGreaterThan(0);
+        // Lets the list shrink to that space so it scrolls inside it
+        expect(getStyleAtWidth(listArea, 'min-height', width)).toBe('0');
+      },
+    );
+
+    it('centers the icon the same way in both menu buttons on phones', async () => {
+      const { header, controls } = await renderEmptyReportHeader();
+      const { menuButton, filterButton } = controls;
+
+      // Inline-block buttons place their icons by the text baseline, which
+      // drops the badge-wrapped filter icon a few pixels below the menu icon
+      const menuBox = buttonBoxAtWidth(menuButton, phoneWidth);
+      expect(['flex', 'inline-flex']).toContain(menuBox.display);
+      expect(menuBox).toMatchObject({
+        alignItems: 'center',
+        justifyContent: 'center',
+      });
+      expect(buttonBoxAtWidth(filterButton, phoneWidth)).toEqual(menuBox);
+
+      // The centered items are the icons themselves
+      const { getByTestId } = within(header);
+      expect(getByTestId('HrToolsMenuIcon').parentElement).toBe(menuButton);
+      expect(
+        getByTestId('FilterIcon').closest('.MuiBadge-root')?.parentElement,
+      ).toBe(filterButton);
+    });
+
+    it('keeps both menu buttons level in the header row on phones', async () => {
+      const { controls } = await renderEmptyReportHeader();
+      const { menuButton, filterButton } = controls;
+
+      const headerRow = layoutParentAtWidth(menuButton, phoneWidth);
+      expect(layoutParentAtWidth(filterButton, phoneWidth)).toBe(headerRow);
+      expect(getStyleAtWidth(headerRow, 'align-items', phoneWidth)).toBe(
+        'center',
+      );
+      // Same height, centered in the same row, so the top edges match too
+      const levelStyles = (button: Element) =>
+        ['height', 'align-self', 'margin-top', 'margin-bottom'].map(
+          (property) => getStyleAtWidth(button, property, phoneWidth),
+        );
+      expect(levelStyles(filterButton)).toEqual(levelStyles(menuButton));
+    });
+
+    it('shrinks the title on phones so it fits on one line beside the menu buttons', async () => {
+      const { controls } = await renderEmptyReportHeader();
+
+      const phoneSize = fontSizePxAtWidth(controls.title, phoneWidth);
+      expect(phoneSize).toBeLessThan(
+        fontSizePxAtWidth(controls.title, desktopWidth),
+      );
+      // Still reads as a heading above the body text
+      expect(phoneSize).toBeGreaterThan(
+        Number.parseFloat(String(theme.typography.body1.fontSize)) *
+          theme.typography.htmlFontSize,
+      );
+    });
+
+    it('shows the whole title on phones instead of cutting it off', async () => {
+      const { controls } = await renderEmptyReportHeader();
+
+      expect(
+        getStyleAtWidth(controls.title, 'text-overflow', phoneWidth),
+      ).not.toBe('ellipsis');
+      expect(
+        getStyleAtWidth(controls.title, 'white-space', phoneWidth),
+      ).not.toBe('nowrap');
+    });
+
+    it.each([600, 900, desktopWidth])(
+      'keeps the desktop menu buttons and title size at %ipx wide',
+      async (width) => {
+        const { controls } = await renderEmptyReportHeader();
+        const { menuButton, filterButton, title } = controls;
+
+        // The shared header button styles
+        [menuButton, filterButton].forEach((button) =>
+          expect(buttonBoxAtWidth(button, width)).toMatchObject({
+            display: 'inline-block',
+            width: '48px',
+            height: '48px',
+          }),
+        );
+        expect(getStyleAtWidth(title, 'font-size', width)).toBe(
+          theme.typography.h5.fontSize,
+        );
+      },
+    );
   });
 });

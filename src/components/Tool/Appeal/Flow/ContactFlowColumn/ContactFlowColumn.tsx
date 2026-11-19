@@ -31,7 +31,10 @@ import {
   AppealsType,
 } from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
-import { appealHeaderInfoHeight } from '../../AppealDetails/AppealHeaderInfo/AppealHeaderInfo';
+import {
+  appealHeaderInfoHeight,
+  appealHeaderInfoMobileHeight,
+} from '../../AppealDetails/AppealHeaderInfo/AppealHeaderInfo';
 import { useAppealsContactsQuery } from '../../AppealsContext/contacts.generated';
 import {
   DynamicAddContactToAppealModal,
@@ -222,9 +225,12 @@ export const ContactFlowColumn: React.FC<Props> = ({
         </Box>
       </ContainerBox>
       <StyledCardContent
-        style={{
-          height: `calc(100vh - ${navBarHeight} - ${headerHeight} - ${appealHeaderInfoHeight} - 87px)`,
-          padding: 0,
+        style={{ padding: 0 }}
+        sx={{
+          height: {
+            xs: `calc(100vh - ${navBarHeight} - ${headerHeight} - ${appealHeaderInfoMobileHeight} - 87px)`,
+            sm: `calc(100vh - ${navBarHeight} - ${headerHeight} - ${appealHeaderInfoHeight} - 87px)`,
+          },
         }}
       >
         <CardContentInner

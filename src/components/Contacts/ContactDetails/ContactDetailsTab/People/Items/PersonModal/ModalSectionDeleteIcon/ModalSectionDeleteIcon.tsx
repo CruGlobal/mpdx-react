@@ -4,6 +4,8 @@ import { IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 
+export const modalSectionDeleteIconClass = 'ModalSectionDeleteIcon';
+
 const ContactEditDeleteIconButton = styled(IconButton)(({ theme }) => ({
   position: 'absolute',
   top: '50%',
@@ -28,6 +30,7 @@ export const ModalSectionDeleteIcon: React.FC<ModalSectionDeleteIconProps> = ({
   const { t } = useTranslation();
   return (
     <ContactEditDeleteIconButton
+      className={modalSectionDeleteIconClass}
       onClick={handleClick}
       aria-label={t('Modal Section Delete Icon')}
       disabled={disabled ?? false}

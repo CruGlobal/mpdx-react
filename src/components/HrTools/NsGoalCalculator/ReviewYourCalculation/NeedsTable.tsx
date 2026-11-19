@@ -41,6 +41,29 @@ export const NeedsTable = styled(Table)(({ theme }) => ({
     textAlign: 'right',
     whiteSpace: 'nowrap',
   },
+  // Keeps the summary and the Monthly Needs table on the first printed page
+  '@media print': {
+    '.MuiTableCell-root': {
+      paddingBlock: theme.spacing(0.5),
+    },
+  },
+  // The card already pads its edges, so phones drop the outer cell padding and
+  // let the name header wrap to keep the table inside the card.
+  [theme.breakpoints.down('sm')]: {
+    '.MuiTableCell-root': {
+      paddingInline: theme.spacing(1),
+    },
+    '.MuiTableCell-root.line': {
+      width: theme.spacing(3),
+      paddingLeft: 0,
+    },
+    '.MuiTableCell-root.amount': {
+      paddingRight: 0,
+    },
+    '.MuiTableHead-root .MuiTableCell-root.amount': {
+      whiteSpace: 'normal',
+    },
+  },
 }));
 
 export interface NeedsWorksheetTableProps {

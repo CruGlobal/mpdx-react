@@ -50,12 +50,7 @@ export const AutosaveCustomTextField: React.FC<
       {...fieldProps}
       {...props}
       FormHelperTextProps={{
-        sx:
-          fieldName === 'additionalInfo' ||
-          fieldName === 'phoneNumber' ||
-          fieldName === 'emailAddress'
-            ? { marginLeft: 0 }
-            : { textAlign: 'center' },
+        sx: { marginLeft: 0 },
         ...props.FormHelperTextProps,
       }}
     />

@@ -69,14 +69,11 @@ const ActivitySection = styled('div')(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.mpdxGrayMedium.main}`,
   '@media (max-width: 1150px)': {
     // One column
-    ':nth-of-type(n + 6)': {
-      borderBottom: 'unset',
-    },
     borderRight: 'unset',
   },
   '@media (min-width: 1151px) and (max-width: 1500px)': {
-    // Two columns
-    ':nth-of-type(n + 5)': {
+    // Two columns, with PartnersSection as the fourth cell
+    ':nth-of-type(n + 3)': {
       borderBottom: 'unset',
     },
     ':nth-of-type(2n)': {
@@ -85,12 +82,44 @@ const ActivitySection = styled('div')(({ theme }) => ({
   },
   '@media (min-width: 1501px)': {
     // Three columns
-    ':nth-of-type(n + 4)': {
-      borderBottom: 'unset',
-    },
     ':nth-of-type(3n)': {
       borderRight: 'unset',
     },
+  },
+}));
+
+// In three columns, the partner counts are each their own grid cell. With
+// fewer columns, they share one cell.
+const PartnersSection = styled('div')(({ theme }) => ({
+  display: 'contents',
+  '@media (max-width: 1500px)': {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+    // Center the row in the cell, but top-align the counts within it so a
+    // label that wraps doesn't push its number out of line
+    alignContent: 'center',
+    alignItems: 'start',
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
+  },
+}));
+
+const PartnerSection = styled('div')(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  height: '280px',
+  paddingTop: theme.spacing(2),
+  borderRight: `1px solid ${theme.palette.mpdxGrayMedium.main}`,
+  ':last-of-type': {
+    borderRight: 'unset',
+  },
+  '@media (max-width: 1500px)': {
+    height: 'auto',
+    paddingTop: 0,
+    paddingInline: theme.spacing(0.5),
+    borderRight: 'unset',
+    textAlign: 'center',
   },
 }));
 
@@ -110,6 +139,19 @@ const StatsLargeNumber = styled(Typography)({
   fontSize: '6rem',
   lineHeight: '1.167',
   marginTop: '35px',
+  '@media (max-width: 1500px)': {
+    fontSize: '3rem',
+    marginTop: 0,
+  },
+});
+
+const StatsLargeNumberSkeleton = styled(Skeleton)({
+  width: '147px',
+  height: '147px',
+  '@media (max-width: 1500px)': {
+    width: '4rem',
+    height: '4rem',
+  },
 });
 
 const StatsRow = styled('div')(({ theme }) => ({
@@ -465,57 +507,59 @@ export const Activity: React.FC<ActivityProps> = ({
             </>
           )}
         </ActivitySection>
-        <ActivitySection data-testid="CurrentRealityPartnerFinancial">
-          {loading ? (
-            <Skeleton width="147px" height="147px" />
-          ) : (
-            <StatsLargeNumber>
-              {data?.accountListAnalytics.contactsByStatus.financial}
-            </StatsLargeNumber>
-          )}
-          <CoachingLink
-            href={contactsLink({
-              status: [ContactFilterStatusEnum.PartnerFinancial],
-            })}
-            accountListType={accountListType}
-          >
-            <SectionTitle>{t('Financial Partners')}</SectionTitle>
-          </CoachingLink>
-        </ActivitySection>
-        <ActivitySection data-testid="CurrentRealityPartnerSpecial">
-          {loading ? (
-            <Skeleton width="147px" height="147px" />
-          ) : (
-            <StatsLargeNumber>
-              {data?.accountListAnalytics.contactsByStatus.special}
-            </StatsLargeNumber>
-          )}
-          <CoachingLink
-            href={contactsLink({
-              status: [ContactFilterStatusEnum.PartnerSpecial],
-            })}
-            accountListType={accountListType}
-          >
-            <SectionTitle>{t('Special Gift Partners')}</SectionTitle>
-          </CoachingLink>
-        </ActivitySection>
-        <ActivitySection data-testid="CurrentRealityPartnerPrayer">
-          {loading ? (
-            <Skeleton width="147px" height="147px" />
-          ) : (
-            <StatsLargeNumber>
-              {data?.accountListAnalytics.contactsByStatus.prayer}
-            </StatsLargeNumber>
-          )}
-          <CoachingLink
-            href={contactsLink({
-              status: [ContactFilterStatusEnum.PartnerPray],
-            })}
-            accountListType={accountListType}
-          >
-            <SectionTitle>{t('Prayer Partners')}</SectionTitle>
-          </CoachingLink>
-        </ActivitySection>
+        <PartnersSection>
+          <PartnerSection data-testid="CurrentRealityPartnerFinancial">
+            {loading ? (
+              <StatsLargeNumberSkeleton />
+            ) : (
+              <StatsLargeNumber>
+                {data?.accountListAnalytics.contactsByStatus.financial}
+              </StatsLargeNumber>
+            )}
+            <CoachingLink
+              href={contactsLink({
+                status: [ContactFilterStatusEnum.PartnerFinancial],
+              })}
+              accountListType={accountListType}
+            >
+              <SectionTitle>{t('Financial Partners')}</SectionTitle>
+            </CoachingLink>
+          </PartnerSection>
+          <PartnerSection data-testid="CurrentRealityPartnerSpecial">
+            {loading ? (
+              <StatsLargeNumberSkeleton />
+            ) : (
+              <StatsLargeNumber>
+                {data?.accountListAnalytics.contactsByStatus.special}
+              </StatsLargeNumber>
+            )}
+            <CoachingLink
+              href={contactsLink({
+                status: [ContactFilterStatusEnum.PartnerSpecial],
+              })}
+              accountListType={accountListType}
+            >
+              <SectionTitle>{t('Special Gift Partners')}</SectionTitle>
+            </CoachingLink>
+          </PartnerSection>
+          <PartnerSection data-testid="CurrentRealityPartnerPrayer">
+            {loading ? (
+              <StatsLargeNumberSkeleton />
+            ) : (
+              <StatsLargeNumber>
+                {data?.accountListAnalytics.contactsByStatus.prayer}
+              </StatsLargeNumber>
+            )}
+            <CoachingLink
+              href={contactsLink({
+                status: [ContactFilterStatusEnum.PartnerPray],
+              })}
+              accountListType={accountListType}
+            >
+              <SectionTitle>{t('Prayer Partners')}</SectionTitle>
+            </CoachingLink>
+          </PartnerSection>
+        </PartnersSection>
       </SectionsContainer>
     </AnimatedCard>
   );

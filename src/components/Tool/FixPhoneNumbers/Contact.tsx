@@ -109,6 +109,7 @@ const useStyles = makeStyles()(() => ({
 const ContactHeader = styled(CardHeader)(() => ({
   '.MuiCardHeader-action': {
     alignSelf: 'center',
+    marginLeft: theme.spacing(1),
   },
 }));
 
@@ -434,7 +435,7 @@ const Contact: React.FC<Props> = ({ person, submitAll, accountListId }) => {
                                 fontWeight="bold"
                                 sx={{ display: { xs: 'inline', sm: 'none' } }}
                               >
-                                {t('Source')}:
+                                {t('Source')}:{' '}
                               </Typography>
                               <Typography display="inline" variant="body2">
                                 {appName}

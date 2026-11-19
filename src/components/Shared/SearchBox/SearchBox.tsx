@@ -3,7 +3,14 @@ import { mdiAccountSearch } from '@mdi/js';
 import Icon from '@mdi/react';
 import Close from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
-import { IconButton, InputAdornment, TextField, Tooltip } from '@mui/material';
+import {
+  IconButton,
+  InputAdornment,
+  SxProps,
+  TextField,
+  Theme,
+  Tooltip,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { PageEnum } from 'src/components/Shared/Header/ListHeader';
@@ -15,6 +22,7 @@ export interface SearchBoxProps {
   showContactSearchIcon: boolean;
   page?: PageEnum;
   toolTipText?: string;
+  sx?: SxProps<Theme>;
 }
 
 const SearchInput = styled(TextField)(() => ({
@@ -30,6 +38,7 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
   showContactSearchIcon,
   page,
   toolTipText,
+  sx,
 }) => {
   const { t } = useTranslation();
   const [currentSearchTerm, setSearchTerm] = useState(searchTerm ?? '');
@@ -59,7 +68,10 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
       <SearchInput
         size="small"
         variant="outlined"
-        sx={{ width: { sm: '27ch', md: '31ch' } }}
+        sx={[
+          { width: { sm: '27ch', md: '31ch' } },
+          ...(Array.isArray(sx) ? sx : [sx]),
+        ]}
         onChange={(e) => handleOnChange(e.target.value)}
         placeholder={placeholder ?? t('Search')}
         value={currentSearchTerm}

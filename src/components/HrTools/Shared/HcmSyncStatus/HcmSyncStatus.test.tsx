@@ -26,6 +26,7 @@ interface TestComponentProps {
   effectiveDate?: string;
   skip?: boolean;
   refreshError?: 'rateLimited' | 'unavailable';
+  suppressErrorCodes?: string[];
 }
 
 const errors = {
@@ -47,6 +48,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   effectiveDate,
   skip,
   refreshError,
+  suppressErrorCodes,
 }) => (
   <ThemeProvider theme={theme}>
     <GqlMockedProvider
@@ -70,11 +72,13 @@ const TestComponent: React.FC<TestComponentProps> = ({
           personNumber={personNumber}
           effectiveDate={effectiveDate}
           skip={skip}
+          suppressErrorCodes={suppressErrorCodes}
         />
         <HcmSyncBodyStatus
           personNumber={personNumber}
           effectiveDate={effectiveDate}
           skip={skip}
+          suppressErrorCodes={suppressErrorCodes}
         />
       </>
     </GqlMockedProvider>
@@ -85,6 +89,26 @@ const renderBody = async (props: TestComponentProps = {}) => {
   const result = render(<TestComponent {...props} />);
   const body = within(await result.findByTestId('HcmSyncBodyStatus'));
   return { ...result, body };
+};
+
+// Finds the row that holds both the sync text and Refresh, and the row's piece holding each one.
+const syncRowParts = (status: HTMLElement) => {
+  const text = within(status).getByText('Synced from HCM 3 hr. ago');
+  const refresh = within(status).getByRole('button', { name: 'Refresh' });
+  let row = refresh.parentElement;
+  while (row && !row.contains(text)) {
+    row = row.parentElement;
+  }
+  if (!row) {
+    throw new Error('The sync text and Refresh are not in one row');
+  }
+  const pieces = Array.from(row.children) as HTMLElement[];
+  const textGroup = pieces.find((piece) => piece.contains(text));
+  const refreshSlot = pieces.find((piece) => piece.contains(refresh));
+  if (!textGroup || !refreshSlot) {
+    throw new Error('The sync text or Refresh is missing from the row');
+  }
+  return { text, refresh, row, textGroup, refreshSlot };
 };
 
 describe('HcmSyncStatus', () => {
@@ -113,7 +137,15 @@ describe('HcmSyncStatus', () => {
     expect(await findByRole('tooltip')).toHaveTextContent('Sep 30, 2026');
   });
 
-  it('marks data the sync has not reached in over a day', async () => {
+  it('does not mark data inside the API snapshot window of 36 hours', async () => {
+    const { body } = await renderBody({ syncedAt: '2026-09-29T09:00:00Z' });
+
+    expect(body.getByText(/^Synced from HCM/)).toHaveStyle({
+      color: theme.palette.text.secondary,
+    });
+  });
+
+  it('marks data older than the API snapshot window of 36 hours', async () => {
     const { body } = await renderBody({ syncedAt: '2026-09-28T12:00:00Z' });
 
     expect(body.getByText('Synced from HCM 2 days ago')).toHaveStyle({
@@ -248,6 +280,28 @@ describe('HcmSyncStatus', () => {
     ]);
   });
 
+  it("passes the page's handled error codes to the global error toast", async () => {
+    await renderBody({ suppressErrorCodes: ['HCM_PERSON_NOT_FOUND'] });
+
+    const hcmCall = mutationSpy.mock.calls.find(
+      ([{ operation }]) => operation.operationName === 'Hcm',
+    );
+    expect(hcmCall?.[0].operation.getContext().suppressErrorCodes).toEqual([
+      'HCM_PERSON_NOT_FOUND',
+    ]);
+  });
+
+  it('keeps every error toasting when the page handles none', async () => {
+    await renderBody();
+
+    const hcmCall = mutationSpy.mock.calls.find(
+      ([{ operation }]) => operation.operationName === 'Hcm',
+    );
+    expect(
+      hcmCall?.[0].operation.getContext().suppressErrorCodes,
+    ).toBeUndefined();
+  });
+
   it('lets the user try again right away when HCM is unavailable', async () => {
     const { body } = await renderBody({ refreshError: 'unavailable' });
 
@@ -260,5 +314,75 @@ describe('HcmSyncStatus', () => {
       ),
     );
     expect(body.getByRole('button', { name: 'Refresh' })).toBeEnabled();
+  });
+
+  // A 360px phone can be too narrow for the sync text and Refresh on one line. jsdom does no
+  // layout, so these check the CSS that keeps the row inside the screen.
+  describe('on a narrow phone', () => {
+    it('lets Refresh drop under the sync text when they do not fit on one line', async () => {
+      const { findByTestId } = render(<TestComponent />);
+
+      const { row, text, refresh } = syncRowParts(
+        await findByTestId('HcmSyncBodyStatus'),
+      );
+
+      expect(text).toBeVisible();
+      expect(refresh).toHaveTextContent('Refresh');
+      expect(row).toHaveStyle({ display: 'flex', flexWrap: 'wrap' });
+    });
+
+    it('lets the sync text shrink and trail off rather than push Refresh off the screen', async () => {
+      const { findByTestId } = render(<TestComponent />);
+
+      const { textGroup, text } = syncRowParts(
+        await findByTestId('HcmSyncBodyStatus'),
+      );
+
+      expect(textGroup).toHaveStyle({ minWidth: '0' });
+      expect(text).toHaveStyle({
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+      });
+    });
+
+    it('keeps Refresh spaced from the sync text without indenting it when it drops', async () => {
+      const { findByTestId } = render(<TestComponent />);
+
+      const { row, refreshSlot } = syncRowParts(
+        await findByTestId('HcmSyncBodyStatus'),
+      );
+
+      const rowStyle = getComputedStyle(row);
+      expect(rowStyle.columnGap).not.toMatch(/^(0px)?$/);
+      expect(rowStyle.rowGap).not.toMatch(/^(0px)?$/);
+      expect(getComputedStyle(refreshSlot).marginLeft).toMatch(/^(0(px)?)?$/);
+    });
+
+    it('keeps the HCM info icon beside the sync text when Refresh drops', async () => {
+      const { findByTestId } = render(<TestComponent />);
+
+      const { textGroup, refreshSlot } = syncRowParts(
+        await findByTestId('HcmSyncBodyStatus'),
+      );
+
+      expect(
+        within(textGroup).getByTestId('HcmInfoTooltip'),
+      ).toBeInTheDocument();
+      expect(
+        within(refreshSlot).queryByTestId('HcmInfoTooltip'),
+      ).not.toBeInTheDocument();
+    });
+
+    it('fits the header row the same way when the header is tight', async () => {
+      const { findByTestId } = render(<TestComponent />);
+
+      const { row, textGroup } = syncRowParts(
+        await findByTestId('HcmSyncHeaderStatus'),
+      );
+
+      expect(row).toHaveStyle({ flexWrap: 'wrap' });
+      expect(textGroup).toHaveStyle({ minWidth: '0' });
+    });
   });
 });

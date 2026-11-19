@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { Container } from '@mui/material';
 import { FormikProvider } from 'formik';
@@ -191,6 +192,8 @@ const AdditionalSalaryRequestContent: React.FC = () => {
 const AdditionalSalaryRequestPage: React.FC = () => {
   const { t } = useTranslation();
   const appName = getAppName();
+  const { query } = useRouter();
+  const isSpouse = query.isSpouse === 'true';
 
   return (
     <>
@@ -202,7 +205,7 @@ const AdditionalSalaryRequestPage: React.FC = () => {
         requireUserGroups={RequiredUserGroupEnum.Asr}
       >
         <ReportPageWrapper>
-          <AdditionalSalaryRequestProvider>
+          <AdditionalSalaryRequestProvider key={isSpouse ? 'spouse' : 'self'}>
             <AdditionalSalaryRequestContent />
           </AdditionalSalaryRequestProvider>
         </ReportPageWrapper>

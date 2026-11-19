@@ -6,15 +6,18 @@ import { useTranslation } from 'react-i18next';
 
 const BoxWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mpdxGrayLight.main,
-  minWidth: 700,
   maxWidth: '97%',
   height: '100%',
   margin: 'auto',
   padding: theme.spacing(4),
+  textAlign: 'center',
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
   alignItems: 'center',
+  [theme.breakpoints.up('md')]: {
+    minWidth: 700,
+  },
 }));
 
 const StyledInfoIcon = styled(InfoOutlinedIcon)(({ theme }) => ({

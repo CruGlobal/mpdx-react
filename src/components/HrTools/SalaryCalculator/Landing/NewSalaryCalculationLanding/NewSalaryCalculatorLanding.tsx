@@ -19,7 +19,7 @@ import { LoadErrorAlert } from 'src/components/Shared/LoadErrorAlert/LoadErrorAl
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { SalaryInformationCard } from '../../Shared/SalaryInformationCard';
 import { useLandingData } from '../useLandingData';
-import { useCreateSalaryCalculationMutation } from './LandingSalaryCalculations.generated';
+import { useStartSalaryCalculation } from './useStartSalaryCalculation';
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   paddingTop: theme.spacing(4),
@@ -33,6 +33,7 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
   const accountListId = useAccountListId();
   const {
     self,
+    spouse,
     loading,
     staffAccountId,
     names,
@@ -45,18 +46,14 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
     refetchLoadError,
   } = useLandingData();
 
-  const [createSalaryCalculation, { loading: creatingCalculation }] =
-    useCreateSalaryCalculationMutation();
+  const {
+    startCalculation,
+    loading: goalLoading,
+    starting: creatingCalculation,
+  } = useStartSalaryCalculation(self, spouse);
 
   const handleStartCalculation = async () => {
-    const createCalculationResult = await createSalaryCalculation({
-      variables: {
-        input: { attributes: {} },
-      },
-    });
-
-    const newCalculationId =
-      createCalculationResult.data?.createSalaryRequest?.salaryRequest?.id;
+    const newCalculationId = await startCalculation();
     if (newCalculationId) {
       router.push({
         pathname: `/accountLists/${accountListId}/hrTools/salaryCalculator/${newCalculationId}`,
@@ -158,7 +155,7 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
                 variant="contained"
                 color="primary"
                 onClick={handleStartCalculation}
-                disabled={creatingCalculation}
+                disabled={creatingCalculation || goalLoading}
                 aria-busy={creatingCalculation}
                 startIcon={
                   creatingCalculation ? (

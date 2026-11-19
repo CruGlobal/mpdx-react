@@ -11,18 +11,40 @@ import theme from 'src/theme';
 import { progressiveApprovalsLink } from '../../AdditionalSalaryRequest/Shared/pdfLinks';
 import { useCaps } from '../SalaryCalculation/useCaps';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
+import { MhaEnd, MhaEndWarning } from './MhaEndWarning';
 
 interface DialogContent {
   title: string;
   content: string;
   subContent: React.ReactNode;
+  acknowledgement?: string;
 }
 
-export const useSubmitDialogContent = (): DialogContent => {
+export const useSubmitDialogContent = (
+  mhaEnd?: MhaEnd | null,
+): DialogContent => {
   const { t } = useTranslation();
   const { calculation } = useSalaryCalculator();
   const { combinedGross } = useCaps();
   const { formatCurrency } = useFormatters();
+
+  if (mhaEnd) {
+    return {
+      title: t('This request will stop MHA. Do you still want to submit it?'),
+      content: t(
+        "You are submitting a request that stops Minister's Housing Allowance (MHA).",
+      ),
+      subContent: (
+        <MhaEndWarning
+          people={mhaEnd.people}
+          effectiveDate={mhaEnd.effectiveDate}
+        />
+      ),
+      acknowledgement: t(
+        'I understand that MHA will stop and I still want to submit this request.',
+      ),
+    };
+  }
 
   const progressiveApprovalTier = calculation?.progressiveApprovalTier;
   const reason = calculation?.progressiveApprovalTierReason;

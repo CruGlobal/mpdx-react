@@ -48,10 +48,4 @@ jobs:
           body: |
             Update translations with the latest labels extracted from the components and downloaded from CrowdIn.
 
-            Due to GitHub Actions restrictions, our `on: pull_request` CI workflow will not run automatically because this PR was created by a bot. To get it to run, a human will have to push a commit to the branch.
-
-            ```sh
-            $ git switch bot-update-translations
-            $ git commit --allow-empty --message "Bump CI"
-            $ git push
-            ```
+            Due to GitHub Actions restrictions, our `on: pull_request` CI workflow will not run automatically because this PR was created by a bot. To get it to run, a maintainer will have to click the "Approve and run workflows" button at the bottom of this PR.

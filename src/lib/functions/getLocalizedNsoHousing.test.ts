@@ -18,11 +18,11 @@ describe('getLocalizedNsoHousing', () => {
     ],
     [
       NewStaffQuestionnaireNsoHousingEnum.CoupleRoom,
-      'Married couple in hotel/suite dorm room',
+      'Married couple without children in hotel/suite dorm room',
     ],
     [
       NewStaffQuestionnaireNsoHousingEnum.FamilyRoom,
-      'Family in hotel/suite dorm room',
+      'Family with children in hotel/suite dorm room',
     ],
     [
       NewStaffQuestionnaireNsoHousingEnum.LocalCommuting,

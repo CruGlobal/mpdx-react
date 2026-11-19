@@ -133,13 +133,15 @@ export const AccountListItem: FC<AccountListItemProps> = ({
                       </Box>
                     )}
                   </Box>
-                  <Typography>
-                    {currencyFormat(
-                      account.balance ?? 0,
-                      account.currency,
-                      locale,
-                    )}
-                  </Typography>
+                  {account.balance !== undefined && (
+                    <Typography>
+                      {currencyFormat(
+                        account.balance,
+                        account.currency,
+                        locale,
+                      )}
+                    </Typography>
+                  )}
                 </Box>
                 <StyledCheckbox
                   edge="end"

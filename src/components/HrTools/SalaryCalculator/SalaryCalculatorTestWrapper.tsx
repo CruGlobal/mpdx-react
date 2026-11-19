@@ -1,4 +1,5 @@
 import { ThemeProvider } from '@emotion/react';
+import { GraphQLError } from 'graphql';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import { merge } from 'lodash';
 import { SnackbarProvider } from 'notistack';
@@ -10,6 +11,7 @@ import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   MinistersHousingIneligibilityReasonEnum,
   SalaryRequestStatusEnum,
+  SecaStatusEnum,
   UsStaffGroupEnum,
   UserTypeEnum,
 } from 'src/graphql/types.generated';
@@ -27,7 +29,16 @@ import {
   EffectiveSalaryCalculationQuery,
   SalaryCalculationQuery,
 } from './SalaryCalculatorContext/SalaryCalculation.generated';
-import { SalaryCalculatorProvider } from './SalaryCalculatorContext/SalaryCalculatorContext';
+import {
+  SalaryCalculatorProvider,
+  useSalaryCalculator,
+} from './SalaryCalculatorContext/SalaryCalculatorContext';
+import { GoalSalaryQuery } from './Shared/GoalSalary.generated';
+import { GoalMock, goalSalaryQueryMock } from './Shared/goalSalaryMock';
+import {
+  SubmitSalaryCalculationMutation,
+  SubmitSalaryCalculationMutationVariables,
+} from './StepNavigation/SubmitSalaryCalculation.generated';
 
 const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
   mocks: {
@@ -35,9 +46,11 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
       {
         salaryRequestEligible: true,
         staffInfo: {
+          firstName: 'John',
           preferredName: 'John',
           lastName: 'Doe',
           personNumber: '000123456',
+          secaStatus: SecaStatusEnum.Seca,
           city: 'Miami',
           country: 'US',
           state: 'FL',
@@ -54,9 +67,18 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
         },
         mhaRequest: {
           currentApprovedOverallAmount: 20000,
+          boardApprovedOverallAmount: 20000,
           currentTakenAmount: 7200,
         },
         mhaEit: {
+          mhaEligibility: true,
+          ineligibilityReasonCode: null,
+        },
+        mhaBoardApproval: {
+          mhaEligibility: true,
+          ineligibilityReasonCode: null,
+        },
+        mhaNewRequest: {
           mhaEligibility: true,
           ineligibilityReasonCode: null,
         },
@@ -69,9 +91,11 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
       {
         salaryRequestEligible: true,
         staffInfo: {
+          firstName: 'Jane',
           preferredName: 'Jane',
           lastName: 'Doe',
           personNumber: '000789123',
+          secaStatus: SecaStatusEnum.Seca,
           tenure: 1000,
           primaryPhoneNumber: '555-0124',
           emailAddress: 'jane.doe@example.com',
@@ -83,9 +107,18 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
         },
         mhaRequest: {
           currentApprovedOverallAmount: 20000,
+          boardApprovedOverallAmount: 20000,
           currentTakenAmount: 12000,
         },
         mhaEit: {
+          mhaEligibility: true,
+          ineligibilityReasonCode: null,
+        },
+        mhaBoardApproval: {
+          mhaEligibility: true,
+          ineligibilityReasonCode: null,
+        },
+        mhaNewRequest: {
           mhaEligibility: true,
           ineligibilityReasonCode: null,
         },
@@ -128,7 +161,27 @@ export interface SalaryCalculatorTestWrapperProps {
   calculationUnavailableCalls?: number;
   /** Makes SalaryCalculation fail with an error other than HCM_UNAVAILABLE */
   calculationError?: boolean;
+  /** Makes SubmitSalaryCalculation fail with this error unless its input sets `confirmMhaEnd` */
+  submitError?: GraphQLError;
+  /** The account list's MPD Goals */
+  goals?: GoalMock[];
 }
+
+const staffAccountMock = {
+  staffAccount: {
+    id: '12345',
+    name: 'Test Account',
+  },
+};
+
+const goalCalculatorConstantsMock = {
+  constant: {
+    mpdGoalGeographicConstants: [
+      { location: 'Atlanta, GA' },
+      { location: 'Miami, FL' },
+    ],
+  },
+};
 
 export const SalaryCalculatorTestWrapper: React.FC<
   SalaryCalculatorTestWrapperProps
@@ -148,6 +201,8 @@ export const SalaryCalculatorTestWrapper: React.FC<
   hcmUnavailableCalls = 0,
   calculationUnavailableCalls = 0,
   calculationError = false,
+  submitError,
+  goals = [],
 }) => {
   const hcmUserMerged = merge({}, hcmUserMock, hcmUser);
   const hcmSpouseMerged = merge({}, hcmSpouseMock, hcmSpouse);
@@ -172,14 +227,11 @@ export const SalaryCalculatorTestWrapper: React.FC<
             StaffAccount: StaffAccountQuery;
             GetUser: GetUserQuery;
             AccountGeographicLocation: AccountGeographicLocationQuery;
+            SubmitSalaryCalculation: SubmitSalaryCalculationMutation;
+            GoalSalary: GoalSalaryQuery;
           }>
             mocks={{
-              StaffAccount: {
-                staffAccount: {
-                  id: '12345',
-                  name: 'Test Account',
-                },
-              },
+              StaffAccount: staffAccountMock,
               GetUser: {
                 user: {
                   userType,
@@ -196,17 +248,11 @@ export const SalaryCalculatorTestWrapper: React.FC<
               PayrollDates: {
                 payrollDates,
               },
+              GoalSalary: goalSalaryQueryMock(goals),
               EffectiveSalaryCalculation: {
                 salaryRequest: effectiveSalaryRequestMock,
               },
-              GoalCalculatorConstants: {
-                constant: {
-                  mpdGoalGeographicConstants: [
-                    { location: 'Atlanta, GA' },
-                    { location: 'Miami, FL' },
-                  ],
-                },
-              },
+              GoalCalculatorConstants: goalCalculatorConstantsMock,
               Hcm: {
                 hcm: mockHcmUnavailable(
                   hasSpouse
@@ -243,6 +289,17 @@ export const SalaryCalculatorTestWrapper: React.FC<
                       calculationUnavailableCalls,
                     ) as never),
               },
+              SubmitSalaryCalculation: {
+                submitSalaryRequest: ((
+                  _root: unknown,
+                  { input }: SubmitSalaryCalculationMutationVariables,
+                ) => {
+                  if (submitError && !input.confirmMhaEnd) {
+                    throw submitError;
+                  }
+                  return {};
+                }) as never,
+              },
             }}
             onCall={onCall}
           >
@@ -253,3 +310,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
     </ThemeProvider>
   );
 };
+
+/** Renders once HCM data loads, which comes after the calculation, so tests can wait for both */
+export const HcmLoaded: React.FC = () =>
+  useSalaryCalculator().hcmUser ? <span>HCM loaded</span> : null;

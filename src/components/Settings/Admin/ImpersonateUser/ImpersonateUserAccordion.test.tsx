@@ -5,8 +5,11 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AdminAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
+import { clearSessionData } from 'src/lib/clearSessionData';
 import theme from '../../../../theme';
 import { ImpersonateUserAccordion } from './ImpersonateUserAccordion';
+
+jest.mock('src/lib/clearSessionData');
 
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
@@ -35,7 +38,7 @@ const handleAccordionChange = jest.fn();
 interface ComponentsProps {
   expandedAccordion: AdminAccordion | null;
   mutationSpy?: () => void;
-  routerOverride?: typeof router;
+  routerOverride?: typeof router & { push?: jest.Mock };
 }
 
 const Components = ({
@@ -234,6 +237,62 @@ describe('ImpersonateUserAccordion', () => {
           },
         );
       });
+    });
+  });
+
+  describe('Clearing session data', () => {
+    const submitForm = async (push: jest.Mock) => {
+      const { getAllByRole, getByRole } = render(
+        <Components
+          expandedAccordion={AdminAccordion.ImpersonateUser}
+          routerOverride={{ ...router, push }}
+        />,
+      );
+
+      const button = getAllByRole('button', { name: 'Impersonate User' })[1];
+      userEvent.type(
+        getByRole('textbox', { name: /Okta User Name \/ Email/i }),
+        'test@test.org',
+      );
+      userEvent.type(
+        getByRole('textbox', { name: /reason \/ helpscout ticket link/i }),
+        'Helpscout Ticket',
+      );
+
+      await waitFor(() => expect(button).not.toBeDisabled());
+      userEvent.click(button);
+    };
+
+    it('clears session data before redirecting to login', async () => {
+      window.fetch = jest.fn().mockResolvedValue({
+        json: () => Promise.resolve({ errors: [] }),
+        status: 200,
+      });
+      const push = jest.fn();
+
+      await submitForm(push);
+
+      await waitFor(() => expect(clearSessionData).toHaveBeenCalled());
+      await waitFor(() => expect(push).toHaveBeenCalledWith('/login'));
+      expect(
+        (clearSessionData as jest.Mock).mock.invocationCallOrder[0],
+      ).toBeLessThan(push.mock.invocationCallOrder[0]);
+    });
+
+    it('keeps session data when impersonation fails', async () => {
+      window.fetch = jest.fn().mockResolvedValue({
+        json: () => Promise.resolve({ errors: [{ detail: 'nope' }] }),
+        status: 400,
+      });
+      const push = jest.fn();
+
+      await submitForm(push);
+
+      await waitFor(() =>
+        expect(mockEnqueue).toHaveBeenCalledWith('nope', { variant: 'error' }),
+      );
+      expect(clearSessionData).not.toHaveBeenCalled();
+      expect(push).not.toHaveBeenCalled();
     });
   });
 

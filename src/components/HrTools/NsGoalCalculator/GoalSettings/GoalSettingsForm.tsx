@@ -138,6 +138,8 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
     : null;
 
   const mpdGoal = calculation.calculations.monthlyGoal;
+  // Only a sent goal emails the staff member an updated worksheet on save.
+  const isSent = Boolean(calculation.newStaffCohortAttendee?.goalSentAt);
 
   const handleSubmit = async (
     values: GoalSettingsFormValues,
@@ -258,7 +260,7 @@ export const GoalSettingsForm: React.FC<GoalSettingsFormProps> = (props) => {
                           ) : undefined
                         }
                       >
-                        {t('Save & Share')}
+                        {isSent ? t('Save & Share Update') : t('Save')}
                       </Button>
                     </Stack>
                   </Stack>

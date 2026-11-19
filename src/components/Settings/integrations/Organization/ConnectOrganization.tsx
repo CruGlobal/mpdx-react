@@ -16,14 +16,13 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
-import { signOut } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { OrganizationAutocomplete } from 'src/components/Shared/Autocomplete/OrganizationAutocomplete/OrganizationAutocomplete';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { PaddedBox } from 'src/components/Shared/styledComponents/PaddedBox';
 import { Organization } from 'src/graphql/types.generated';
-import { clearDatadogUser } from 'src/lib/dataDog';
+import { signOutAndClear } from 'src/lib/clearSessionData';
 import { getAppName } from 'src/lib/getAppName';
 import { articles } from 'src/lib/helpjuice';
 import theme from 'src/theme';
@@ -223,10 +222,9 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
                   >
                     <li>
                       <Link
-                        onClick={() => {
-                          signOut({ callbackUrl: 'signOut' }).then(() => {
-                            clearDatadogUser();
-                            client.clearStore();
+                        onClick={async () => {
+                          await signOutAndClear(client, {
+                            callbackUrl: 'signOut',
                           });
                         }}
                       >

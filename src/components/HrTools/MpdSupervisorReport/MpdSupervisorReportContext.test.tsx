@@ -30,6 +30,15 @@ import {
   managedStaffMock,
 } from './mpdSupervisorReportMocks';
 
+// Every quick-filter flag the report sends, unset
+const noQuickFlags = {
+  negativeLastMonth: null,
+  negativeThreeMonths: null,
+  negativeThreeMonthsInPastYear: null,
+  expensesOverIncomeThreeMonths: null,
+  belowNewStaffMonthlySalary: null,
+};
+
 const mutationSpy = jest.fn();
 const sampleMember = managedStaffMember();
 
@@ -664,13 +673,12 @@ describe('managed staff query variables', () => {
     );
   });
 
-  it('omits both health flags while All people is selected', async () => {
+  it('omits every balance flag while All people is selected', async () => {
     renderConsumer();
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
-        negativeLastMonth: null,
-        negativeThreeMonths: null,
+        ...noQuickFlags,
       }),
     );
   });
@@ -685,8 +693,8 @@ describe('managed staff query variables', () => {
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        ...noQuickFlags,
         negativeLastMonth: true,
-        negativeThreeMonths: null,
       }),
     );
   });
@@ -701,8 +709,40 @@ describe('managed staff query variables', () => {
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
-        negativeLastMonth: null,
+        ...noQuickFlags,
         negativeThreeMonths: true,
+      }),
+    );
+  });
+
+  it('sends negativeThreeMonthsInPastYear for the past year filter', async () => {
+    renderConsumer();
+    act(() => {
+      consumerResult.setActiveQuickFilter(
+        MpdSupervisorReportQuickFilterEnum.ThreeMonthsInPastYearNegative,
+      );
+    });
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        ...noQuickFlags,
+        negativeThreeMonthsInPastYear: true,
+      }),
+    );
+  });
+
+  it('sends expensesOverIncomeThreeMonths for the spending filter', async () => {
+    renderConsumer();
+    act(() => {
+      consumerResult.setActiveQuickFilter(
+        MpdSupervisorReportQuickFilterEnum.ThreeMonthsSpendingOverIncome,
+      );
+    });
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ManagedStaff', {
+        ...noQuickFlags,
+        expensesOverIncomeThreeMonths: true,
       }),
     );
   });

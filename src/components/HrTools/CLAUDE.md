@@ -5,10 +5,11 @@ requests, savings-fund transfers, questionnaires, and admin/supervisor reports.
 This file captures the cross-tool "why" — rules and seams you can't see from any
 single form's code. It loads whenever you touch anything under `HrTools/`.
 
-Follow the root `CLAUDE.md` and `.claude/rules/code-review.md` for the usual
-conventions (named exports, i18n, Formik/Yup, `GqlMockedProvider`, Luxon dates).
-The financial-reporting review agent triggers on this tree — money math here is
-load-bearing.
+Follow the root `CLAUDE.md`, `.claude/review/rules/standards.md` and
+`.claude/review/rules/testing.md` for the usual conventions (named exports,
+i18n, Formik/Yup, `GqlMockedProvider`, Luxon dates). The financial review agent
+(`.claude/review/rules/financial.md`) triggers on this tree, because money math
+here is load-bearing.
 
 ## How the tools are reached
 
@@ -63,7 +64,7 @@ The table below is an orientation aid — verify against each tool's
 | GoalCalculator (MPD)                   | SeniorStaff                                              |
 | NsGoalCalculator + NsoMpdQuestionnaire | NewStaff                                                 |
 | PdsGoalCalculator                      | PaidWithDesignation                                      |
-| StaffSavingFund                        | any staff account (`requireStaffAccount`, no group gate) |
+| StaffSavingFund                        | staff account, not PaidWithDesignation (`StaffAccount`)  |
 | MinistryPartnerReminders               | any staff account (`requireStaffAccount`, no group gate) |
 | MpdSupervisorReport                    | `supervisesStaff` (no group gate)                        |
 
@@ -109,6 +110,9 @@ Other shared pieces worth knowing before you build a local copy:
   with the same code, so pass the `Hcm` query and that query to
   `useHcmUnavailable` (`Shared/HcmData/useHcmUnavailable.ts`) for one
   `hcmUnavailable` flag and a `refetchHcm` that retries only what failed.
+  Pages that handle an HCM error themselves must pass the same
+  `suppressErrorCodes` to their Hcm query and to both HcmSync status
+  components (`HANDLED_HCM_ERROR_CODES` in `Shared/HcmData/hcmPersonNotFound.ts`).
   `StaffInfoCard`,
   `AccountInfoBox`, `EligibilityStatusTable`, `GoalPresentation/`,
   `SummaryHeaderCard`, and `useFormatters` are the other shared leaves. Prefer
@@ -195,8 +199,10 @@ has a distinct `Complete` mutation, and the request forms autosave a draft but
 
 ## Per-form domain gotchas
 
-- **MinisterHousingAllowance** — the online flow gates on **MHA eligibility only**
-  (`hcmData.mhaEit.mhaEligibility`). Italian/MHI staff fall out because their
+- **MinisterHousingAllowance** — the online flow gates new requests on
+  `hcmData.mhaNewRequest.mhaEligibility` (IBS certification, or an MHA the board
+  already approved); what it shows as approved uses `mhaBoardApproval` and
+  `mhaRequest.boardApprovedOverallAmount`. Italian/MHI staff fall out because their
   `mhaEligibility` is false — not via a country check; `staffInfo.country` only
   drives an informational note pointing them to the **paper MHI form**. There is
   no online MHI path. A new request is blocked while the current one is
@@ -205,13 +211,20 @@ has a distinct `Complete` mutation, and the request forms autosave a draft but
   from the HCM query returning a second record (the spouse).
 - **MpdGoalAdmin** — no longer a mock. It runs `NewStaffCohorts.graphql`
   (`NewStaffCohorts`, `NewStaffCohortAttendees`, `UpdateNewStaffCohort`) and
-  `ScenarioGoals/ScenarioGoals.graphql`. `newStaffCohorts` is **team-wide, not
-  per-user** — the page is gated on `RequiredUserGroupEnum.MpdGoalCalc`, so an
-  empty cohort list means no cohorts exist at all, not that this user has none.
-  `MpdGoalAdminContext` **auto-selects the first cohort** whenever the list is
-  non-empty, so "no cohort selected" is only reachable with zero cohorts; tests
-  that pick a cohort themselves must first wait for that auto-select to settle
-  (wait on `selectedCohortId`, not on `cohorts.length`) or it will overwrite them.
+  `ScenarioGoals/ScenarioGoals.graphql`. `trainingSize` only counts attendees
+  the caller can see, so for coordinators (not `mpdSupervisorAdmin`) the context
+  **drops cohorts with `trainingSize` 0**, and a coordinator can get an empty
+  list while cohorts exist. The list is held empty until GetUser data exists, so
+  an admin never auto-selects from the filtered list; a failed GetUser surfaces
+  as the context `error` and does not count as coordinator.
+  `MpdGoalAdminContext` **auto-selects the first cohort** of the filtered list,
+  and a URL `cohortId` naming a hidden cohort falls back to the first remaining
+  one. `noVisibleCohorts` (coordinator, loaded, no error, empty list) makes
+  `MpdGoalAdmin.tsx` replace both CohortBar and the table with the "No Trainings
+  Available" null state; "No Training Selected" is only reached by an admin with
+  zero cohorts. Tests that pick a cohort themselves must first wait for the
+  auto-select to settle (wait on `selectedCohortId`, not on `cohorts.length`) or
+  it will overwrite them.
   **Print All renders server-side**: the button calls
   `printNewStaffCohortGoals`, then fetches the returned single-use `downloadUrl`
   with the Authorization header and saves the blob.
@@ -219,6 +232,10 @@ has a distinct `Complete` mutation, and the request forms autosave a draft but
   result set means a click mid-search would otherwise send the ids the preceding
   search returned. Mutation failures toast through the global Apollo error link;
   only the blob fetch needs its own message.
+  The **MPD Coaches** tab (`MpdCoaches/MpdCoaches.graphql`) is the coach list the
+  Assign Coach pickers offer. Only `isGoalsAdmin` sees it; a coordinator's
+  hand-edited `?tab=mpd-coaches` falls back to Active Goals. Add and remove
+  evict the cached picker and candidate-search root fields (`evictCoachLists`).
 - **MpdSupervisorReport** — `managedStaff` refuses to grade more than its row
   cap and answers with a `FILTER_REQUIRED` GraphQL error (`count`, `filtered`
   in `extensions`). The context turns it into `filterRequired` guidance and

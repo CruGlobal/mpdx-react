@@ -70,7 +70,13 @@ export const GoalSummaryCard: React.FC<GoalSummaryCardProps> = ({
 
   return (
     <PresentationCard title={t('Your MPD Goal Calculation')}>
-      <Stack direction={{ xs: 'column', md: 'row' }} spacing={3}>
+      <Stack
+        direction={{ xs: 'column', md: 'row' }}
+        spacing={3}
+        useFlexGap
+        // The printed page is narrower than the md breakpoint
+        sx={{ '@media print': { flexDirection: 'row' } }}
+      >
         {figures.map(({ label, amount, subLabel }) => (
           <Stack key={label} sx={{ flex: 1 }}>
             <Typography

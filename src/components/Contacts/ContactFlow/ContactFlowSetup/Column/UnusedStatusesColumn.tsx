@@ -41,9 +41,10 @@ export const UnusedStatusesColumn: React.FC<Props> = ({
         <Typography>{t('Unused Statuses')}</Typography>
       </Box>
       <CardContent
+        // On phones the column fits its statuses instead of filling the screen
+        sx={{ height: { xs: 'auto', sm: 'calc(100vh - 230px)' } }}
         style={{
           position: 'relative',
-          height: 'calc(100vh - 230px)',
           padding: 0,
           background: theme.palette.mpdxGrayLight.main,
           overflowY: 'auto',

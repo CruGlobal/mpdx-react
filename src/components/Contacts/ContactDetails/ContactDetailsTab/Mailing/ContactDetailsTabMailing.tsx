@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import CreateIcon from '@mui/icons-material/Create';
 import LocationOn from '@mui/icons-material/LocationOn';
-import { Box, Button, IconButton, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  IconButton,
+  Theme,
+  Typography,
+  useMediaQuery,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -64,6 +71,41 @@ const AddressEditIconContainer = styled(IconButton)(({ theme }) => ({
   margin: theme.spacing(0, 1),
 }));
 
+interface AddAddressButtonProps {
+  placement: 'top' | 'bottom';
+}
+
+// Phones get the button on its own row below the addresses so it can't cover them.
+const AddAddressButton: React.FC<AddAddressButtonProps> = ({ placement }) => {
+  const { t } = useTranslation();
+  const { setAddAddressModalOpen } = React.useContext(
+    ContactDetailContext,
+  ) as ContactDetailsType;
+  const isSmallScreen = useMediaQuery(
+    (theme: Theme) => theme.breakpoints.down('sm'),
+    { noSsr: true },
+  );
+  const showHere = placement === 'bottom' ? isSmallScreen : !isSmallScreen;
+  if (!showHere) {
+    return null;
+  }
+
+  const button = (
+    <AddButton onClick={() => setAddAddressModalOpen(true)}>
+      <AddIcon />
+      <AddText variant="subtitle1">{t('Add Address')}</AddText>
+    </AddButton>
+  );
+
+  return isSmallScreen ? (
+    <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>{button}</Box>
+  ) : (
+    <Box sx={{ position: 'relative' }}>
+      <Box sx={{ position: 'absolute', right: 2, top: 2 }}>{button}</Box>
+    </Box>
+  );
+};
+
 interface MailingProp {
   accountListId: string;
   data: ContactMailingFragment;
@@ -99,14 +141,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
     useState(false);
   return (
     <>
-      <Box sx={{ position: 'relative' }}>
-        <Box sx={{ position: 'absolute', right: 2, top: 2 }}>
-          <AddButton onClick={() => setAddAddressModalOpen(true)}>
-            <AddIcon />
-            <AddText variant="subtitle1">{t('Add Address')}</AddText>
-          </AddButton>
-        </Box>
-      </Box>
+      <AddAddressButton placement="top" />
       <Box>
         <ContactDetailsMailingMainContainer>
           <ContactDetailsMailingIcon />
@@ -221,6 +256,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
           </ContactDetailsMailingTextContainer>
         </ContactDetailsMailingMainContainer>
       </Box>
+      <AddAddressButton placement="bottom" />
       {selectedAddress && (
         <EditContactAddressModal
           contactId={id}

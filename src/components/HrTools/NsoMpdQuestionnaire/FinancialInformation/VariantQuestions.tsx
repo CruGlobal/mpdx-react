@@ -61,11 +61,12 @@ export const VariantQuestions: React.FC = () => {
             schema={schema}
             question={t(
               "What is {{spouseName}}'s current requested annual salary?",
-              {
-                spouseName,
-              },
+              { spouseName },
             )}
-            helperText={t('Round to the nearest dollar.')}
+            helperText={t(
+              "Requested salary is the same as net salary or take-home pay. {{spouseName}}'s pre-filled amount is estimated from their current salary. Round to the nearest dollar.",
+              { spouseName },
+            )}
             startAdornment={<CurrencyAdornment />}
           />
           <NumberQuestion
@@ -73,9 +74,7 @@ export const VariantQuestions: React.FC = () => {
             schema={schema}
             question={t(
               "What is {{spouseName}}'s 403(b) contribution percentage?",
-              {
-                spouseName,
-              },
+              { spouseName },
             )}
             helperText={t(
               'Enter a percentage greater than or equal to 0 and less than 100.',

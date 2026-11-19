@@ -97,11 +97,13 @@ export const PdsGoalsList: React.FC = () => {
   return (
     <Container>
       <PdsGoalsListWelcome firstName={firstName} />
-      <Stack direction="row" gap={2} pb={3}>
+      <Stack direction={{ xs: 'column', sm: 'row' }} gap={2} pb={3}>
         <Button
           variant="contained"
           onClick={() => setDialogOpen(true)}
           disabled={constantsLoading}
+          // 44px tap target on phones; desktop keeps the default button height
+          sx={{ minHeight: { xs: 44, sm: 'auto' } }}
         >
           {t('Create a New Goal')}
         </Button>

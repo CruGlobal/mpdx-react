@@ -8,6 +8,10 @@ query ManagedStaff(
   $userPersonTypes: [MpdUserPersonTypeEnum!]
   $negativeLastMonth: Boolean
   $negativeThreeMonths: Boolean
+  $negativeThreeMonthsInPastYear: Boolean
+  $expensesOverIncomeThreeMonths: Boolean
+  $belowNewStaffMonthlySalary: Boolean
+  $capHealth: MpdCapHealthEnum
 ) {
   managedStaff(
     first: $first
@@ -19,6 +23,10 @@ query ManagedStaff(
     userPersonTypes: $userPersonTypes
     negativeLastMonth: $negativeLastMonth
     negativeThreeMonths: $negativeThreeMonths
+    negativeThreeMonthsInPastYear: $negativeThreeMonthsInPastYear
+    expensesOverIncomeThreeMonths: $expensesOverIncomeThreeMonths
+    belowNewStaffMonthlySalary: $belowNewStaffMonthlySalary
+    capHealth: $capHealth
   ) {
     nodes {
       firstName
@@ -48,6 +56,15 @@ query ManagedStaff(
         }
       }
       newStaffMonthlySalary
+      householdType
+      balanceBuffer
+      monthEndBalances {
+        month
+        endBalance
+        status
+      }
+      percentOfCap
+      capHealth
       quarterlyHealth {
         monthlyGrossSalary
         startingQuarter {

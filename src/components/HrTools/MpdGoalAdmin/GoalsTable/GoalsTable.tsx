@@ -12,7 +12,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TablePagination,
   TableRow,
@@ -44,6 +43,18 @@ import {
 } from '../mpdGoalAdminHelpers';
 import { useRunAndSendFlow } from '../useRunAndSendFlow';
 import { CoordinatorsCell } from './CoordinatorsCell';
+import { GoalsTableContainer } from './GoalsTableScroll';
+
+// Lowest-priority columns drop out below md so the table fits without sideways scrolling.
+const lowPriorityColumnSx = {
+  display: { xs: 'none', md: 'table-cell' },
+  width: 96,
+};
+
+// Tighter than size="small" so the Cohort column fits at a 1280px laptop width.
+const compactCellsSx = {
+  '.MuiTableCell-root:not(.MuiTableCell-paddingCheckbox)': { px: 1 },
+};
 
 interface GoalStatusChipProps {
   status: GoalStatusEnum;
@@ -144,8 +155,8 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
   }
 
   return (
-    <TableContainer>
-      <Table size="small" aria-label={t('MPD goals')}>
+    <GoalsTableContainer>
+      <Table size="small" aria-label={t('MPD goals')} sx={compactCellsSx}>
         <TableHead>
           <TableRow>
             <TableCell padding="checkbox">
@@ -157,11 +168,14 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
               />
             </TableCell>
             <TableCell>{t('Name')}</TableCell>
+            <TableCell>{t('Cohort')}</TableCell>
             <TableCell>{t('Ministry')}</TableCell>
-            <TableCell>{t('Campus Division')}</TableCell>
+            <TableCell sx={lowPriorityColumnSx}>
+              {t('Campus Division')}
+            </TableCell>
             <TableCell>{t('MPD Goal')}</TableCell>
-            <TableCell>{t('Goal Status')}</TableCell>
-            <TableCell>{t('Family Status')}</TableCell>
+            <TableCell sx={{ width: 120 }}>{t('Send Status')}</TableCell>
+            <TableCell sx={lowPriorityColumnSx}>{t('Family Status')}</TableCell>
             <TableCell>{t('Coach')}</TableCell>
             <TableCell>{t('Coordinators')}</TableCell>
             <TableCell>{t('Actions')}</TableCell>
@@ -187,8 +201,11 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
                 />
               </TableCell>
               <TableCell>{row.name}</TableCell>
+              <TableCell>{row.cohortName}</TableCell>
               <TableCell>{row.ministry}</TableCell>
-              <TableCell>{row.subministry || '—'}</TableCell>
+              <TableCell sx={lowPriorityColumnSx}>
+                {row.subministry || '—'}
+              </TableCell>
               <TableCell>
                 {/* No goal calculation yet — a $0.00 here would read as real. */}
                 {row.mpdGoal === null
@@ -201,7 +218,9 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
                   sentAt={row.goalSentAt}
                 />
               </TableCell>
-              <TableCell>{familyStatusLabel(row.familyStatus, t)}</TableCell>
+              <TableCell sx={lowPriorityColumnSx}>
+                {familyStatusLabel(row.familyStatus, t)}
+              </TableCell>
               <TableCell>
                 {row.coach ? (
                   coachLabel(row.coach, t)
@@ -307,6 +326,6 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
           handleClose={() => setCoachRow(null)}
         />
       )}
-    </TableContainer>
+    </GoalsTableContainer>
   );
 };

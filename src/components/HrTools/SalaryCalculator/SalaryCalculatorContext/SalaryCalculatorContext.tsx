@@ -6,13 +6,13 @@ import React, {
   useCallback,
   useContext,
   useMemo,
-  useState,
 } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
 import { useStepList } from 'src/hooks/useStepList';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { getQueryParam } from 'src/lib/queryParam';
+import { useDrawerOpenState } from '../../Shared/CalculationReports/PanelLayout/useDrawerOpenState';
 import { FormEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { HcmQuery, useHcmQuery } from '../../Shared/HcmData/Hcm.generated';
@@ -44,6 +44,8 @@ export interface SalaryCalculatorContextType {
   hcmSpouse: HcmQuery['hcm'][number] | null;
   hasSpouse: boolean;
   calculation: SalaryCalculationQuery['salaryRequest'] | null;
+  /** Whether the HCM data is still loading. The steps render before it arrives. */
+  hcmLoading: boolean;
   hcmUnavailable: boolean;
   refetchHcm: () => Promise<unknown>;
   calculationError: boolean;
@@ -95,6 +97,7 @@ export const SalaryCalculatorProvider: React.FC<
 
   const {
     data: hcmData,
+    loading: hcmLoading,
     error: hcmError,
     refetch: refetchHcmQuery,
   } = useHcmQuery({
@@ -125,7 +128,7 @@ export const SalaryCalculatorProvider: React.FC<
     percentComplete,
   } = useStepList(FormEnum.SalaryCalc);
 
-  const [isDrawerOpen, setDrawerOpen] = useState(true);
+  const [isDrawerOpen, setDrawerOpen] = useDrawerOpenState();
   const toggleDrawer = useCallback(() => {
     setDrawerOpen((prev) => !prev);
   }, []);
@@ -147,6 +150,7 @@ export const SalaryCalculatorProvider: React.FC<
       hcmSpouse: eligibleSpouse,
       hasSpouse: !!eligibleSpouse,
       calculation,
+      hcmLoading,
       hcmUnavailable,
       refetchHcm,
       calculationError: !!calculationQueryError,
@@ -165,6 +169,7 @@ export const SalaryCalculatorProvider: React.FC<
     isDrawerOpen,
     toggleDrawer,
     hcmData,
+    hcmLoading,
     hcmUnavailable,
     refetchHcm,
     calculationQueryError,

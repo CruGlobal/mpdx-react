@@ -164,6 +164,24 @@ describe('GoalsTable', () => {
     );
   });
 
+  it("shows each row's cohort in a Cohort column after Name", () => {
+    const { getAllByRole } = renderTable([
+      { ...rows[0], cohortName: 'Fall NSO 2026' },
+      { ...rows[1], cohortName: 'Spring NSO 2027' },
+    ]);
+    const headers = getAllByRole('columnheader').map(
+      (cell) => cell.textContent,
+    );
+    expect(headers.indexOf('Cohort')).toBe(headers.indexOf('Name') + 1);
+    const cohortCells = getAllByRole('row')
+      .slice(1)
+      .map(
+        (row) => within(row).getAllByRole('cell')[headers.indexOf('Cohort')],
+      );
+    expect(cohortCells[0]).toHaveTextContent('Fall NSO 2026');
+    expect(cohortCells[1]).toHaveTextContent('Spring NSO 2027');
+  });
+
   it('shows the OneApp sub-ministry under Campus Division', () => {
     const { getAllByRole } = renderTable([
       { ...rows[0], subministry: 'CMCH01' },
@@ -180,9 +198,17 @@ describe('GoalsTable', () => {
     );
   });
 
+  it('renders a scroll hint above the table for phones', () => {
+    const { getByText } = renderTable();
+    expect(
+      getByText('Scroll sideways to see goal status, coach, and actions.'),
+    ).toBeInTheDocument();
+  });
+
   it('renders an empty placeholder for zero rows', () => {
-    const { getByText } = renderTable([]);
+    const { getByText, queryByText } = renderTable([]);
     expect(getByText('No goals found')).toBeInTheDocument();
+    expect(queryByText(/Scroll sideways/)).not.toBeInTheDocument();
   });
 
   it('renders a placeholder, not $0.00, for a row with no goal calculation', () => {
@@ -190,6 +216,27 @@ describe('GoalsTable', () => {
     const { getByText, queryByText } = renderTable();
     expect(getByText('—')).toBeInTheDocument();
     expect(queryByText('$0.00')).not.toBeInTheDocument();
+  });
+
+  it('labels the Send Status column with Ready to Send and Not Ready chips', () => {
+    const { getAllByRole } = renderTable([
+      { ...rows[0], goalStatus: GoalStatusEnum.Complete },
+      {
+        ...rows[0],
+        id: 'not-ready-row',
+        goalStatus: GoalStatusEnum.Incomplete,
+      },
+    ]);
+    expect(getFirstRowCell(getAllByRole, 'Send Status')).toHaveTextContent(
+      'Ready to Send',
+    );
+    const headers = getAllByRole('columnheader').map(
+      (cell) => cell.textContent,
+    );
+    const secondRow = within(getAllByRole('row')[2]).getAllByRole('cell');
+    expect(secondRow[headers.indexOf('Send Status')]).toHaveTextContent(
+      'Not Ready',
+    );
   });
 
   it('renders a Sent chip with the info color for an already-sent goal', () => {
@@ -269,7 +316,7 @@ describe('GoalsTable', () => {
     expect(ctx.selectedRowIds.has('row-3')).toBe(true);
   });
 
-  it('blocks the row action for a goal that is not Complete', async () => {
+  it('blocks the row action for a goal that is not Ready to Send', async () => {
     const { getAllByRole, findByRole } = await renderLoadedTable();
     const button = getAllByRole('button', { name: /Actions for/ })[1];
     expect(button).toBeDisabled();
@@ -360,7 +407,7 @@ describe('GoalsTable', () => {
     ]);
   });
 
-  it('explains the empty picker when the cohort has no assignable coaches', async () => {
+  it('explains the empty picker when no MPD coaches have been added', async () => {
     const { getByRole, findByRole, queryByRole } = await renderWithCoaches(
       noAssignableCoachesMock,
     );
@@ -368,12 +415,12 @@ describe('GoalsTable', () => {
 
     const dialog = await findByRole('dialog');
     expect(within(dialog).getByRole('alert')).toHaveTextContent(
-      'No coaches are available to assign for this cohort.',
+      'No MPD coaches have been added yet. An MPD admin can add coaches on the MPD Coaches tab.',
     );
     expect(queryByRole('combobox', { name: 'Coach' })).not.toBeInTheDocument();
   });
 
-  it('reports a failed coach list instead of blaming OneApp eligibility', async () => {
+  it('reports a failed coach list instead of calling the coach list empty', async () => {
     const { getByRole, findByRole, queryByText, queryByRole } =
       await renderWithCoaches(failedAssignableCoachesMock);
     userEvent.click(getByRole('button', { name: 'Assign Coach' }));
@@ -382,7 +429,7 @@ describe('GoalsTable', () => {
     expect(within(dialog).getByRole('alert')).toHaveTextContent(
       'The list of coaches could not be loaded, so no coach can be assigned yet.',
     );
-    expect(queryByText(/OneApp/)).not.toBeInTheDocument();
+    expect(queryByText(/have been added yet/)).not.toBeInTheDocument();
     // Nothing can be picked, so there is no Save button left to sit dead.
     expect(queryByRole('button', { name: 'Save' })).not.toBeInTheDocument();
     expect(

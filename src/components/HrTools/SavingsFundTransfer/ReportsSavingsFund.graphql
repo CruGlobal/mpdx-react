@@ -30,6 +30,10 @@ query ReportsSavingsFundTransfer(
       recurringStart
       recurringEnd
       active
+      failures {
+        occurrence
+        reasonCode
+      }
     }
     scheduledTransfer {
       id
@@ -53,4 +57,5 @@ fragment FundFields on Fund {
   fundType
   endBalance
   deficitLimit
+  availableBalance
 }

@@ -3,13 +3,16 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import matchMediaMock from '__tests__/util/matchMediaMock';
 import { mockSession } from '__tests__/util/mockSession';
-import { render } from '__tests__/util/testingLibraryReactMock';
+import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import {
   afterTestResizeObserver,
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
+import { ManagedStaffQuery } from 'src/components/HrTools/MpdSupervisorReport/ManagedStaff.generated';
+import { managedStaffMock } from 'src/components/HrTools/MpdSupervisorReport/mpdSupervisorReportMocks';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
@@ -32,11 +35,13 @@ const Components: React.FC<ComponentProps> = ({
       <TestRouter>
         <GqlMockedProvider<{
           GetUser: GetUserQuery;
+          ManagedStaff: ManagedStaffQuery;
         }>
           mocks={{
             GetUser: {
               user: { userType, usStaffGroup, supervisesStaff },
             },
+            ManagedStaff: managedStaffMock(),
           }}
           onCall={mutationSpy}
         >
@@ -68,6 +73,25 @@ describe('MPD Supervisor Page', () => {
       name: /mpd supervisor report/i,
     });
     expect(heading[0]).toBeInTheDocument();
+  });
+
+  it('should start with the filters closed on small screens and close them from the backdrop', async () => {
+    matchMediaMock({ width: '390px' });
+    const { findAllByRole, getByRole, getByTestId } = render(<Components />);
+
+    expect(
+      (await findAllByRole('heading', { name: /mpd supervisor report/i }))[0],
+    ).toBeInTheDocument();
+    const leftPanel = getByTestId('SidePanelsLayoutLeftPanel');
+    await waitFor(() =>
+      expect(leftPanel).toHaveStyle('transform: translate(-100%)'),
+    );
+
+    userEvent.click(getByRole('button', { name: 'Toggle Filters Panel' }));
+    expect(leftPanel).toHaveStyle('transform: none');
+
+    userEvent.click(getByTestId('SidePanelsLayoutBackdrop'));
+    expect(leftPanel).toHaveStyle('transform: translate(-100%)');
   });
 
   it('should open and close menu', async () => {

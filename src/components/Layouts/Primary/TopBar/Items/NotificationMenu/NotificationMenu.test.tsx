@@ -1,8 +1,11 @@
 import React from 'react';
 import { InMemoryCache } from '@apollo/client';
+import { MockedResponse } from '@apollo/client/testing';
+import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
+import theme from 'src/theme';
 import { GetNotificationsDocument } from './GetNotificationsQuery.generated';
 import NotificationMenu from './NotificationMenu';
 import {
@@ -20,6 +23,24 @@ jest.mock('next/router', () => ({
     };
   },
 }));
+
+interface ThemedMenuProps {
+  mocks: MockedResponse[];
+  isInDrawer?: boolean;
+}
+
+const ThemedMenu: React.FC<ThemedMenuProps> = ({ mocks, isInDrawer }) => (
+  <ThemeProvider theme={theme}>
+    <TestWrapper mocks={mocks}>
+      <NotificationMenu isInDrawer={isInDrawer} />
+    </TestWrapper>
+  </ThemeProvider>
+);
+
+// jsdom can't resolve CSS var(), so read the palette color MUI passes to the
+// button through its --variant-*Color variable instead of the computed color
+const buttonColor = (button: HTMLElement, variant: 'text' | 'outlined') =>
+  window.getComputedStyle(button).getPropertyValue(`--variant-${variant}Color`);
 
 describe('NotificationMenu', () => {
   it('default', async () => {
@@ -137,5 +158,123 @@ describe('NotificationMenu', () => {
     await waitFor(() =>
       expect(getByText('No notifications to show.')).toBeInTheDocument(),
     );
+  });
+
+  describe('in the side menu drawer', () => {
+    it('shows only Mark all as read in a dark header, without a second Notifications title', async () => {
+      const { findByRole, getByRole, queryByText, queryByRole } = render(
+        <ThemedMenu mocks={getNotificationsMocks()} isInDrawer />,
+      );
+
+      expect(
+        await findByRole('link', {
+          name: 'S Smith, Roger May 26, 2020 — Upcoming anniversary',
+        }),
+      ).toBeInTheDocument();
+      expect(queryByText('Notifications')).not.toBeInTheDocument();
+      expect(
+        queryByRole('button', { name: /^Notifications/ }),
+      ).not.toBeInTheDocument();
+
+      const header = getByRole('button', { name: 'Mark all as read' }).closest(
+        '.MuiListSubheader-root',
+      );
+      expect(header).toHaveStyle({
+        backgroundColor: 'rgb(56, 63, 67)',
+        zIndex: '2',
+        paddingRight: '8px',
+      });
+    });
+
+    it('makes Mark all as read yellow with a 44px tap target', async () => {
+      const { findByRole } = render(
+        <ThemedMenu mocks={getNotificationsMocks()} isInDrawer />,
+      );
+
+      const markAllButton = await findByRole('button', {
+        name: 'Mark all as read',
+      });
+      await waitFor(() => expect(markAllButton).not.toBeDisabled());
+      expect(buttonColor(markAllButton, 'text')).toBe('#FFD000');
+      expect(markAllButton).toHaveStyle({ minHeight: '44px' });
+    });
+
+    it('keeps a disabled Mark all as read readable in medium gray', async () => {
+      const { findByText, getByRole } = render(
+        <ThemedMenu mocks={[getNotificationsEmptyMock()]} isInDrawer />,
+      );
+
+      expect(await findByText('No notifications to show.')).toBeInTheDocument();
+      const markAllButton = getByRole('button', { name: 'Mark all as read' });
+      expect(markAllButton).toBeDisabled();
+      expect(markAllButton).toHaveStyle({ color: 'rgb(156, 159, 161)' });
+    });
+
+    it('shows the empty message in white under the picture', async () => {
+      const { findByText, getByRole } = render(
+        <ThemedMenu mocks={[getNotificationsEmptyMock()]} isInDrawer />,
+      );
+
+      const emptyMessage = await findByText('No notifications to show.');
+      expect(emptyMessage).toHaveStyle({ color: 'rgb(255, 255, 255)' });
+      expect(getByRole('img', { name: 'empty' })).toBeInTheDocument();
+    });
+
+    it('makes the Load More button yellow', async () => {
+      const { findByRole } = render(
+        <ThemedMenu mocks={getNotificationsMocks()} isInDrawer />,
+      );
+
+      const loadMoreButton = await findByRole('button', { name: 'Load More' });
+      expect(buttonColor(loadMoreButton, 'outlined')).toBe('#FFD000');
+    });
+  });
+
+  describe('in the top bar menu', () => {
+    it('keeps the Notifications title and the white header', async () => {
+      const { getByRole, findByRole, getByText } = render(
+        <ThemedMenu mocks={getNotificationsMocks()} />,
+      );
+
+      userEvent.click(getByRole('button', { name: 'Notifications' }));
+
+      const markAllButton = await findByRole('button', {
+        hidden: true,
+        name: 'Mark all as read',
+      });
+      expect(getByText('Notifications')).toBeInTheDocument();
+      expect(markAllButton.closest('.MuiListSubheader-root')).toHaveStyle({
+        backgroundColor: 'rgb(255, 255, 255)',
+      });
+      await waitFor(() => expect(markAllButton).not.toBeDisabled());
+      expect(buttonColor(markAllButton, 'text')).toBe('#05699B');
+      expect(markAllButton).not.toHaveStyle({ minHeight: '44px' });
+    });
+
+    it('does not force the empty message to white', async () => {
+      const { getByRole, findByText } = render(
+        <ThemedMenu mocks={[getNotificationsEmptyMock()]} />,
+      );
+
+      userEvent.click(getByRole('button', { name: 'Notifications' }));
+
+      const emptyMessage = await findByText('No notifications to show.');
+      expect(emptyMessage).not.toHaveStyle({ color: 'rgb(255, 255, 255)' });
+    });
+
+    it('keeps the Load More button in the inherited text color', async () => {
+      const { getByRole, findByRole } = render(
+        <ThemedMenu mocks={getNotificationsMocks()} />,
+      );
+
+      userEvent.click(getByRole('button', { name: 'Notifications' }));
+
+      const loadMoreButton = await findByRole('button', {
+        hidden: true,
+        name: 'Load More',
+      });
+      // No palette color is set, so the button inherits the menu's text color
+      expect(buttonColor(loadMoreButton, 'outlined')).toBe('');
+    });
   });
 });

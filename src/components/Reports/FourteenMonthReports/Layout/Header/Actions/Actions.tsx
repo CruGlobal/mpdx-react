@@ -5,8 +5,8 @@ import GetAppIcon from '@mui/icons-material/GetApp';
 import PrintIcon from '@mui/icons-material/Print';
 import { Button, ButtonGroup, SvgIcon } from '@mui/material';
 import { DateTime } from 'luxon';
-import { buildURI } from 'react-csv/lib/core';
 import { useTranslation } from 'react-i18next';
+import { buildCsvUri } from 'src/lib/csv';
 import { FourteenMonthReportCurrencyType } from '../../../FourteenMonthReport';
 
 interface FourteenMonthReportActionsProps {
@@ -34,7 +34,7 @@ export const FourteenMonthReportActions: React.FC<
   // This has to be a useEffect instead of a useMemo to prevent hydration errors because the
   // server isn't able to calculate a blob URL.
   useEffect(() => {
-    const csvBlob = buildURI(csvData, true);
+    const csvBlob = buildCsvUri(csvData);
     setCsvBlob(csvBlob);
 
     return () => URL.revokeObjectURL(csvBlob);

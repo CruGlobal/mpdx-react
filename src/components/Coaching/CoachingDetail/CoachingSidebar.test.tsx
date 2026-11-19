@@ -32,6 +32,8 @@ interface TestComponentProps {
     >
   >;
   taskAnalyticsMocks?: Partial<GetTaskAnalyticsQuery['taskAnalytics']>;
+  hasNoAccountBalance?: boolean;
+  balanceLoading?: boolean;
 }
 
 const accountListId = 'account-list-1';
@@ -43,6 +45,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
   showClose = false,
   accountListMocks,
   taskAnalyticsMocks,
+  hasNoAccountBalance,
+  balanceLoading,
 }) => {
   const accountListData =
     accountListType === AccountListTypeEnum.Coaching
@@ -77,6 +81,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
         period={CoachingPeriodEnum.Weekly}
         setPeriod={setPeriodMock}
         loading={false}
+        hasNoAccountBalance={hasNoAccountBalance}
+        balanceLoading={balanceLoading}
         showClose={showClose}
         handleClose={handleCloseMock}
         accountListData={accountListData}
@@ -148,6 +154,35 @@ describe('CoachingSidebar', () => {
         );
 
         expect(getByTestId('Balance')).toHaveTextContent('Balance: $1,000');
+      });
+
+      it('explains there is no balance instead of showing one', () => {
+        const { getByTestId, getByText } = render(
+          <TestComponent
+            accountListType={accountListType}
+            accountListMocks={{ balance: 1000 }}
+            hasNoAccountBalance
+          />,
+        );
+
+        expect(getByTestId('Balance')).toHaveTextContent(/^Balance:$/);
+        expect(
+          getByText(
+            'Your designation is not connected to a staff account, so there is no account balance to show.',
+          ),
+        ).toBeInTheDocument();
+      });
+
+      it('shows no amount while the balance is loading', () => {
+        const { getByTestId } = render(
+          <TestComponent
+            accountListType={accountListType}
+            accountListMocks={{ balance: 1000 }}
+            balanceLoading
+          />,
+        );
+
+        expect(getByTestId('Balance')).toHaveTextContent(/^Balance:$/);
       });
     });
 

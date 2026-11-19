@@ -1,0 +1,8 @@
+query CurrentMonthlyGoal($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    id
+    settings {
+      monthlyGoal
+    }
+  }
+}

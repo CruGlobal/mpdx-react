@@ -4,6 +4,7 @@ import { useNewStaffQuestionnaireStatusQuery } from './NewStaffQuestionnaireStat
 import { useAccountListId } from './useAccountListId';
 import { useDeveloperBypass } from './useDeveloperBypass';
 import { useIneligibleByGroup } from './useIneligibleByGroup';
+import { useNsGoalCalculatorAccess } from './useNsGoalCalculatorAccess';
 import { NavItems } from './useReportNavItems';
 import { useReportsDisabled } from './useReportsDisabled';
 import { useRequiredSession } from './useRequiredSession';
@@ -21,12 +22,14 @@ export function useHrToolsNavItems(): {
     inNsGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
     inMpdSupervisorIneligibleGroup,
+    inStaffAccountIneligibleGroup,
     canViewNewStaffCohorts,
     hasNoStaffAccount,
     userLoading,
   } = useIneligibleByGroup();
   const developerBypass = useDeveloperBypass();
   const { reportsDisabled } = useReportsDisabled();
+  const { canUseNsGoalCalculator } = useNsGoalCalculatorAccess();
   const { impersonating, isImpersonatorDeveloper } = useRequiredSession();
   // Non-developer impersonators must never see the supervisor report (MPDX-10066).
   // Applied outside the developerBypass filter because session.developer reflects
@@ -65,24 +68,18 @@ export function useHrToolsNavItems(): {
       {
         id: 'staffSavingFund',
         title: t('Savings Fund Transfer'),
-        hideItem: reportsDisabled || hasNoStaffAccount,
+        hideItem:
+          reportsDisabled || hasNoStaffAccount || inStaffAccountIneligibleGroup,
       },
       {
         id: 'nsGoalCalculator',
         title: t('New Staff Goal Calculator'),
-        hideItem:
-          reportsDisabled ||
-          process.env.DISABLE_NS_GOAL_CALCULATOR === 'true' ||
-          inNsGoalCalcIneligibleGroup,
+        hideItem: !canUseNsGoalCalculator,
       },
       {
         id: 'nsoMpdQuestionnaire',
         title: t('NSO MPD Questionnaire'),
-        hideItem:
-          reportsDisabled ||
-          process.env.DISABLE_NS_GOAL_CALCULATOR === 'true' ||
-          inNsGoalCalcIneligibleGroup ||
-          hideQuestionnaire,
+        hideItem: !canUseNsGoalCalculator || hideQuestionnaire,
       },
       {
         id: 'goalCalculator',
@@ -136,6 +133,7 @@ export function useHrToolsNavItems(): {
     inNsGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
     inMpdSupervisorIneligibleGroup,
+    inStaffAccountIneligibleGroup,
     canViewNewStaffCohorts,
     hideQuestionnaire,
     userLoading,

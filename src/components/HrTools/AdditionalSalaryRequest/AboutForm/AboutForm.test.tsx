@@ -1,13 +1,23 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
+import { Formik } from 'formik';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  DeepPartialMock,
+  GqlMockedProvider,
+} from '__tests__/util/graphqlMocking';
+import {
+  AsrStatusEnum,
+  ProgressiveApprovalTierReasonEnum,
+} from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { HcmQuery } from '../../Shared/HcmData/Hcm.generated';
 import { AdditionalSalaryRequestQuery } from '../AdditionalSalaryRequest.generated';
+import { openAvailableBalanceTooltip } from '../FormVersions/testUtils';
 import { AdditionalSalaryRequestProvider } from '../Shared/AdditionalSalaryRequestContext';
+import { defaultCompleteFormValues } from '../Shared/CompleteForm.mock';
 import { AboutForm } from './AboutForm';
 
 const mockHandleContinue = jest.fn();
@@ -63,7 +73,7 @@ type AboutFormMocks = {
 };
 
 interface TestWrapperProps {
-  asrMocks?: Partial<AboutFormMocks>;
+  asrMocks?: DeepPartialMock<AboutFormMocks>;
   onCall?: jest.Mock;
 }
 
@@ -76,7 +86,12 @@ const TestWrapper: React.FC<TestWrapperProps> = ({ asrMocks, onCall }) => (
           onCall={onCall}
         >
           <AdditionalSalaryRequestProvider>
-            <AboutForm />
+            <Formik
+              initialValues={defaultCompleteFormValues}
+              onSubmit={jest.fn()}
+            >
+              <AboutForm />
+            </Formik>
           </AdditionalSalaryRequestProvider>
         </GqlMockedProvider>
       </SnackbarProvider>
@@ -115,11 +130,123 @@ describe('AboutForm', () => {
   });
 
   it('should display financial data when a request exists', async () => {
-    const { findByText } = render(<TestWrapper />);
+    const { findByText, queryByText } = render(<TestWrapper />);
 
-    expect(await findByText(/Primary Account Balance/i)).toBeInTheDocument();
+    expect(
+      await findByText(/^Available for This Request$/i),
+    ).toBeInTheDocument();
+    expect(queryByText(/Primary Account Balance/i)).not.toBeInTheDocument();
     expect(
       await findByText(/Your Maximum Allowable Salary \(CAP\)/i),
+    ).toBeInTheDocument();
+    expect(await findByText('REMAINING ALLOWABLE SALARY')).toBeInTheDocument();
+  });
+
+  // MPDX-10239: after a paid request, its amount was shown as room still left
+  it('shows the remaining salary the API counts after a paid request', async () => {
+    const { findByTestId } = render(
+      <TestWrapper
+        asrMocks={{
+          AdditionalSalaryRequest: {
+            latestAdditionalSalaryRequest: {
+              status: AsrStatusEnum.ApprovedAndPaid,
+              calculations: {
+                currentSalaryCap: 120000,
+                grossAnnualSalary: 60000,
+                ytdAsrAmount: 0,
+                remainingAllowableSalary: 30000,
+              },
+            },
+          },
+        }}
+      />,
+    );
+
+    expect(await findByTestId('amount-three')).toHaveTextContent('$30,000.00');
+  });
+
+  it('explains the available amount in a tooltip beside its label', async () => {
+    const utils = render(
+      <TestWrapper
+        asrMocks={{
+          AdditionalSalaryRequest: {
+            latestAdditionalSalaryRequest: {
+              calculations: {
+                staffAccountBalance: 1500,
+                staffAccountDeficitLimit: 500,
+                unpaidHouseholdAsrAmount: 800,
+                unpaidHouseholdAsrs: [
+                  {
+                    amount: 800,
+                    status: AsrStatusEnum.Pending,
+                    submittedAt: null,
+                    spouse: true,
+                  },
+                ],
+              },
+            },
+          },
+        }}
+      />,
+    );
+
+    await utils.findByTestId('amount-one');
+    expect(utils.queryByText(/Primary balance/)).not.toBeInTheDocument();
+    const tooltip = await openAvailableBalanceTooltip(utils);
+    expect(tooltip).toHaveTextContent(
+      'Primary balance of $1,500.00, plus deficit limit of $500.00, minus $800.00 in other unpaid requests',
+    );
+    expect(tooltip).toHaveTextContent(
+      "Your spouse's request, waiting for approval: $800.00",
+    );
+  });
+
+  it('shows the approval note inside the card, under the amounts', async () => {
+    const { findByText, getByTestId } = render(
+      <TestWrapper
+        asrMocks={{
+          AdditionalSalaryRequest: {
+            latestAdditionalSalaryRequest: {
+              calculations: {
+                approvalThreshold: 30000,
+                approvalThresholdReason:
+                  ProgressiveApprovalTierReasonEnum.OverUserCap,
+              },
+            },
+          },
+        }}
+      />,
+    );
+
+    const note = await findByText(
+      /Requests over \$30,000\.00 \(your remaining allowable salary\) need approval/,
+    );
+    expect(note.closest('.MuiCard-root')).toContainElement(
+      getByTestId('amount-one'),
+    );
+  });
+
+  // MPDX-10269: the spouse figure comes from the API, not cap - gross - ytd ($10,000 here)
+  it("shows the spouse's remaining salary from the API", async () => {
+    const { findByText } = render(
+      <TestWrapper
+        asrMocks={{
+          AdditionalSalaryRequest: {
+            latestAdditionalSalaryRequest: {
+              spouseCalculations: {
+                currentSalaryCap: 60000,
+                grossAnnualSalary: 45000,
+                ytdAsrAmount: 5000,
+                remainingAllowableSalary: 4000,
+              },
+            },
+          },
+        }}
+      />,
+    );
+
+    expect(
+      await findByText('Up to their remaining allowable salary of $4,000'),
     ).toBeInTheDocument();
   });
 
@@ -140,10 +267,11 @@ describe('AboutForm', () => {
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('AdditionalSalaryRequest'),
     );
-    expect(queryByText(/Primary Account Balance/i)).not.toBeInTheDocument();
+    expect(queryByText(/Available for This Request/i)).not.toBeInTheDocument();
     expect(
       queryByText(/Your Maximum Allowable Salary \(CAP\)/i),
     ).not.toBeInTheDocument();
+    expect(queryByText('REMAINING ALLOWABLE SALARY')).not.toBeInTheDocument();
   });
 
   it('should link to the Progressive Approvals document', () => {

@@ -19,9 +19,9 @@ export const useOptionalAccountListId = (): string | null => {
 
 /**
  * Read the accountListId from the route, throwing if it is missing. Use this on
- * pages nested under an [accountListId] route (all of which use
- * getServerSideProps, so the router is ready on the first render and the param
- * is always present). On pages that may render without an accountListId, use
+ * pages nested under an [accountListId] route (RouterGuard waits for the
+ * router to be ready, so the param is always present). On pages that may
+ * render without an accountListId, use
  * useOptionalAccountListId instead.
  */
 export const useAccountListId = (): string => {

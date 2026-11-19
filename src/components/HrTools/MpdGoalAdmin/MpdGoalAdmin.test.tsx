@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
@@ -17,8 +17,10 @@ import {
 import {
   attendeesMock,
   cohortsMock,
+  coordinatorUserMock,
   goalsAdminUserMock,
   noCohortsMock,
+  onlyEmptyCohortsMock,
 } from './mpdGoalAdminMocks';
 
 type Mocks = {
@@ -149,6 +151,23 @@ describe('MpdGoalAdmin', () => {
     expect(trainingSelect).toHaveAttribute('aria-disabled', 'true');
   });
 
+  it("replaces the selector and table when no cohort holds a coordinator's staff", async () => {
+    const { findByText, queryByRole } = renderMain({
+      GetUser: coordinatorUserMock,
+      NewStaffCohorts: onlyEmptyCohortsMock,
+    });
+
+    expect(
+      await findByText(
+        'None of the current training cohorts include staff in your ministry.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      queryByRole('combobox', { name: 'Training' }),
+    ).not.toBeInTheDocument();
+    expect(queryByRole('table')).not.toBeInTheDocument();
+  });
+
   // The tab lives in the URL so Goal Settings can link back to the right one.
   it('puts the selected tab in the URL', async () => {
     const { getByRole } = renderMain();
@@ -166,6 +185,53 @@ describe('MpdGoalAdmin', () => {
       undefined,
       { shallow: true },
     );
+  });
+
+  it('shows the MPD Coaches tab to the MPD Goals team', async () => {
+    const { findByRole } = renderMain();
+
+    expect(
+      await findByRole('tab', { name: 'MPD Coaches' }),
+    ).toBeInTheDocument();
+  });
+
+  // Coordinators assign from the coach list but only the MPD Goals team keeps it.
+  it('hides the MPD Coaches tab from a coordinator', async () => {
+    const { findAllByText, findByRole, queryByRole } = renderMain({
+      GetUser: coordinatorUserMock,
+    });
+
+    expect(
+      await findByRole('tab', { name: 'Scenario Goals' }),
+    ).toBeInTheDocument();
+    // Cohorts are held back until GetUser loads, so a cohort name means the role is known.
+    expect(await findAllByText('Fall NSO 2026')).not.toHaveLength(0);
+    await waitFor(() =>
+      expect(
+        queryByRole('tab', { name: 'MPD Coaches' }),
+      ).not.toBeInTheDocument(),
+    );
+  });
+
+  it('renders the MPD Coaches tab from the URL', async () => {
+    const { findByRole } = renderMain({}, { tab: 'mpd-coaches' });
+
+    expect(
+      await findByRole('button', { name: 'Add Coach' }),
+    ).toBeInTheDocument();
+  });
+
+  it('shows a coordinator the active goals for a hand-edited MPD Coaches URL', async () => {
+    const { findAllByText, findByText, queryByRole } = renderMain(
+      { GetUser: coordinatorUserMock },
+      { tab: 'mpd-coaches' },
+    );
+
+    expect(await findByText('Active MPD Goals')).toBeInTheDocument();
+    expect(await findAllByText('Fall NSO 2026')).not.toHaveLength(0);
+    expect(
+      queryByRole('button', { name: 'Add Coach' }),
+    ).not.toBeInTheDocument();
   });
 
   it('renders the scenario goals tab from the URL', async () => {

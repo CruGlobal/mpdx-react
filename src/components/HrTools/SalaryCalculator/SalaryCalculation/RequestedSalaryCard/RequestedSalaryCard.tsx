@@ -28,26 +28,65 @@ import {
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 import { EffectiveDateNote } from '../../Shared/EffectiveDateNote';
 import { StepCard, StepTableHead } from '../../Shared/StepCard';
+import { estimateRequestedSalary } from '../../Shared/estimateRequestedSalary';
 import { orientSalaryRequest } from '../../Shared/orientSalaryRequest';
-import { useCaps } from '../useCaps';
 import { useSosaBlockOverCap } from '../useSosaBlockOverCap';
+import { GoalSalaryRow } from './GoalSalaryRow';
 
-/**
- * Estimate a person's requested salary from their current HCM gross salary by reversing the
- * requested salary -> gross calculation: gross = salary * (1 + SECA fraction) / non-403b fraction.
- * Used when there is no approved salary request on file, such as a person's first request in MPDX.
- */
-export const estimateRequestedSalary = (
-  grossSalary: number | null | undefined,
-  calculations: CalculationFieldsFragment | null | undefined,
-): number | null => {
-  if (!grossSalary || !calculations) {
-    return null;
-  }
+const SosaHardCapAlert: React.FC = () => {
+  const { t } = useTranslation();
+  const { calculation } = useSalaryCalculator();
+  const { formatCurrency } = useFormatters();
 
-  return Math.round(
-    (grossSalary * calculations.non403bFraction) /
-      (1 + calculations.secaEstimatedFraction),
+  const ytdGross = formatCurrency(calculation?.calculations.requestedYtdGross);
+  const hardCap = formatCurrency(calculation?.calculations.hardCap);
+
+  return (
+    <Alert severity="error" sx={{ mt: 2 }}>
+      <Trans t={t}>
+        Your request cannot be submitted. With SECA, 403(b) and any additional
+        salary this year, your gross salary for the year would be{' '}
+        {{ gross: ytdGross }}. That is above your {{ cap: hardCap }} SOSA salary
+        limit, and approvals cannot raise this limit.
+        <br />
+        <br />
+        Please lower your requested salary, or contact{' '}
+        <Link href="mailto:payroll@cru.org">payroll@cru.org</Link> with any
+        questions.
+      </Trans>
+    </Alert>
+  );
+};
+
+const EstimatedSalary: React.FC<{ estimate: number }> = ({ estimate }) => {
+  const { t } = useTranslation();
+  const locale = useLocale();
+
+  return (
+    <>
+      <Box
+        component="span"
+        sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}
+      >
+        {/* No cents, since this is an estimate and not an exact amount */}
+        {currencyFormat(estimate, 'USD', locale, { fractionDigits: 0 })}
+        <Tooltip
+          title={t(
+            'We could not find an approved salary request on file, so this is our best estimate based on your current salary and 403(b) contributions in HCM. Please check your current salary in HCM to confirm it.',
+          )}
+          arrow
+        >
+          <InfoIcon
+            fontSize="small"
+            color="action"
+            data-testid="RequestedSalaryCard-estimateIcon"
+          />
+        </Tooltip>
+      </Box>
+      <Typography variant="caption" color="textSecondary" display="block">
+        {t('Estimate - confirm in HCM')}
+      </Typography>
+    </>
   );
 };
 
@@ -59,8 +98,6 @@ export const RequestedSalaryCard: React.FC = () => {
     hcmSpouse,
   } = useSalaryCalculator();
   const { formatCurrency } = useFormatters();
-  const locale = useLocale();
-  const { overCapPerson } = useCaps();
   const { isUserSosa, blockOnCap } = useSosaBlockOverCap();
   const { markValid, markInvalid } = useAutosaveForm();
 
@@ -94,35 +131,10 @@ export const RequestedSalaryCard: React.FC = () => {
     if (!estimated) {
       return '–';
     }
-    return (
-      <>
-        <Box
-          component="span"
-          sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}
-        >
-          {/* No cents, since this is an estimate and not an exact amount */}
-          {currencyFormat(estimated, 'USD', locale, { fractionDigits: 0 })}
-          <Tooltip
-            title={t(
-              'We could not find an approved salary request on file, so this is our best estimate based on your current salary and 403(b) contributions in HCM. Please check your current salary in HCM to confirm it.',
-            )}
-            arrow
-          >
-            <InfoIcon
-              fontSize="small"
-              color="action"
-              data-testid="RequestedSalaryCard-estimateIcon"
-            />
-          </Tooltip>
-        </Box>
-        <Typography variant="caption" color="textSecondary" display="block">
-          {t('Estimate - confirm in HCM')}
-        </Typography>
-      </>
-    );
+    return <EstimatedSalary estimate={estimated} />;
   };
 
-  // Disable the Continue button while the saved gross exceeds the SOSA cap.
+  // Disable the Continue button while the saved gross exceeds the SOSA hard cap.
   useEffect(() => {
     if (blockOnCap) {
       markInvalid('over-cap');
@@ -227,6 +239,8 @@ export const RequestedSalaryCard: React.FC = () => {
               )}
             </TableRow>
 
+            <GoalSalaryRow />
+
             <TableRow>
               <TableCell component="th" scope="row">
                 {t('Minimum Salary')}
@@ -283,21 +297,7 @@ export const RequestedSalaryCard: React.FC = () => {
           </TableBody>
         </Table>
 
-        {blockOnCap && (
-          <Alert severity="error" sx={{ mt: 2 }}>
-            <Trans t={t}>
-              Your request requires additional approvals and cannot be submitted
-              online. SOSA staff can have requests exceeding the{' '}
-              {{ cap: overCapPerson?.effectiveCap }} cap approved for certain
-              geographic locations with the appropriate levels of approval.
-              <br />
-              <br />
-              Please contact{' '}
-              <Link href="mailto:payroll@cru.org">payroll@cru.org</Link> for
-              further assistance.
-            </Trans>
-          </Alert>
-        )}
+        {blockOnCap && <SosaHardCapAlert />}
       </CardContent>
     </StepCard>
   );
