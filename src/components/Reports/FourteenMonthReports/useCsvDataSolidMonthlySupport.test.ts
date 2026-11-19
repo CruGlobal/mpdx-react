@@ -72,4 +72,25 @@ describe('useCsvData Solid Monthly Support', () => {
       'Not counted, no exchange rate for their commitment currency: Rivera, Ana',
     ]);
   });
+
+  it('counts a partner who gives in two currencies only in their commitment currency', () => {
+    const partner = {
+      name: 'Rivera, Ana',
+      pledgeCurrency: 'USD',
+      gifts: [0, ...monthly(100, 12)],
+    };
+    const tables = [
+      buildTable('USD', [buildContact({ ...partner, giftCurrency: 'USD' })]),
+      buildTable('CAD', [buildContact({ ...partner, giftCurrency: 'CAD' })]),
+    ];
+    const { result } = renderHook(() => useCsvData(tables), {});
+
+    expect(result.current[0]).toEqual(['Solid Monthly Support', 100, 'USD']);
+    expect(result.current[1]).toEqual([
+      'Solid Monthly Support',
+      0,
+      'CAD',
+      'Not counted, no exchange rate for their commitment currency: Rivera, Ana',
+    ]);
+  });
 });
