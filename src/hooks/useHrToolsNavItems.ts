@@ -1,10 +1,9 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNewStaffQuestionnaireStatusQuery } from './NewStaffQuestionnaireStatus.generated';
-import { useAccountListId } from './useAccountListId';
 import { useDeveloperBypass } from './useDeveloperBypass';
 import { useIneligibleByGroup } from './useIneligibleByGroup';
 import { useNsGoalCalculatorAccess } from './useNsGoalCalculatorAccess';
+import { useNsoMpdQuestionnaireHidden } from './useNsoMpdQuestionnaireHidden';
 import { NavItems } from './useReportNavItems';
 import { useReportsDisabled } from './useReportsDisabled';
 import { useRequiredSession } from './useRequiredSession';
@@ -19,7 +18,6 @@ export function useHrToolsNavItems(): {
     inSalaryCalcIneligibleGroup,
     inMhaIneligibleGroup,
     inMpdGoalCalcIneligibleGroup,
-    inNsGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
     inMpdSupervisorIneligibleGroup,
     inStaffAccountIneligibleGroup,
@@ -36,25 +34,7 @@ export function useHrToolsNavItems(): {
   // the impersonated user, not the impersonator.
   const blockedImpersonation = !!impersonating && !isImpersonatorDeveloper;
 
-  const accountListId = useAccountListId();
-
-  // The API returns a questionnaire only to households in a training with the questionnaire open,
-  // whatever either spouse's staff group, so everyone asks.
-  const {
-    data: questionnaireData,
-    loading: questionnaireLoading,
-    error: questionnaireError,
-  } = useNewStaffQuestionnaireStatusQuery({
-    variables: { accountListId },
-    skip: userLoading,
-  });
-  const questionnaire = questionnaireData?.newStaffQuestionnaire;
-  const hasQuestionnaireToFillIn = !!questionnaire && !questionnaire.completed;
-  // A failed query must not hide the path to paperwork new staff still owe,
-  // nor offer it to everyone else
-  const hideQuestionnaire = questionnaireError
-    ? inNsGoalCalcIneligibleGroup
-    : questionnaireLoading || !hasQuestionnaireToFillIn;
+  const hideQuestionnaire = useNsoMpdQuestionnaireHidden();
 
   const items = useMemo(() => {
     if (userLoading) {
@@ -81,10 +61,7 @@ export function useHrToolsNavItems(): {
       {
         id: 'nsoMpdQuestionnaire',
         title: t('NSO MPD Questionnaire'),
-        hideItem:
-          reportsDisabled ||
-          process.env.DISABLE_NS_GOAL_CALCULATOR === 'true' ||
-          hideQuestionnaire,
+        hideItem: hideQuestionnaire,
       },
       {
         id: 'goalCalculator',
@@ -135,7 +112,6 @@ export function useHrToolsNavItems(): {
     inSalaryCalcIneligibleGroup,
     inMhaIneligibleGroup,
     inMpdGoalCalcIneligibleGroup,
-    inNsGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
     inMpdSupervisorIneligibleGroup,
     inStaffAccountIneligibleGroup,
