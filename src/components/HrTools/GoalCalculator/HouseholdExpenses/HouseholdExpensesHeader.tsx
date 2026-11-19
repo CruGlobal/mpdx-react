@@ -101,13 +101,15 @@ export const HouseholdExpensesHeader: React.FC = () => {
     }
   };
 
+  // The global Apollo error link already shows and reports mutation errors.
+  // Catch them here so RUM doesn't also log an unhandled rejection.
   const handleUsePaycheck = () => {
-    setDirectInput(null);
+    setDirectInput(null).catch(() => {});
     setEditing(false);
   };
 
   const handleUseCategoriesTotal = () => {
-    setDirectInput(categoriesTotal);
+    setDirectInput(categoriesTotal).catch(() => {});
     setEditing(false);
   };
 
@@ -117,7 +119,7 @@ export const HouseholdExpensesHeader: React.FC = () => {
   };
 
   const handleDirectInputSave = () => {
-    setDirectInput(directInputFieldValue);
+    setDirectInput(directInputFieldValue).catch(() => {});
     setEditing(false);
   };
 
