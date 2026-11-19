@@ -1,6 +1,8 @@
 import { missingValue } from '../../../Shared/helpers/missingValue';
 import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
 import {
+  combinedCapOverrides,
+  combinedCapValues,
   createRenderFormComponent,
   defaultMockContextValue,
   openAvailableBalanceTooltip,
@@ -173,6 +175,16 @@ describe('NewForm', () => {
 
       expect(getByText('Total Salary Requested')).toBeInTheDocument();
       expect(getByText('Approval Process')).toBeInTheDocument();
+    });
+
+    it("asks for approval past the API's threshold even under the own cap", () => {
+      const { getByText, queryByText } = renderComponent({
+        initialValues: combinedCapValues,
+        contextOverrides: combinedCapOverrides,
+      });
+
+      expect(getByText('Approval Process')).toBeInTheDocument();
+      expect(queryByText('Total Salary Requested')).not.toBeInTheDocument();
     });
 
     it('does not render exceeded cap components when not exceeded', () => {

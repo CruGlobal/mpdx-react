@@ -33,6 +33,8 @@ import {
   SalaryCalculatorProvider,
   useSalaryCalculator,
 } from './SalaryCalculatorContext/SalaryCalculatorContext';
+import { GoalSalaryQuery } from './Shared/GoalSalary.generated';
+import { GoalMock, goalSalaryQueryMock } from './Shared/goalSalaryMock';
 import {
   SubmitSalaryCalculationMutation,
   SubmitSalaryCalculationMutationVariables,
@@ -44,6 +46,7 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
       {
         salaryRequestEligible: true,
         staffInfo: {
+          firstName: 'John',
           preferredName: 'John',
           lastName: 'Doe',
           personNumber: '000123456',
@@ -88,6 +91,7 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
       {
         salaryRequestEligible: true,
         staffInfo: {
+          firstName: 'Jane',
           preferredName: 'Jane',
           lastName: 'Doe',
           personNumber: '000789123',
@@ -159,7 +163,25 @@ export interface SalaryCalculatorTestWrapperProps {
   calculationError?: boolean;
   /** Makes SubmitSalaryCalculation fail with this error unless its input sets `confirmMhaEnd` */
   submitError?: GraphQLError;
+  /** The account list's MPD Goals */
+  goals?: GoalMock[];
 }
+
+const staffAccountMock = {
+  staffAccount: {
+    id: '12345',
+    name: 'Test Account',
+  },
+};
+
+const goalCalculatorConstantsMock = {
+  constant: {
+    mpdGoalGeographicConstants: [
+      { location: 'Atlanta, GA' },
+      { location: 'Miami, FL' },
+    ],
+  },
+};
 
 export const SalaryCalculatorTestWrapper: React.FC<
   SalaryCalculatorTestWrapperProps
@@ -180,6 +202,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
   calculationUnavailableCalls = 0,
   calculationError = false,
   submitError,
+  goals = [],
 }) => {
   const hcmUserMerged = merge({}, hcmUserMock, hcmUser);
   const hcmSpouseMerged = merge({}, hcmSpouseMock, hcmSpouse);
@@ -205,14 +228,10 @@ export const SalaryCalculatorTestWrapper: React.FC<
             GetUser: GetUserQuery;
             AccountGeographicLocation: AccountGeographicLocationQuery;
             SubmitSalaryCalculation: SubmitSalaryCalculationMutation;
+            GoalSalary: GoalSalaryQuery;
           }>
             mocks={{
-              StaffAccount: {
-                staffAccount: {
-                  id: '12345',
-                  name: 'Test Account',
-                },
-              },
+              StaffAccount: staffAccountMock,
               GetUser: {
                 user: {
                   userType,
@@ -229,17 +248,11 @@ export const SalaryCalculatorTestWrapper: React.FC<
               PayrollDates: {
                 payrollDates,
               },
+              GoalSalary: goalSalaryQueryMock(goals),
               EffectiveSalaryCalculation: {
                 salaryRequest: effectiveSalaryRequestMock,
               },
-              GoalCalculatorConstants: {
-                constant: {
-                  mpdGoalGeographicConstants: [
-                    { location: 'Atlanta, GA' },
-                    { location: 'Miami, FL' },
-                  ],
-                },
-              },
+              GoalCalculatorConstants: goalCalculatorConstantsMock,
               Hcm: {
                 hcm: mockHcmUnavailable(
                   hasSpouse

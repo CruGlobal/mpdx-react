@@ -28,27 +28,10 @@ import {
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 import { EffectiveDateNote } from '../../Shared/EffectiveDateNote';
 import { StepCard, StepTableHead } from '../../Shared/StepCard';
+import { estimateRequestedSalary } from '../../Shared/estimateRequestedSalary';
 import { orientSalaryRequest } from '../../Shared/orientSalaryRequest';
 import { useSosaBlockOverCap } from '../useSosaBlockOverCap';
-
-/**
- * Estimate a person's requested salary from their current HCM gross salary by reversing the
- * requested salary -> gross calculation: gross = salary * (1 + SECA fraction) / non-403b fraction.
- * Used when there is no approved salary request on file, such as a person's first request in MPDX.
- */
-export const estimateRequestedSalary = (
-  grossSalary: number | null | undefined,
-  calculations: CalculationFieldsFragment | null | undefined,
-): number | null => {
-  if (!grossSalary || !calculations) {
-    return null;
-  }
-
-  return Math.round(
-    (grossSalary * calculations.non403bFraction) /
-      (1 + calculations.secaEstimatedFraction),
-  );
-};
+import { GoalSalaryRow } from './GoalSalaryRow';
 
 const SosaHardCapAlert: React.FC = () => {
   const { t } = useTranslation();
@@ -75,6 +58,38 @@ const SosaHardCapAlert: React.FC = () => {
   );
 };
 
+const EstimatedSalary: React.FC<{ estimate: number }> = ({ estimate }) => {
+  const { t } = useTranslation();
+  const locale = useLocale();
+
+  return (
+    <>
+      <Box
+        component="span"
+        sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}
+      >
+        {/* No cents, since this is an estimate and not an exact amount */}
+        {currencyFormat(estimate, 'USD', locale, { fractionDigits: 0 })}
+        <Tooltip
+          title={t(
+            'We could not find an approved salary request on file, so this is our best estimate based on your current salary and 403(b) contributions in HCM. Please check your current salary in HCM to confirm it.',
+          )}
+          arrow
+        >
+          <InfoIcon
+            fontSize="small"
+            color="action"
+            data-testid="RequestedSalaryCard-estimateIcon"
+          />
+        </Tooltip>
+      </Box>
+      <Typography variant="caption" color="textSecondary" display="block">
+        {t('Estimate - confirm in HCM')}
+      </Typography>
+    </>
+  );
+};
+
 export const RequestedSalaryCard: React.FC = () => {
   const { t } = useTranslation();
   const {
@@ -83,7 +98,6 @@ export const RequestedSalaryCard: React.FC = () => {
     hcmSpouse,
   } = useSalaryCalculator();
   const { formatCurrency } = useFormatters();
-  const locale = useLocale();
   const { isUserSosa, blockOnCap } = useSosaBlockOverCap();
   const { markValid, markInvalid } = useAutosaveForm();
 
@@ -117,32 +131,7 @@ export const RequestedSalaryCard: React.FC = () => {
     if (!estimated) {
       return '–';
     }
-    return (
-      <>
-        <Box
-          component="span"
-          sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}
-        >
-          {/* No cents, since this is an estimate and not an exact amount */}
-          {currencyFormat(estimated, 'USD', locale, { fractionDigits: 0 })}
-          <Tooltip
-            title={t(
-              'We could not find an approved salary request on file, so this is our best estimate based on your current salary and 403(b) contributions in HCM. Please check your current salary in HCM to confirm it.',
-            )}
-            arrow
-          >
-            <InfoIcon
-              fontSize="small"
-              color="action"
-              data-testid="RequestedSalaryCard-estimateIcon"
-            />
-          </Tooltip>
-        </Box>
-        <Typography variant="caption" color="textSecondary" display="block">
-          {t('Estimate - confirm in HCM')}
-        </Typography>
-      </>
-    );
+    return <EstimatedSalary estimate={estimated} />;
   };
 
   // Disable the Continue button while the saved gross exceeds the SOSA hard cap.
@@ -249,6 +238,8 @@ export const RequestedSalaryCard: React.FC = () => {
                 </TableCell>
               )}
             </TableRow>
+
+            <GoalSalaryRow />
 
             <TableRow>
               <TableCell component="th" scope="row">
