@@ -76,8 +76,11 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
   );
 
   const averages = useMemo(
-    () => monthlyAverages(monthlySummary),
-    [monthlySummary],
+    () => ({
+      ...monthlyAverages(monthlySummary),
+      period: t('last 11 full months'),
+    }),
+    [monthlySummary, t],
   );
 
   const tableRows = useMemo(

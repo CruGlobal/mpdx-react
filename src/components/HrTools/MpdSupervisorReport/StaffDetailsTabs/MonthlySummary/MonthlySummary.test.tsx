@@ -249,9 +249,13 @@ describe('StaffTabMonthlySummary', () => {
     userEvent.click(await findByRole('button', { name: 'Chart view' }));
 
     expect(
-      await findByText('Contributions average: $4,500.00'),
+      await findByText(
+        'Contributions average (last 11 full months): $4,500.00',
+      ),
     ).toBeInTheDocument();
-    expect(getByText('Expenses average: $3,300.00')).toBeInTheDocument();
+    expect(
+      getByText('Expenses average (last 11 full months): $3,300.00'),
+    ).toBeInTheDocument();
   });
 
   it('charts labelled empty months without showing a zero amount', async () => {

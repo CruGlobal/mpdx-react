@@ -27,6 +27,8 @@ export interface MonthlySummaryChartData {
 export interface MonthlySummaryAverages {
   income?: number;
   expenses?: number;
+  // Which months the averages cover, e.g. "last 11 full months"
+  period: string;
 }
 
 interface MonthlySummaryChartProps {
