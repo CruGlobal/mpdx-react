@@ -10,6 +10,7 @@ import {
   formatGoalAmount,
 } from '../CalculatorSettings/GoalReferenceCards/ReferenceCard';
 import { calculateGoalTotals } from '../Shared/calculateTotals';
+import { pickPrimaryGoal } from '../Shared/pickPrimaryGoal';
 import { ListGoalCalculationFragment } from './GoalCalculations.generated';
 
 interface CalculatedGoalCardProps {
@@ -56,10 +57,7 @@ interface GoalSummaryCardsProps {
 export const GoalSummaryCards: React.FC<GoalSummaryCardsProps> = ({
   goals,
 }) => {
-  // Read-only goals are converted New Staff goals, not goals calculated here
-  const editableGoals = goals?.filter((goal) => !goal.readOnly);
-  const summaryGoal =
-    editableGoals?.find((goal) => goal.primary) ?? editableGoals?.[0];
+  const summaryGoal = pickPrimaryGoal(goals);
 
   return (
     <Stack
