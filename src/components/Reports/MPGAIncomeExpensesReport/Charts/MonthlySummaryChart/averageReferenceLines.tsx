@@ -1,72 +1,85 @@
 import { TFunction } from 'i18next';
-import { ReferenceLine } from 'recharts';
+import { LegendProps, ReferenceLine } from 'recharts';
 import theme from 'src/theme';
 import { MonthlySummaryAverages } from './MonthlySummaryChart';
 
-interface AverageReferenceLinesOptions {
+interface AverageSeriesOptions {
   t: TFunction;
   averages?: MonthlySummaryAverages;
   incomeName: string;
+}
+
+interface AverageLegendOptions extends AverageSeriesOptions {
   formatCurrency: (value: number) => string;
 }
 
-// Recharts only finds its own elements among the chart's direct children, so
-// this returns ReferenceLine elements instead of being a component.
-export const averageReferenceLines = ({
-  t,
-  averages,
-  incomeName,
-  formatCurrency,
-}: AverageReferenceLinesOptions) => {
-  if (!averages) {
-    return [];
-  }
+const averageDash = '6 4';
 
-  // The higher line's label sits above it and the lower one's below, so the
-  // two labels never share the gap between close lines. A lone line's label
-  // sits above it.
-  const incomeOnTop =
-    (averages.income ?? -Infinity) >= (averages.expenses ?? -Infinity);
-
-  return [
+// The averages that have a value, each in a darker shade of its bars' color so
+// the line shows where it crosses its own bars
+const averageSeries = ({ t, averages, incomeName }: AverageSeriesOptions) =>
+  [
     {
       key: 'income',
-      value: averages.income,
+      value: averages?.income,
       name: incomeName,
-      // Darker than the bars so the line shows where it crosses its own bars
       color: theme.palette.success.dark,
-      above: incomeOnTop,
     },
     {
       key: 'expenses',
-      value: averages.expenses,
+      value: averages?.expenses,
       name: t('Expenses'),
       color: theme.palette.error.dark,
-      above: !incomeOnTop,
     },
-  ].map(({ key, value, name, color, above }) =>
-    value === undefined ? null : (
-      <ReferenceLine
-        key={key}
-        y={value}
-        stroke={color}
-        strokeWidth={2}
-        strokeDasharray="6 4"
-        label={{
-          value: t('{{name}} average: {{amount}}', {
-            name,
-            amount: formatCurrency(value),
-          }),
-          // On a flat line, "insideBottom" sits above it and "insideTop" below
-          position: above ? 'insideBottomRight' : 'insideTopRight',
-          fill: color,
-          fontSize: theme.typography.body2.fontSize,
-          // A white outline keeps the label readable where it crosses a bar
-          stroke: theme.palette.common.white,
-          strokeWidth: 4,
-          paintOrder: 'stroke',
-        }}
-      />
-    ),
+  ].flatMap(({ value, ...series }) =>
+    value === undefined ? [] : [{ ...series, value }],
   );
+
+// Recharts only finds its own elements among the chart's direct children, so
+// this returns ReferenceLine elements instead of being a component. The lines
+// have no text; their amounts are in the legend.
+export const averageReferenceLines = (options: AverageSeriesOptions) =>
+  averageSeries(options).map(({ key, value, color }) => (
+    <ReferenceLine
+      key={key}
+      y={value}
+      stroke={color}
+      strokeWidth={2}
+      strokeDasharray={averageDash}
+    />
+  ));
+
+const averageLegendItems = ({
+  formatCurrency,
+  ...options
+}: AverageLegendOptions) =>
+  averageSeries(options).map(({ value, name, color }) => ({
+    value: options.t('{{name}} average: {{amount}}', {
+      name,
+      amount: formatCurrency(value),
+    }),
+    type: 'plainline' as const,
+    color,
+    payload: { strokeDasharray: averageDash },
+  }));
+
+interface ChartLegendOptions extends AverageLegendOptions {
+  barColors: [string, string];
+}
+
+// The bars' legend entries plus one per average
+export const chartLegend = ({ barColors, ...options }: ChartLegendOptions) => {
+  const averageItems = averageLegendItems(options);
+  const legendPayload: LegendProps['payload'] = [
+    { value: options.incomeName, type: 'square', color: barColors[0] },
+    { value: options.t('Expenses'), type: 'square', color: barColors[1] },
+    ...averageItems,
+  ];
+
+  return {
+    legendPayload,
+    // Averages make the legend wrap to several lines on a phone, so then it
+    // sits above the chart instead of taking height from the plot
+    legendAbove: averageItems.length > 0,
+  };
 };
