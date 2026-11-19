@@ -27,8 +27,8 @@ export const toChartData = (
     };
   });
 
-// Months with no amount (before they joined, or not synced) are left out so
-// they don't drag the average down. A reported $0 counts.
+// Months with no amount (not synced) are left out so they don't drag the
+// average down. A reported $0 counts.
 const average = (values: Array<number | null | undefined>) => {
   const amounts = values.filter(
     (value): value is number => value !== null && value !== undefined,
@@ -39,14 +39,22 @@ const average = (values: Array<number | null | undefined>) => {
   return amounts.reduce((sum, value) => sum + value, 0) / amounts.length;
 };
 
+const isEmpty = (month: MonthAmounts) =>
+  !month.contributions && !month.expenses;
+
 // The API's last row is the current month, still in progress, so it is left
-// out too, the same as the Dashboard's donation average.
+// out too, the same as the Dashboard's donation average. The API sends the
+// months before someone joined as $0, so empty months before their first
+// activity are left out as well. `months` is how many months are averaged.
 export const monthlyAverages = (
   months: MonthAmounts[],
-): MonthlySummaryAverages => {
-  const pastMonths = months.slice(0, -1);
+): MonthlySummaryAverages & { months: number } => {
+  const finishedMonths = months.slice(0, -1);
+  const firstActive = finishedMonths.findIndex((month) => !isEmpty(month));
+  const pastMonths = firstActive < 0 ? [] : finishedMonths.slice(firstActive);
   return {
     income: average(pastMonths.map((month) => month.contributions)),
     expenses: average(pastMonths.map((month) => month.expenses)),
+    months: pastMonths.length,
   };
 };

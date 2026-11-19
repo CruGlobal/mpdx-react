@@ -82,6 +82,8 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
 
   const showChart = view === MonthlySummaryView.Chart;
   const hasData = monthlySummary.length > 0;
+  const { months: averagedMonths, ...averages } =
+    monthlyAverages(monthlySummary);
 
   const emptyChartData = useMemo((): MonthlySummaryChartData[] => {
     const thisMonth = DateTime.local().startOf('month');
@@ -127,8 +129,8 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
           overrideIncomeText={t('Contributions')}
           noDataLabel={hasData ? undefined : t('N/A')}
           averages={{
-            ...monthlyAverages(monthlySummary),
-            note: t('(last 11 full months)'),
+            ...averages,
+            note: t('(last {{count}} full months)', { count: averagedMonths }),
           }}
         />
       ) : (

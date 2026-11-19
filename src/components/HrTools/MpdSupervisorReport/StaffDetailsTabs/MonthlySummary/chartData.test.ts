@@ -29,7 +29,7 @@ describe('monthlyAverages', () => {
         { contributions: 3200, expenses: 3100 },
         currentMonth,
       ]),
-    ).toEqual({ income: 3800, expenses: 3700 });
+    ).toEqual({ income: 3800, expenses: 3700, months: 3 });
   });
 
   it('leaves out the last row, even when its date is not this month', () => {
@@ -39,7 +39,7 @@ describe('monthlyAverages', () => {
         { month: '2019-12', contributions: 5000, expenses: 4000 },
         { month: '2019-12', ...currentMonth },
       ]),
-    ).toEqual({ income: 4500, expenses: 3500 });
+    ).toEqual({ income: 4500, expenses: 3500, months: 2 });
   });
 
   it('skips months with no amount but counts months reported as zero', () => {
@@ -50,7 +50,7 @@ describe('monthlyAverages', () => {
         { contributions: 3000, expenses: null },
         currentMonth,
       ]),
-    ).toEqual({ income: 1500, expenses: 1000 });
+    ).toEqual({ income: 1500, expenses: 1000, months: 2 });
   });
 
   it('has no average for a field with no amounts', () => {
@@ -60,6 +60,40 @@ describe('monthlyAverages', () => {
         { contributions: undefined, expenses: 400 },
         currentMonth,
       ]),
-    ).toEqual({ income: undefined, expenses: 300 });
+    ).toEqual({ income: undefined, expenses: 300, months: 2 });
+  });
+
+  it('leaves out the empty months before the staff member started', () => {
+    // The API sends months before someone joined as $0, not null
+    expect(
+      monthlyAverages([
+        { contributions: 0, expenses: 0 },
+        { contributions: 0, expenses: 0 },
+        { contributions: 4000, expenses: 3000 },
+        { contributions: 5000, expenses: 3600 },
+        currentMonth,
+      ]),
+    ).toEqual({ income: 4500, expenses: 3300, months: 2 });
+  });
+
+  it('counts an empty month once activity has started', () => {
+    expect(
+      monthlyAverages([
+        { contributions: 0, expenses: 0 },
+        { contributions: 4000, expenses: 3000 },
+        { contributions: 0, expenses: 0 },
+        { contributions: 5000, expenses: 3600 },
+        currentMonth,
+      ]),
+    ).toEqual({ income: 3000, expenses: 2200, months: 3 });
+  });
+
+  it('has no averages when no month is finished or active', () => {
+    const none = { income: undefined, expenses: undefined, months: 0 };
+    expect(monthlyAverages([])).toEqual(none);
+    expect(monthlyAverages([currentMonth])).toEqual(none);
+    expect(
+      monthlyAverages([{ contributions: 0, expenses: 0 }, currentMonth]),
+    ).toEqual(none);
   });
 });
