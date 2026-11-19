@@ -78,13 +78,13 @@ describe('RequestSummaryStatus', () => {
   });
 
   it('shows the status message and allows continuing otherwise', async () => {
-    const { findByText, getByTestId, getByRole } = render(
+    const { findByText, findByTestId, getByRole } = render(
       <TestComponent salaryRequestMock={notBlockedMock} />,
     );
 
     // Not blocked is also what shows before the data loads, so wait for it first
     expect(await findByText('HCM loaded')).toBeInTheDocument();
-    expect(getByTestId('RequestSummaryCard-status')).toHaveTextContent(
+    expect(await findByTestId('RequestSummaryCard-status')).toHaveTextContent(
       'Division Head message',
     );
     await waitFor(() =>
@@ -93,12 +93,12 @@ describe('RequestSummaryStatus', () => {
   });
 
   it('shows the status message for a request that is only being viewed', async () => {
-    const { findByText, getByTestId, queryByTestId } = render(
+    const { findByText, findByTestId, queryByTestId } = render(
       <TestComponent salaryRequestMock={blockedMock} editing={false} />,
     );
 
     expect(await findByText('HCM loaded')).toBeInTheDocument();
-    expect(getByTestId('RequestSummaryCard-status')).toHaveTextContent(
+    expect(await findByTestId('RequestSummaryCard-status')).toHaveTextContent(
       'Division Head message',
     );
     expect(queryByTestId('SpouseCapFirstAlert')).not.toBeInTheDocument();
