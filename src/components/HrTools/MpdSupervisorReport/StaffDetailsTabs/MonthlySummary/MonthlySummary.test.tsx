@@ -234,6 +234,19 @@ describe('StaffTabMonthlySummary', () => {
     expect(getByRole('table')).toBeInTheDocument();
   });
 
+  it('draws the 12-month contributions and expenses averages on the chart', async () => {
+    const { findByRole, findByText, getByText } = render(
+      <TestComponent monthlySummary={mockMonthlySummary} />,
+    );
+
+    userEvent.click(await findByRole('button', { name: 'Chart view' }));
+
+    expect(
+      await findByText('Contributions 12-month avg: $3,733.33'),
+    ).toBeInTheDocument();
+    expect(getByText('Expenses 12-month avg: $3,733.33')).toBeInTheDocument();
+  });
+
   it('charts labelled empty months without showing a zero amount', async () => {
     const { container, findByRole, queryByRole, queryByText } = render(
       <TestComponent monthlySummary={[]} />,

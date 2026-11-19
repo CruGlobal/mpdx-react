@@ -6,6 +6,7 @@ import {
   BarChart,
   LabelList,
   Legend,
+  ReferenceLine,
   Tooltip,
   XAxis,
   YAxis,
@@ -23,6 +24,11 @@ export interface MonthlySummaryChartData {
   net: number;
 }
 
+export interface MonthlySummaryAverages {
+  income?: number;
+  expenses?: number;
+}
+
 interface MonthlySummaryChartProps {
   data: MonthlySummaryChartData[];
   currency: string;
@@ -31,6 +37,8 @@ interface MonthlySummaryChartProps {
   width: number;
   overrideIncomeText?: string;
   noDataLabel?: string;
+  // Draws a dashed line at each average, labelled with its amount
+  averages?: MonthlySummaryAverages;
 }
 
 interface MonthlyTotal extends MonthlySummaryChartData {
@@ -47,6 +55,7 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
   width,
   overrideIncomeText,
   noDataLabel,
+  averages,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -57,6 +66,27 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
     maskAmounts
       ? noDataLabel
       : currencyFormat(value, currency, locale, { showTrailingZeros: true });
+
+  const incomeName = overrideIncomeText ?? t('Income');
+
+  const averageLines = maskAmounts
+    ? []
+    : [
+        {
+          key: 'income',
+          value: averages?.income,
+          name: incomeName,
+          color: chartColors[0],
+          labelPosition: 'insideTopLeft' as const,
+        },
+        {
+          key: 'expenses',
+          value: averages?.expenses,
+          name: t('Expenses'),
+          color: chartColors[1],
+          labelPosition: 'insideBottomLeft' as const,
+        },
+      ];
 
   const monthlyTotals = useMemo(
     (): MonthlyTotal[] =>
@@ -123,8 +153,7 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
                       {label}
                     </Typography>
                     <Typography variant="body1">
-                      {overrideIncomeText ?? t('Income')}:{' '}
-                      {formatAmount(income)}
+                      {incomeName}: {formatAmount(income)}
                     </Typography>
                     <Typography variant="body1">
                       {t('Expenses')}: {formatAmount(expenses)}
@@ -147,11 +176,7 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
                 );
               }}
             />
-            <Bar
-              dataKey="income"
-              name={overrideIncomeText ?? t('Income')}
-              fill={chartColors[0]}
-            />
+            <Bar dataKey="income" name={incomeName} fill={chartColors[0]} />
             <Bar
               dataKey="expenses"
               name={t('Expenses')}
@@ -179,6 +204,26 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
                 />
               )}
             </Bar>
+            {averageLines.map(({ key, value, name, color, labelPosition }) =>
+              value === undefined ? null : (
+                <ReferenceLine
+                  key={key}
+                  y={value}
+                  stroke={color}
+                  strokeWidth={2}
+                  strokeDasharray="6 4"
+                  label={{
+                    value: t('{{name}} 12-month avg: {{amount}}', {
+                      name,
+                      amount: formatAmount(value),
+                    }),
+                    position: labelPosition,
+                    fill: color,
+                    fontSize: theme.typography.body2.fontSize,
+                  }}
+                />
+              ),
+            )}
             <Legend
               verticalAlign="top"
               align="center"
@@ -188,7 +233,7 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
               )}
               payload={[
                 {
-                  value: overrideIncomeText ?? t('Income'),
+                  value: incomeName,
                   type: 'square',
                   color: chartColors[0],
                 },

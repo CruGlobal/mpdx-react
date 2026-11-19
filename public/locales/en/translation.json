@@ -277,6 +277,7 @@
     "{{mode}} Minister's Housing Allowance Calculation Tool": "{{mode}} Minister's Housing Allowance Calculation Tool",
     "{{month}} ending balance": "{{month}} ending balance",
     "{{months}} months ago": "{{months}} months ago",
+    "{{name}} 12-month avg: {{amount}}": "{{name}} 12-month avg: {{amount}}",
     "{{name}} has one or multiple invalid numbers. Please fix.": "{{name}} has one or multiple invalid numbers. Please fix.",
     "{{name}} may request up to their Board Approved {{sectionKind}} Amount of {{approvedAmount}}.": "{{name}} may request up to their Board Approved {{sectionKind}} Amount of {{approvedAmount}}.",
     "{{name}} won't get MHA once this request takes effect.": "{{name}} won't get MHA once this request takes effect.",

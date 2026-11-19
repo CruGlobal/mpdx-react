@@ -45,6 +45,27 @@ const ChartWithNoDataLabel: React.FC = () => (
   </MPGAIncomeExpensesReportTestWrapper>
 );
 
+const averagesData = [
+  { month: 'Jan 2023', income: 4000, expenses: 3500, net: 500 },
+  { month: 'Feb 2023', income: 3600, expenses: 3900, net: -300 },
+];
+
+const ChartWithAverages: React.FC<{ noDataLabel?: string }> = ({
+  noDataLabel,
+}) => (
+  <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
+    <MonthlySummaryChart
+      data={averagesData}
+      currency="USD"
+      aspect={1.35}
+      width={100}
+      overrideIncomeText="Contributions"
+      averages={{ income: 3800, expenses: 3700 }}
+      noDataLabel={noDataLabel}
+    />
+  </MPGAIncomeExpensesReportTestWrapper>
+);
+
 describe('MonthlySummaryChart', () => {
   it('renders the bar chart', async () => {
     const { findByRole } = render(<TestComponent />);
@@ -108,6 +129,47 @@ describe('MonthlySummaryChart', () => {
       0,
     );
     expect(within(region).queryByText(/^\$/)).not.toBeInTheDocument();
+  });
+
+  it('draws a dashed line with its amount for each average when given averages', async () => {
+    const { findByRole } = render(<ChartWithAverages />);
+
+    const region = await findByRole('region');
+
+    expect(
+      await within(region).findByText('Contributions 12-month avg: $3,800.00'),
+    ).toBeInTheDocument();
+    expect(
+      within(region).getByText('Expenses 12-month avg: $3,700.00'),
+    ).toBeInTheDocument();
+    const lines = region.querySelectorAll('.recharts-reference-line line');
+    expect(lines).toHaveLength(2);
+    lines.forEach((line) =>
+      expect(line).toHaveAttribute('stroke-dasharray', '6 4'),
+    );
+  });
+
+  it('draws no average lines without averages', async () => {
+    const { findByRole } = render(<TestComponent />);
+
+    const region = await findByRole('region');
+
+    await waitFor(() =>
+      expect(region.querySelector('svg.recharts-surface')).toBeTruthy(),
+    );
+    expect(region.querySelectorAll('.recharts-reference-line')).toHaveLength(0);
+  });
+
+  it('draws no average lines when amounts are masked', async () => {
+    const { findByRole } = render(<ChartWithAverages noDataLabel="N/A" />);
+
+    const region = await findByRole('region');
+
+    await waitFor(() =>
+      expect(region.querySelector('svg.recharts-surface')).toBeTruthy(),
+    );
+    expect(region.querySelectorAll('.recharts-reference-line')).toHaveLength(0);
+    expect(within(region).queryByText(/12-month avg/)).not.toBeInTheDocument();
   });
 
   it('renders legend with correct labels', async () => {

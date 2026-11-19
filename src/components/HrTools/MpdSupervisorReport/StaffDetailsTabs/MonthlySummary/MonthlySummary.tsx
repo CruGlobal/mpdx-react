@@ -25,6 +25,7 @@ import { pendingField } from '../../helpers';
 import { useMonthlyPayrollSummaryQuery } from './MonthlyPayrollSummary.generated';
 import { SupportVsGoalCells } from './SupportVsGoalCells';
 import { ToggleSummaryView } from './ToggleSummaryView/ToggleSummaryView';
+import { monthlyAverages } from './monthlyAverages';
 
 export enum MonthlySummaryView {
   Table = 'table',
@@ -85,6 +86,11 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
     [monthlySummary, locale],
   );
 
+  const averages = useMemo(
+    () => monthlyAverages(monthlySummary),
+    [monthlySummary],
+  );
+
   const tableRows = useMemo(
     () => [...monthlySummary].reverse(),
     [monthlySummary],
@@ -136,6 +142,7 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
           width={100}
           overrideIncomeText={t('Contributions')}
           noDataLabel={hasData ? undefined : t('N/A')}
+          averages={averages}
         />
       ) : (
         <TableContainer>
