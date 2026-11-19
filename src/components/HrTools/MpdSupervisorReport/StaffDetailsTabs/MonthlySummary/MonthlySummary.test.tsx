@@ -232,13 +232,11 @@ describe('StaffTabMonthlySummary', () => {
     userEvent.click(getByRole('button', { name: 'Table view' }));
 
     expect(getByRole('table')).toBeInTheDocument();
-    expect(
-      queryByText('Averages: last 11 full months'),
-    ).not.toBeInTheDocument();
+    expect(queryByText('(last 11 full months)')).not.toBeInTheDocument();
   });
 
   it('draws the contributions and expenses averages of the finished months on the chart', async () => {
-    const { findByRole, findByText, getByText } = render(
+    const { findByRole, findByTestId } = render(
       <TestComponent
         monthlySummary={[
           { ...mockMonthlySummary[0], contributions: 4000, expenses: 3000 },
@@ -251,11 +249,9 @@ describe('StaffTabMonthlySummary', () => {
 
     userEvent.click(await findByRole('button', { name: 'Chart view' }));
 
-    expect(
-      await findByText('Contributions average: $4,500.00'),
-    ).toBeInTheDocument();
-    expect(getByText('Expenses average: $3,300.00')).toBeInTheDocument();
-    expect(getByText('Averages: last 11 full months')).toBeInTheDocument();
+    expect(await findByTestId('MonthlySummaryAverageKey')).toHaveTextContent(
+      'Contributions average $4,500.00Expenses average $3,300.00(last 11 full months)',
+    );
   });
 
   it('charts labelled empty months without showing a zero amount', async () => {
@@ -268,7 +264,7 @@ describe('StaffTabMonthlySummary', () => {
     expect(await findByRole('region')).toBeInTheDocument();
     expect(queryByRole('table')).not.toBeInTheDocument();
     expect(queryByText(/^\$/)).not.toBeInTheDocument();
-    expect(queryByText(/^Averages:/)).not.toBeInTheDocument();
+    expect(queryByText(/full months/)).not.toBeInTheDocument();
 
     // Tests run pinned to 2020-01-01, so the window ends on the current month.
     const ticks = Array.from(

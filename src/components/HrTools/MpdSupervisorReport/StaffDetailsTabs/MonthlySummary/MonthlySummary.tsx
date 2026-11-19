@@ -119,22 +119,18 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
         />
       </Box>
       {showChart ? (
-        <>
-          {hasData && (
-            <Typography variant="body2" color="text.secondary">
-              {t('Averages: last 11 full months')}
-            </Typography>
-          )}
-          <MonthlySummaryChart
-            data={hasData ? chartData : emptyChartData}
-            currency="USD"
-            aspect={2.5}
-            width={100}
-            overrideIncomeText={t('Contributions')}
-            noDataLabel={hasData ? undefined : t('N/A')}
-            averages={monthlyAverages(monthlySummary)}
-          />
-        </>
+        <MonthlySummaryChart
+          data={hasData ? chartData : emptyChartData}
+          currency="USD"
+          aspect={2.5}
+          width={100}
+          overrideIncomeText={t('Contributions')}
+          noDataLabel={hasData ? undefined : t('N/A')}
+          averages={{
+            ...monthlyAverages(monthlySummary),
+            note: t('(last 11 full months)'),
+          }}
+        />
       ) : (
         <TableContainer>
           <Table size="small" aria-label={t('Monthly Summary Table')}>

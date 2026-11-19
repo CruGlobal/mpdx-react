@@ -1,6 +1,7 @@
 import '../sharedRechartMock';
 import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
+import theme from 'src/theme';
 import { useMPGAIncomeExpenses } from '../../MPGAIncomeExpensesContext/MPGAIncomeExpensesContext';
 import { MPGAIncomeExpensesReportTestWrapper } from '../../MPGAIncomeExpensesReportTestWrapper';
 import {
@@ -135,29 +136,58 @@ describe('MonthlySummaryChart', () => {
     expect(within(region).queryByText(/^\$/)).not.toBeInTheDocument();
   });
 
-  it('lists each average with its amount in the legend', async () => {
-    const { findByRole } = render(<ChartWithAverages />);
+  it('lists only the bars in the legend, between the key and the chart, when averages show', async () => {
+    const { findByRole, getByTestId } = render(<ChartWithAverages />);
 
     const list = await findByRole('list');
+    const region = await findByRole('region');
 
     expect(
       within(list)
         .getAllByRole('listitem')
         .map((item) => item.textContent),
-    ).toEqual([
-      'Contributions',
-      'Expenses',
-      'Contributions average: $3,800.00',
-      'Expenses average: $3,700.00',
-    ]);
+    ).toEqual(['Contributions', 'Expenses']);
+    // Outside the chart so it can't overlap the plot on a phone
+    expect(
+      getByTestId('MonthlySummaryAverageKey').compareDocumentPosition(list) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(region).not.toContainElement(list);
   });
 
-  it('puts the legend above the chart when it lists averages', async () => {
-    const { findByRole } = render(<ChartWithAverages />);
+  it('shows a key above the chart with each average and the note', async () => {
+    const { findByRole, getByTestId } = render(
+      <ChartWithAverages
+        averages={{ income: 3800, expenses: 3700, note: '(last 3 months)' }}
+      />,
+    );
 
-    const list = await findByRole('list');
+    const region = await findByRole('region');
+    const key = getByTestId('MonthlySummaryAverageKey');
 
-    expect(list.closest('.recharts-wrapper')).toBeNull();
+    expect(
+      key.compareDocumentPosition(region) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    const contributions = within(key).getByText('Contributions average');
+    expect(contributions.tagName).toBe('STRONG');
+    expect(contributions.parentElement).toHaveTextContent(
+      'Contributions average $3,800.00',
+    );
+    expect(
+      within(key).getByText('Expenses average').parentElement,
+    ).toHaveTextContent('Expenses average $3,700.00');
+    expect(within(key).getByText('(last 3 months)')).toBeInTheDocument();
+
+    const swatches = key.querySelectorAll('svg[aria-hidden="true"] line');
+    expect(
+      Array.from(swatches).map((line) => [
+        line.getAttribute('stroke'),
+        line.getAttribute('stroke-dasharray'),
+      ]),
+    ).toEqual([
+      [theme.palette.success.dark, '6 4'],
+      [theme.palette.error.dark, '6 4'],
+    ]);
   });
 
   it('draws an unlabelled dashed line for each average', async () => {
@@ -180,26 +210,21 @@ describe('MonthlySummaryChart', () => {
     ).toHaveLength(0);
   });
 
-  it('shows a lone $0 average in the legend and as a line', async () => {
-    const { findByRole } = render(
+  it('shows a lone $0 average in the key and as a line', async () => {
+    const { findByTestId, findByRole } = render(
       <ChartWithAverages averages={{ expenses: 0 }} />,
     );
 
-    const list = await findByRole('list');
+    const key = await findByTestId('MonthlySummaryAverageKey');
 
-    expect(
-      within(list).getByText('Expenses average: $0.00'),
-    ).toBeInTheDocument();
-    expect(
-      within(list).queryByText(/Contributions average/),
-    ).not.toBeInTheDocument();
+    expect(key).toHaveTextContent(/^Expenses average \$0\.00$/);
     expect(
       (await findByRole('region')).querySelectorAll('.recharts-reference-line'),
     ).toHaveLength(1);
   });
 
-  it('draws no average lines without averages', async () => {
-    const { findByRole } = render(<TestComponent />);
+  it('draws no average lines or key without averages', async () => {
+    const { findByRole, queryByTestId } = render(<TestComponent />);
 
     const region = await findByRole('region');
 
@@ -207,10 +232,13 @@ describe('MonthlySummaryChart', () => {
       expect(region.querySelector('svg.recharts-surface')).toBeTruthy(),
     );
     expect(region.querySelectorAll('.recharts-reference-line')).toHaveLength(0);
+    expect(queryByTestId('MonthlySummaryAverageKey')).not.toBeInTheDocument();
   });
 
   it('draws no average lines when amounts are masked', async () => {
-    const { findByRole } = render(<ChartWithAverages noDataLabel="N/A" />);
+    const { findByRole, queryByTestId } = render(
+      <ChartWithAverages noDataLabel="N/A" />,
+    );
 
     const region = await findByRole('region');
 
@@ -218,7 +246,7 @@ describe('MonthlySummaryChart', () => {
       expect(region.querySelector('svg.recharts-surface')).toBeTruthy(),
     );
     expect(region.querySelectorAll('.recharts-reference-line')).toHaveLength(0);
-    expect(within(region).queryByText(/average/)).not.toBeInTheDocument();
+    expect(queryByTestId('MonthlySummaryAverageKey')).not.toBeInTheDocument();
   });
 
   it('renders legend with correct labels', async () => {
