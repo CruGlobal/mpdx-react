@@ -39,10 +39,12 @@ describe('NewSalaryCalculatorLanding MPD Goal salary', () => {
   });
 
   it('keeps the prefilled salary without an MPD Goal from this year', async () => {
+    const push = jest.fn();
     const { findByRole } = render(
       <TestComponent
         hasApprovedCalculation
         goals={[makeGoal('1', { calculationsYear: currentYear - 1 })]}
+        push={push}
       />,
     );
 
@@ -50,9 +52,9 @@ describe('NewSalaryCalculatorLanding MPD Goal salary', () => {
       await findByRole('button', { name: 'Calculate New Salary' }),
     );
 
-    await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('CreateSalaryCalculation'),
-    );
+    // It navigates only after any auto-fill has run
+    await waitFor(() => expect(push).toHaveBeenCalled());
+    expect(mutationSpy).toHaveGraphqlOperation('CreateSalaryCalculation');
     expect(mutationSpy).not.toHaveGraphqlOperation('UpdateSalaryCalculation');
   });
 });

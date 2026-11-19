@@ -2,7 +2,10 @@ import { useCallback, useMemo } from 'react';
 import { DateTime } from 'luxon';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
-import { calculateGoalGrossAnnualSalaries } from '../../GoalCalculator/Shared/calculateTotals';
+import {
+  calculateGoalGrossAnnualSalaries,
+  hasStaffSpouse,
+} from '../../GoalCalculator/Shared/calculateTotals';
 import { pickPrimaryGoal } from '../../GoalCalculator/Shared/pickPrimaryGoal';
 import { GoalSalaryQuery, useGoalSalaryQuery } from './GoalSalary.generated';
 import { estimateRequestedSalary } from './estimateRequestedSalary';
@@ -10,8 +13,48 @@ import { estimateRequestedSalary } from './estimateRequestedSalary';
 type Calculations = Parameters<typeof estimateRequestedSalary>[1];
 
 interface HcmPerson {
-  staffInfo: { firstName: string };
+  staffInfo: { firstName: string; preferredName?: string | null };
 }
+
+type Goal = GoalSalaryQuery['goalCalculations']['nodes'][number];
+
+const normalizeName = (name: string | null | undefined) =>
+  name?.trim().toLowerCase() ?? '';
+
+// Whether a name typed on the goal is this person's legal or preferred first name
+const isNamed = (person: HcmPerson | null, name: string | null | undefined) => {
+  const goalName = normalizeName(name);
+  return (
+    !!person &&
+    !!goalName &&
+    [person.staffInfo.firstName, person.staffInfo.preferredName].some(
+      (personName) => normalizeName(personName) === goalName,
+    )
+  );
+};
+
+/**
+ * Whether the goal's first person is the staff member's spouse. The goal's first person is whoever
+ * created it, and the goal only stores the names typed on it, so match those to HCM. Null when the
+ * names don't say who is who.
+ */
+const isSpouseFirst = (
+  goal: Goal,
+  hcmUser: HcmPerson | null,
+  hcmSpouse: HcmPerson | null,
+): boolean | null => {
+  if (!hasStaffSpouse(goal.familySize)) {
+    return false;
+  }
+
+  const userFirst =
+    isNamed(hcmUser, goal.firstName) ||
+    isNamed(hcmSpouse, goal.spouseFirstName);
+  const spouseFirst =
+    isNamed(hcmSpouse, goal.firstName) ||
+    isNamed(hcmUser, goal.spouseFirstName);
+  return userFirst === spouseFirst ? null : spouseFirst;
+};
 
 export interface GoalSalaries {
   salary: number | null;
@@ -20,7 +63,7 @@ export interface GoalSalaries {
 
 export interface UseGoalSalaryResult {
   /** The staff member's MPD Goal for this year, if they have one */
-  goal: GoalSalaryQuery['goalCalculations']['nodes'][number] | undefined;
+  goal: Goal | undefined;
   loading: boolean;
   /**
    * Convert the goal's gross salary into requested salaries using the request's own SECA and
@@ -40,10 +83,9 @@ export const useGoalSalary = (
   hcmUser: HcmPerson | null,
   hcmSpouse: HcmPerson | null,
 ): UseGoalSalaryResult => {
-  const accountListId = useAccountListId() ?? '';
+  const accountListId = useAccountListId();
   const { data, error, fetchMore } = useGoalSalaryQuery({
     variables: { accountListId },
-    skip: !accountListId,
   });
   const { loading } = useFetchAllPages({
     fetchMore,
@@ -66,17 +108,18 @@ export const useGoalSalary = (
         return null;
       }
 
+      // Rather than risk giving each person the other's salary
+      const spouseFirst = isSpouseFirst(goal, hcmUser, hcmSpouse);
+      if (spouseFirst === null) {
+        return null;
+      }
+
       const { grossAnnualSalary, spouseGrossAnnualSalary } =
         calculateGoalGrossAnnualSalaries(goal);
-      // The goal's first person is whoever created it, which may be the spouse
-      const spouseMadeGoal =
-        !!hcmSpouse &&
-        goal.firstName === hcmSpouse.staffInfo.firstName &&
-        goal.firstName !== hcmUser?.staffInfo.firstName;
-      const userGross = spouseMadeGoal
+      const userGross = spouseFirst
         ? spouseGrossAnnualSalary
         : grossAnnualSalary;
-      const spouseGross = spouseMadeGoal
+      const spouseGross = spouseFirst
         ? grossAnnualSalary
         : spouseGrossAnnualSalary;
 

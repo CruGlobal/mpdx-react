@@ -54,6 +54,17 @@ describe('calculateGoalGrossAnnualSalaries', () => {
     );
   });
 
+  it('gives the whole salary to the spouse when only the spouse has a paycheck', () => {
+    const goalCalculation = { ...goalCalculationMock, netPaycheckAmount: 0 };
+    const { grossAnnualSalary, spouseGrossAnnualSalary } =
+      calculateGoalGrossAnnualSalaries(goalCalculation);
+
+    expect(grossAnnualSalary).toBe(0);
+    expect(spouseGrossAnnualSalary).toBeCloseTo(
+      calculateGoalTotals(goalCalculation, constants).grossAnnualSalary,
+    );
+  });
+
   it('returns 0 for a goal with no salary', () => {
     expect(calculateGoalGrossAnnualSalaries(null)).toEqual({
       grossAnnualSalary: 0,

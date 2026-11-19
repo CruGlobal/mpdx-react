@@ -98,7 +98,10 @@ const calculateGoalSalary = (
   const spouseTaxesPercentage = toPercentage(
     married ? goalCalculation?.spouseTaxesPercentage : null,
   );
-  const paySplitPercentage = netPaycheckAmount / totalNetPaycheckAmount || 1;
+  // With no paychecks at all, the staff member's rates apply
+  const paySplitPercentage = totalNetPaycheckAmount
+    ? netPaycheckAmount / totalNetPaycheckAmount
+    : 1;
   const spousePaySplitPercentage = 1 - paySplitPercentage;
   const totalTaxesPercentage =
     paySplitPercentage * taxesPercentage +

@@ -1,3 +1,4 @@
+import { NextRouter } from 'next/router';
 import { ThemeProvider } from '@emotion/react';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import { SnackbarProvider } from 'notistack';
@@ -46,6 +47,8 @@ export interface LandingTestWrapperProps {
   noPrimaryFund?: boolean;
   /** The account list's MPD Goals */
   goals?: GoalMock[];
+  /** Called when the page navigates */
+  push?: NextRouter['push'];
 }
 
 const staffAccountIdMock = { user: { staffAccountId: '111111111' } };
@@ -83,10 +86,16 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
   balanceError = false,
   noPrimaryFund = false,
   goals = [],
+  push,
 }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
-      <TestRouter router={{ query: { accountListId: 'account-list-1' } }}>
+      <TestRouter
+        router={{
+          query: { accountListId: 'account-list-1' },
+          ...(push && { push }),
+        }}
+      >
         <GqlMockedProvider<{
           Hcm: HcmQuery;
           StaffAccountId: StaffAccountIdQuery;

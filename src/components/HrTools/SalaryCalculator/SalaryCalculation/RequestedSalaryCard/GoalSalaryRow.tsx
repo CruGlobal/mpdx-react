@@ -28,7 +28,7 @@ export const GoalSalaryRow: React.FC = () => {
     saveField({
       ...(salary !== null && { salary }),
       ...(spouseSalary !== null && { spouseSalary }),
-    });
+    }).catch(() => {});
 
   return (
     <TableRow>
@@ -46,8 +46,13 @@ export const GoalSalaryRow: React.FC = () => {
           {t('Use Goal Salary')}
         </Button>
       </TableCell>
-      <TableCell>{formatCurrency(salary)}</TableCell>
-      {hcmSpouse && <TableCell>{formatCurrency(spouseSalary)}</TableCell>}
+      {/* Blank rather than $0 for a person the goal has no salary for */}
+      <TableCell>{salary !== null && formatCurrency(salary)}</TableCell>
+      {hcmSpouse && (
+        <TableCell>
+          {spouseSalary !== null && formatCurrency(spouseSalary)}
+        </TableCell>
+      )}
     </TableRow>
   );
 };

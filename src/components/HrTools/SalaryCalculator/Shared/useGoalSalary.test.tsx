@@ -2,6 +2,7 @@ import { ReactElement } from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { MpdGoalBenefitsConstantSizeEnum } from 'src/graphql/types.generated';
 import { GoalSalaryQuery } from './GoalSalary.generated';
 import {
   GoalMock,
@@ -13,12 +14,14 @@ import { useGoalSalary } from './useGoalSalary';
 
 const calculations = goalSalaryCalculations;
 
+type HcmPerson = Parameters<typeof useGoalSalary>[0];
+
 const hcmUser = { staffInfo: { firstName: 'John' } };
 const hcmSpouse = { staffInfo: { firstName: 'Jane' } };
 
 const renderGoalSalary = (
   goals: GoalMock[],
-  { spouse = hcmSpouse as typeof hcmSpouse | null, user = hcmUser } = {},
+  { spouse = hcmSpouse as HcmPerson | null, user = hcmUser as HcmPerson } = {},
 ) => {
   const wrapper = ({ children }: { children: ReactElement }) => (
     <TestRouter router={{ query: { accountListId: 'account-list-1' } }}>
@@ -92,12 +95,72 @@ describe('useGoalSalary', () => {
   });
 
   it('swaps the salaries when the spouse made the goal', async () => {
-    const { result } = renderGoalSalary([makeGoal('1', { firstName: 'Jane' })]);
+    const { result } = renderGoalSalary([
+      makeGoal('1', { firstName: 'Jane', spouseFirstName: 'John' }),
+    ]);
     await waitForLoad(result);
 
     expect(result.current.getGoalSalaries(calculations, calculations)).toEqual({
       salary: 18000,
       spouseSalary: 36000,
+    });
+  });
+
+  it('matches preferred names, ignoring case and spaces', async () => {
+    const { result } = renderGoalSalary(
+      [makeGoal('1', { firstName: ' janie ', spouseFirstName: 'Johnny' })],
+      {
+        user: { staffInfo: { firstName: 'John', preferredName: 'Johnny' } },
+        spouse: { staffInfo: { firstName: 'Jane', preferredName: 'Janie' } },
+      },
+    );
+    await waitForLoad(result);
+
+    expect(result.current.getGoalSalaries(calculations, calculations)).toEqual({
+      salary: 18000,
+      spouseSalary: 36000,
+    });
+  });
+
+  it("uses the spouse's share when the spouse made the goal and the form has no spouse", async () => {
+    const { result } = renderGoalSalary(
+      [makeGoal('1', { firstName: 'Jane', spouseFirstName: 'John' })],
+      { spouse: null },
+    );
+    await waitForLoad(result);
+
+    expect(result.current.getGoalSalaries(calculations, null)).toEqual({
+      salary: 18000,
+      spouseSalary: null,
+    });
+  });
+
+  it("returns null when the goal's names don't say who is who", async () => {
+    const { result } = renderGoalSalary([
+      makeGoal('1', { firstName: 'Bob', spouseFirstName: 'Sue' }),
+    ]);
+    await waitForLoad(result);
+
+    expect(
+      result.current.getGoalSalaries(calculations, calculations),
+    ).toBeNull();
+  });
+
+  it('gives a single goal to the staff member whatever its name', async () => {
+    const { result } = renderGoalSalary(
+      [
+        makeGoal('1', {
+          firstName: 'Bob',
+          familySize: MpdGoalBenefitsConstantSizeEnum.Single,
+        }),
+      ],
+      { spouse: null },
+    );
+    await waitForLoad(result);
+
+    expect(result.current.getGoalSalaries(calculations, null)).toEqual({
+      salary: 36000,
+      spouseSalary: null,
     });
   });
 
