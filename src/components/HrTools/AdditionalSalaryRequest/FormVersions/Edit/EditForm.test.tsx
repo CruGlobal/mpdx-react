@@ -1,8 +1,11 @@
 import { missingValue } from '../../../Shared/helpers/missingValue';
 import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
 import {
+  combinedCapOverrides,
+  combinedCapValues,
   createRenderFormComponent,
   defaultMockContextValue,
+  openAvailableBalanceTooltip,
   setupMockContext,
 } from '../testUtils';
 import { EditForm } from './EditForm';
@@ -47,8 +50,8 @@ describe('EditForm', () => {
   it('displays financial balances from context', () => {
     const { getByTestId } = renderComponent();
 
-    // staffAccountBalance: 40000
-    expect(getByTestId('amount-one')).toHaveTextContent('$40,000.00');
+    // availableStaffAccountBalance, not the raw staffAccountBalance of 40000
+    expect(getByTestId('amount-one')).toHaveTextContent('$30,000.00');
     // currentSalaryCap: value in backend
     expect(getByTestId('amount-two')).toHaveTextContent('$100,000.00');
     // remainingAllowableSalary from the API
@@ -71,12 +74,36 @@ describe('EditForm', () => {
       },
     });
 
-    // staffAccountBalance defaults to 0 when calculations are undefined
+    // availableStaffAccountBalance defaults to 0 when calculations are undefined
     expect(getByTestId('amount-one')).toHaveTextContent('$0.00');
     // currentSalaryCap calculation done in backend
     expect(getByTestId('amount-two')).toHaveTextContent('-$40,000.00');
     // remainingAllowableSalary shows a dash when the API leaves it out
     expect(getByTestId('amount-three')).toHaveTextContent(missingValue);
+  });
+
+  it('explains the available amount in a tooltip beside its label', async () => {
+    const utils = renderComponent();
+
+    expect(utils.queryByText(/Primary balance/)).not.toBeInTheDocument();
+    const tooltip = await openAvailableBalanceTooltip(utils);
+    expect(tooltip).toHaveTextContent(
+      'Primary balance of $40,000.00, minus $10,000.00 in other unpaid requests',
+    );
+    expect(tooltip).toHaveTextContent(
+      "Your spouse's request, waiting for approval: $10,000.00",
+    );
+  });
+
+  it('shows the approval note inside the card, under the amounts', () => {
+    const { getByText, getByTestId } = renderComponent();
+
+    const note = getByText(
+      /Requests over \$55,000\.00 \(your remaining allowable salary\) need approval/,
+    );
+    expect(note.closest('.MuiCard-root')).toContainElement(
+      getByTestId('amount-one'),
+    );
   });
 
   it('renders all child components when user exceeds cap', () => {
@@ -101,6 +128,16 @@ describe('EditForm', () => {
     expect(getAllByText('Telephone Number').length).toBeGreaterThanOrEqual(1);
     expect(getAllByText('Email Address').length).toBeGreaterThanOrEqual(1);
     expect(getByText('Total Salary Requested')).toBeInTheDocument();
+  });
+
+  it("asks for approval past the API's threshold even under the own cap", () => {
+    const { getByText, queryByText } = renderComponent({
+      initialValues: combinedCapValues,
+      contextOverrides: combinedCapOverrides,
+    });
+
+    expect(getByText('Approval Process')).toBeInTheDocument();
+    expect(queryByText('Total Salary Requested')).not.toBeInTheDocument();
   });
 
   it('should not render cap-related components when user does not exceed cap', () => {

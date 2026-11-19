@@ -1,3 +1,4 @@
+import { NextRouter } from 'next/router';
 import { ThemeProvider } from '@emotion/react';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import { SnackbarProvider } from 'notistack';
@@ -18,6 +19,11 @@ import {
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { StaffAccountIdQuery } from '../../../Shared/StaffAccountId.generated';
+import {
+  GoalMock,
+  goalSalaryCalculations,
+  goalSalaryQueryMock,
+} from '../../Shared/goalSalaryMock';
 import { AccountBalanceQuery } from '../AccountBalance.generated';
 import { LandingSalaryCalculationsQuery } from './LandingSalaryCalculations.generated';
 
@@ -39,7 +45,81 @@ export interface LandingTestWrapperProps {
   balanceError?: boolean;
   /** Leaves the Primary fund out of the AccountBalance response */
   noPrimaryFund?: boolean;
+  /** The account list's MPD Goals */
+  goals?: GoalMock[];
+  /** Called when the page navigates */
+  push?: NextRouter['push'];
 }
+
+const staffAccountIdMock = { user: { staffAccountId: '111111111' } };
+
+const getUserMock = {
+  user: {
+    userType: UserTypeEnum.UsStaff,
+    usStaffGroup: UsStaffGroupEnum.SeniorStaff,
+  },
+};
+
+// The new calculation's rates convert goalSalaryMock's goals to $36,000 and $18,000
+const createCalculationMock = {
+  createSalaryRequest: {
+    salaryRequest: {
+      id: 'new-calculation',
+      calculations: goalSalaryCalculations,
+      spouseCalculations: goalSalaryCalculations,
+    },
+  },
+};
+
+// The staff member and spouse in HCM
+const hcmPeople = (salaryRequestEligible: boolean) => [
+  {
+    staffInfo: {
+      firstName: 'John',
+      preferredName: 'John',
+      lastName: 'Doe',
+      personNumber: '000123456',
+      secaStatus: SecaStatusEnum.Seca,
+      peopleGroupSupportType: PeopleGroupSupportTypeEnum.SupportedRmo,
+      assignmentStatus: AssignmentStatusEnum.ActivePayrollEligible,
+      assignmentCategory: AssignmentCategoryEnum.FullTimeRegular,
+      userPersonType: UserPersonTypeEnum.EmployeeStaff,
+    },
+    currentSalary: {
+      grossSalaryAmount: 55000,
+      lastUpdated: '2024-03-01',
+    },
+    fourOThreeB: {
+      currentRothContributionPercentage: 12,
+      currentTaxDeferredContributionPercentage: 5,
+    },
+    mhaRequest: {
+      currentTakenAmount: 10000,
+    },
+    salaryRequestEligible,
+  },
+  {
+    staffInfo: {
+      firstName: 'Jane',
+      preferredName: 'Jane',
+      lastName: 'Doe',
+      personNumber: '000123457',
+      secaStatus: SecaStatusEnum.Seca,
+    },
+    currentSalary: {
+      grossSalaryAmount: 10000,
+      lastUpdated: '2024-03-01',
+    },
+    fourOThreeB: {
+      currentRothContributionPercentage: 10,
+      currentTaxDeferredContributionPercentage: 6,
+    },
+    mhaRequest: {
+      currentTakenAmount: 12000,
+    },
+    salaryRequestEligible,
+  },
+];
 
 export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
   onCall,
@@ -55,10 +135,17 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
   calculationError = false,
   balanceError = false,
   noPrimaryFund = false,
+  goals = [],
+  push,
 }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
-      <TestRouter>
+      <TestRouter
+        router={{
+          query: { accountListId: 'account-list-1' },
+          ...(push && { push }),
+        }}
+      >
         <GqlMockedProvider<{
           Hcm: HcmQuery;
           StaffAccountId: StaffAccountIdQuery;
@@ -69,55 +156,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
           mocks={{
             Hcm: {
               hcm: mockHcmUnavailable(
-                [
-                  {
-                    staffInfo: {
-                      preferredName: 'John',
-                      lastName: 'Doe',
-                      personNumber: '000123456',
-                      secaStatus: SecaStatusEnum.Seca,
-                      peopleGroupSupportType:
-                        PeopleGroupSupportTypeEnum.SupportedRmo,
-                      assignmentStatus:
-                        AssignmentStatusEnum.ActivePayrollEligible,
-                      assignmentCategory:
-                        AssignmentCategoryEnum.FullTimeRegular,
-                      userPersonType: UserPersonTypeEnum.EmployeeStaff,
-                    },
-                    currentSalary: {
-                      grossSalaryAmount: 55000,
-                      lastUpdated: '2024-03-01',
-                    },
-                    fourOThreeB: {
-                      currentRothContributionPercentage: 12,
-                      currentTaxDeferredContributionPercentage: 5,
-                    },
-                    mhaRequest: {
-                      currentTakenAmount: 10000,
-                    },
-                    salaryRequestEligible,
-                  },
-                  {
-                    staffInfo: {
-                      preferredName: 'Jane',
-                      lastName: 'Doe',
-                      personNumber: '000123457',
-                      secaStatus: SecaStatusEnum.Seca,
-                    },
-                    currentSalary: {
-                      grossSalaryAmount: 10000,
-                      lastUpdated: '2024-03-01',
-                    },
-                    fourOThreeB: {
-                      currentRothContributionPercentage: 10,
-                      currentTaxDeferredContributionPercentage: 6,
-                    },
-                    mhaRequest: {
-                      currentTakenAmount: 12000,
-                    },
-                    salaryRequestEligible,
-                  },
-                ],
+                hcmPeople(salaryRequestEligible),
                 hcmUnavailableCalls,
               ),
             },
@@ -160,11 +199,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
                   }
                 : null,
             },
-            StaffAccountId: {
-              user: {
-                staffAccountId: '111111111',
-              },
-            },
+            StaffAccountId: staffAccountIdMock,
             AccountBalance: {
               reportsStaffExpenses: balanceError
                 ? ((() => {
@@ -176,12 +211,9 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
                       : [{ fundType: 'Primary', endBalance: 10000 }],
                   },
             },
-            GetUser: {
-              user: {
-                userType: UserTypeEnum.UsStaff,
-                usStaffGroup: UsStaffGroupEnum.SeniorStaff,
-              },
-            },
+            GetUser: getUserMock,
+            GoalSalary: goalSalaryQueryMock(goals),
+            CreateSalaryCalculation: createCalculationMock,
           }}
           onCall={onCall}
         >

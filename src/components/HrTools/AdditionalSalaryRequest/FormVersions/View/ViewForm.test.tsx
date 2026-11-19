@@ -1,7 +1,17 @@
-import { AsrStatusEnum } from 'src/graphql/types.generated';
+import {
+  AsrStatusEnum,
+  ProgressiveApprovalTierReasonEnum,
+} from 'src/graphql/types.generated';
 import { missingValue } from '../../../Shared/helpers/missingValue';
 import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
-import { createRenderFormComponent, setupMockContext } from '../testUtils';
+import {
+  combinedCapOverrides,
+  combinedCapValues,
+  createRenderFormComponent,
+  defaultMockContextValue,
+  openAvailableBalanceTooltip,
+  setupMockContext,
+} from '../testUtils';
 import { ViewForm } from './ViewForm';
 
 jest.mock('../../Shared/AdditionalSalaryRequestContext', () => {
@@ -19,6 +29,19 @@ const renderComponent = createRenderFormComponent(
   ViewForm,
   mockUseAdditionalSalaryRequest,
 );
+
+// The tier the API gives the viewed request, as when its amount needed approval. Its threshold of $55,000 is above
+// the request, as on an approved request whose threshold counts the request itself.
+const withApprovalTier = {
+  requestData: {
+    latestAdditionalSalaryRequest: {
+      ...defaultMockContextValue.requestData.latestAdditionalSalaryRequest,
+      progressiveApprovalTier: { id: 'tier-1' },
+      progressiveApprovalTierReason:
+        ProgressiveApprovalTierReasonEnum.OverCombinedCap,
+    },
+  },
+};
 
 describe('ViewForm', () => {
   beforeEach(() => {
@@ -39,8 +62,8 @@ describe('ViewForm', () => {
   it('displays financial balances from context', () => {
     const { getByTestId } = renderComponent();
 
-    // staffAccountBalance: 40000
-    expect(getByTestId('amount-one')).toHaveTextContent('$40,000.00');
+    // availableStaffAccountBalance, not the raw staffAccountBalance of 40000
+    expect(getByTestId('amount-one')).toHaveTextContent('$30,000.00');
     // currentSalaryCap: value in the backend
     expect(getByTestId('amount-two')).toHaveTextContent('$100,000.00');
     // remainingAllowableSalary from the API
@@ -68,6 +91,62 @@ describe('ViewForm', () => {
     expect(getByTestId('amount-three')).toHaveTextContent('$15,000.00');
   });
 
+  it.each([
+    { status: AsrStatusEnum.Pending, shown: false },
+    { status: AsrStatusEnum.ActionRequired, shown: true },
+  ])(
+    'with status $status shows the approval note: $shown',
+    ({ status, shown }) => {
+      const { queryByText } = renderComponent({
+        contextOverrides: {
+          requestData: {
+            latestAdditionalSalaryRequest: {
+              ...defaultMockContextValue.requestData
+                .latestAdditionalSalaryRequest,
+              status,
+            },
+          },
+        },
+      });
+
+      expect(!!queryByText(/need approval/)).toBe(shown);
+    },
+  );
+
+  it('explains the available amount in a tooltip beside its label', async () => {
+    const utils = renderComponent();
+
+    expect(utils.queryByText(/Primary balance/)).not.toBeInTheDocument();
+    const tooltip = await openAvailableBalanceTooltip(utils);
+    expect(tooltip).toHaveTextContent(
+      'Primary balance of $40,000.00, minus $10,000.00 in other unpaid requests',
+    );
+    expect(tooltip).toHaveTextContent(
+      "Your spouse's request, waiting for approval: $10,000.00",
+    );
+  });
+
+  it('shows the approval note inside the card on a request sent back', () => {
+    const { getByText, getByTestId } = renderComponent({
+      contextOverrides: {
+        requestData: {
+          latestAdditionalSalaryRequest: {
+            ...defaultMockContextValue.requestData
+              .latestAdditionalSalaryRequest,
+            status: AsrStatusEnum.ActionRequired,
+          },
+        },
+      },
+    });
+
+    const note = getByText(
+      /Requests over \$55,000\.00 \(your remaining allowable salary\) need approval/,
+    );
+    expect(note.closest('.MuiCard-root')).toContainElement(
+      getByTestId('amount-one'),
+    );
+  });
+
   it('handles missing calculations gracefully', () => {
     const { getByTestId } = renderComponent({
       contextOverrides: {
@@ -84,7 +163,7 @@ describe('ViewForm', () => {
       },
     });
 
-    // staffAccountBalance defaults to 0 when calculations are undefined
+    // availableStaffAccountBalance defaults to 0 when calculations are undefined
     expect(getByTestId('amount-one')).toHaveTextContent('$0.00');
     // currentSalaryCap calculation done in backend
     expect(getByTestId('amount-two')).toHaveTextContent('-$40,000.00');
@@ -98,6 +177,7 @@ describe('ViewForm', () => {
         ...defaultCompleteFormValues,
         additionalSalaryWithinMax: '200000',
       },
+      contextOverrides: withApprovalTier,
     });
 
     expect(
@@ -114,6 +194,26 @@ describe('ViewForm', () => {
     expect(getByText('Contact Information')).toBeInTheDocument();
     expect(getByText('Total Salary Requested')).toBeInTheDocument();
     expect(getByText('Approval Process')).toBeInTheDocument();
+  });
+
+  it("shows the approval process by the request's own approval tier, even under the threshold and the own cap", () => {
+    const { getByText, queryByText } = renderComponent({
+      initialValues: combinedCapValues,
+      contextOverrides: withApprovalTier,
+    });
+
+    expect(getByText('Approval Process')).toBeInTheDocument();
+    expect(queryByText('Total Salary Requested')).not.toBeInTheDocument();
+  });
+
+  // An approved or paid request counts itself in its own threshold, so the threshold can't say whether it needed approval
+  it("hides the approval process when the request has no approval tier, even past the API's threshold", () => {
+    const { queryByText } = renderComponent({
+      initialValues: combinedCapValues,
+      contextOverrides: combinedCapOverrides,
+    });
+
+    expect(queryByText('Approval Process')).not.toBeInTheDocument();
   });
 
   it('should not render total salary requested or approval process when under cap', () => {

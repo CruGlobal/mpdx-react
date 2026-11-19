@@ -24,6 +24,7 @@ import { NewForm } from '../FormVersions/New/NewForm';
 import { ViewForm } from '../FormVersions/View/ViewForm';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { calculateCompletionPercentage } from '../Shared/calculateCompletionPercentage';
+import { useNeedsApproval } from '../Shared/useNeedsApproval';
 import { useSalaryCalculations } from '../Shared/useSalaryCalculations';
 import { StepList } from '../SharedComponents/StepList';
 import { CapSubContent } from './Helper/CapSubContent';
@@ -94,10 +95,10 @@ const MainContent: React.FC = () => {
     handleNextStep();
   };
 
-  const { exceedsCap, splitAsr, splitAsrType, additionalApproval } =
-    useSalaryCalculations({
-      values,
-    });
+  const { splitAsr, splitAsrType, additionalApproval } = useSalaryCalculations({
+    values,
+  });
+  const needsApproval = useNeedsApproval(values);
 
   const handleDiscard = async () => {
     if (requestId) {
@@ -173,7 +174,7 @@ const MainContent: React.FC = () => {
                 splitAsr={splitAsr}
                 disableSubmit={
                   (splitAsr && !!errors.additionalInfo) ||
-                  (exceedsCap && !!errors.additionalInfo)
+                  (needsApproval && !!errors.additionalInfo)
                 }
                 overrideNext={isFirstFormPage ? handleContinue : undefined}
                 loadingNext={creatingRequest}

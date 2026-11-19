@@ -20,6 +20,7 @@ import {
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import { getNonBackpayTotal, getTotal } from './Helper/getTotal';
 import { useFormUserInfo } from './useFormUserInfo';
+import { exceedsApprovalThreshold } from './useNeedsApproval';
 
 export const useAdditionalSalaryRequestForm = (
   providedInitialValues?: CompleteFormValues,
@@ -36,19 +37,13 @@ export const useAdditionalSalaryRequestForm = (
     fieldConfig,
   } = useAdditionalSalaryRequest();
 
-  const { availableAccountBalance } = useFormUserInfo();
+  const { availableAccountBalance, overBalanceMessage } = useFormUserInfo();
 
   const { data: requestData } = useAdditionalSalaryRequestQuery({
     variables: { isSpouse },
   });
-  const individualCap =
-    requestData?.latestAdditionalSalaryRequest?.calculations.currentSalaryCap ??
-    0;
-  const ytdAsrAmount =
-    requestData?.latestAdditionalSalaryRequest?.calculations.ytdAsrAmount ?? 0;
-  const grossAnnualSalary =
-    requestData?.latestAdditionalSalaryRequest?.calculations
-      .grossAnnualSalary ?? 0;
+  const approvalThreshold =
+    requestData?.latestAdditionalSalaryRequest?.calculations.approvalThreshold;
 
   const [updateAdditionalSalaryRequest] =
     useUpdateAdditionalSalaryRequestMutation();
@@ -156,7 +151,7 @@ export const useAdditionalSalaryRequestForm = (
           )
           .test(
             'total-within-remaining-allowable-salary',
-            t('Exceeds account balance plus deficit limit.'),
+            overBalanceMessage,
             function () {
               const total = getTotal(this.parent as CompleteFormValues);
 
@@ -183,13 +178,10 @@ export const useAdditionalSalaryRequestForm = (
               const nonBackpayTotal = getNonBackpayTotal(
                 this.parent as CompleteFormValues,
               );
-              // Match useSalaryCalculations: backpay alone never exceeds the cap
-              const amountRequestedYtd =
-                grossAnnualSalary + ytdAsrAmount + nonBackpayTotal;
-              const exceedsCap =
-                nonBackpayTotal > 0 && amountRequestedYtd > individualCap;
 
-              if (exceedsCap) {
+              if (
+                exceedsApprovalThreshold(approvalThreshold, nonBackpayTotal)
+              ) {
                 return !!value && value.trim().length > 0;
               }
               return true;
@@ -207,10 +199,8 @@ export const useAdditionalSalaryRequestForm = (
       getMaxForField,
       t,
       availableAccountBalance,
-      individualCap,
-      ytdAsrAmount,
-      grossAnnualSalary,
-      locale,
+      overBalanceMessage,
+      approvalThreshold,
       requestData,
     ],
   );

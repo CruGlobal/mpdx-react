@@ -1,10 +1,12 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { RenderResult, render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { FormikProvider, useFormik } from 'formik';
 import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ProgressiveApprovalTierReasonEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import { amount, phoneNumber } from 'src/lib/yupHelpers';
 import theme from 'src/theme';
@@ -31,9 +33,22 @@ export const defaultMockContextValue = {
       calculations: {
         currentSalaryCap: 100000,
         staffAccountBalance: 40000,
+        staffAccountDeficitLimit: 0,
+        unpaidHouseholdAsrAmount: 10000,
+        unpaidHouseholdAsrs: [
+          {
+            amount: 10000,
+            status: 'PENDING',
+            submittedAt: '2026-11-03T15:00:00Z',
+            spouse: true,
+          },
+        ],
+        availableStaffAccountBalance: 30000,
         ytdAsrAmount: 5000,
         grossAnnualSalary: 40000,
         remainingAllowableSalary: 55000,
+        approvalThreshold: 55000,
+        approvalThresholdReason: ProgressiveApprovalTierReasonEnum.OverUserCap,
       },
     },
   },
@@ -45,6 +60,26 @@ export const defaultMockContextValue = {
     geographicLocation: 'Orlando, FL',
   },
   user: mockUser,
+};
+
+// Under the user's own cap, but over what's left under the couple's combined cap
+export const combinedCapOverrides = {
+  requestData: {
+    latestAdditionalSalaryRequest: {
+      ...defaultMockContextValue.requestData.latestAdditionalSalaryRequest,
+      calculations: {
+        ...defaultMockContextValue.requestData.latestAdditionalSalaryRequest
+          .calculations,
+        approvalThreshold: 10000,
+        approvalThresholdReason:
+          ProgressiveApprovalTierReasonEnum.OverCombinedCap,
+      },
+    },
+  },
+};
+export const combinedCapValues = {
+  ...defaultCompleteFormValues,
+  additionalSalaryWithinMax: '20000',
 };
 
 export const router = {
@@ -132,3 +167,17 @@ export const createRenderFormComponent =
       </ThemeProvider>,
     );
   };
+
+// Hovers the info icon beside the "Available for This Request" label and returns the tooltip it opens
+export const openAvailableBalanceTooltip = async ({
+  getByRole,
+  getByText,
+  findByRole,
+}: RenderResult): Promise<HTMLElement> => {
+  const icon = getByRole('img', {
+    name: 'How the amount available for this request is calculated',
+  });
+  expect(getByText('AVAILABLE FOR THIS REQUEST')).toContainElement(icon);
+  userEvent.hover(icon);
+  return findByRole('tooltip');
+};

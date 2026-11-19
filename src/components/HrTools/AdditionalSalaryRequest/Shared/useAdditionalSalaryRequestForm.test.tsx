@@ -1,7 +1,10 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { DeepPartial } from 'ts-essentials';
-import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import {
+  DeepPartialMock,
+  GqlMockedProvider,
+  gqlMock,
+} from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
 import {
   HcmDocument,
@@ -161,24 +164,21 @@ type MocksType = {
   SubmitAdditionalSalaryRequest: SubmitAdditionalSalaryRequestMutation;
 };
 
-const defaultGqlMocks: DeepPartial<MocksType> = {
+const defaultGqlMocks: DeepPartialMock<MocksType> = {
   AdditionalSalaryRequest: {
     latestAdditionalSalaryRequest: {
       id: 'test-request-id',
       progressiveApprovalTierReason:
         ProgressiveApprovalTierReasonEnum.OverUserCap,
-      calculations: {
-        currentSalaryCap: 100000,
-        ytdAsrAmount: 0,
-        grossAnnualSalary: 40000,
-      },
+      // Less than the $60,000 left under a $100,000 cap on $40,000 of salary, as when the combined cap is nearer
+      calculations: { currentSalaryCap: 100000, approvalThreshold: 10000 },
     },
   },
 };
 
 interface TestComponentProps {
   children: React.ReactElement;
-  mocks?: DeepPartial<MocksType>;
+  mocks?: DeepPartialMock<MocksType>;
 }
 
 const TestWrapper: React.FC<TestComponentProps> = ({ children, mocks }) => {
@@ -435,10 +435,7 @@ describe('useAdditionalSalaryRequestForm', () => {
 
       it('rejects a total beyond the balance plus deficit limit', async () => {
         const errors = await validateBackpay('12000');
-
-        expect(errors.totalAdditionalSalaryRequested).toBe(
-          'Exceeds account balance plus deficit limit.',
-        );
+        expect(errors.totalAdditionalSalaryRequested).toContain('$11,000.00');
       });
 
       it('rejects a $0 total', async () => {
@@ -558,13 +555,13 @@ describe('useAdditionalSalaryRequestForm', () => {
       expect(errors.adoption).toBeUndefined();
     });
 
-    it('should validate additional info when exceedsCap is true', async () => {
+    it("requires additional info past the API's approval threshold, even under the own cap", async () => {
       const { result } = renderHook(
         () =>
           useAdditionalSalaryRequestForm({
             ...defaultFormValues,
             phoneNumber: '555-123-4567',
-            additionalSalaryWithinMax: '70000',
+            additionalSalaryWithinMax: '20000',
           }),
         {
           wrapper: TestWrapper,
@@ -626,11 +623,8 @@ describe('useAdditionalSalaryRequestForm', () => {
                   latestAdditionalSalaryRequest: {
                     ...defaultGqlMocks.AdditionalSalaryRequest
                       ?.latestAdditionalSalaryRequest,
-                    calculations: {
-                      currentSalaryCap: 67500,
-                      ytdAsrAmount: 0,
-                      grossAnnualSalary: 96234.65,
-                    },
+                    // Salary already over the cap, so the API sends a threshold of 0
+                    calculations: { approvalThreshold: 0 },
                   },
                 },
               }}
@@ -670,11 +664,8 @@ describe('useAdditionalSalaryRequestForm', () => {
                   latestAdditionalSalaryRequest: {
                     ...defaultGqlMocks.AdditionalSalaryRequest
                       ?.latestAdditionalSalaryRequest,
-                    calculations: {
-                      currentSalaryCap: 67500,
-                      ytdAsrAmount: 0,
-                      grossAnnualSalary: 96234.65,
-                    },
+                    // Salary already over the cap, so the API sends a threshold of 0
+                    calculations: { approvalThreshold: 0 },
                   },
                 },
               }}

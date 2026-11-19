@@ -1,4 +1,5 @@
 import { renderHook } from '@testing-library/react';
+import { ProgressiveApprovalTierReasonEnum } from 'src/graphql/types.generated';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import { useFormUserInfo } from './useFormUserInfo';
 
@@ -21,6 +22,16 @@ describe('useFormUserInfo', () => {
             grossAnnualSalary: 60000,
             ytdAsrAmount: 15000,
             staffAccountBalance: 40000,
+            staffAccountDeficitLimit: 15000,
+            unpaidHouseholdAsrAmount: 10000,
+            unpaidHouseholdAsrs: [
+              {
+                amount: 10000,
+                status: 'PENDING',
+                submittedAt: null,
+                spouse: true,
+              },
+            ],
             availableStaffAccountBalance: 45000,
             remainingAllowableSalary: 5000,
           },
@@ -42,8 +53,18 @@ describe('useFormUserInfo', () => {
 
     expect(result.current.name).toBe('Doe, John');
     expect(result.current.email).toBe('john.doe@example.com');
-    expect(result.current.primaryAccountBalance).toBe(40000);
     expect(result.current.availableAccountBalance).toBe(45000);
+    expect(result.current.overBalanceMessage).toBe(
+      'Exceeds the $45,000.00 available for this request.',
+    );
+    expect(result.current.balanceBreakdown).toEqual({
+      balance: 40000,
+      deficitLimit: 15000,
+      unpaidTotal: 10000,
+      unpaidRequests: [
+        { amount: 10000, status: 'PENDING', submittedAt: null, spouse: true },
+      ],
+    });
     expect(result.current.remainingCap).toBe(5000);
   });
 
@@ -63,8 +84,8 @@ describe('useFormUserInfo', () => {
 
     const { result } = renderHook(() => useFormUserInfo());
 
-    expect(result.current.primaryAccountBalance).toBe(0);
     expect(result.current.availableAccountBalance).toBe(0);
+    expect(result.current.balanceBreakdown).toBeNull();
     expect(result.current.remainingCap).toBeNull();
   });
 
@@ -85,8 +106,54 @@ describe('useFormUserInfo', () => {
 
     expect(result.current.name).toBeUndefined();
     expect(result.current.email).toBeUndefined();
-    expect(result.current.primaryAccountBalance).toBe(40000);
+    expect(result.current.balanceBreakdown).toEqual({
+      balance: 40000,
+      deficitLimit: 0,
+      unpaidTotal: 0,
+      unpaidRequests: [],
+    });
   });
+
+  it("returns the API's approval threshold and reason", () => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      requestData: {
+        latestAdditionalSalaryRequest: {
+          calculations: {
+            approvalThreshold: 0,
+            approvalThresholdReason:
+              ProgressiveApprovalTierReasonEnum.OverSpouseCap,
+          },
+        },
+      },
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+    const { result } = renderHook(() => useFormUserInfo());
+
+    expect(result.current.approvalThreshold).toEqual({
+      amount: 0,
+      reason: ProgressiveApprovalTierReasonEnum.OverSpouseCap,
+    });
+  });
+
+  it.each([
+    { approvalThreshold: null, approvalThresholdReason: null },
+    {
+      approvalThreshold: null,
+      approvalThresholdReason: ProgressiveApprovalTierReasonEnum.OverUserCap,
+    },
+    { approvalThreshold: 5000, approvalThresholdReason: null },
+  ])(
+    'returns no approval threshold unless the API sends both the amount and the reason ($approvalThreshold, $approvalThresholdReason)',
+    (calculations) => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        requestData: { latestAdditionalSalaryRequest: { calculations } },
+      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+      const { result } = renderHook(() => useFormUserInfo());
+
+      expect(result.current.approvalThreshold).toBeNull();
+    },
+  );
 
   it('handles undefined requestData gracefully', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
@@ -96,6 +163,6 @@ describe('useFormUserInfo', () => {
 
     const { result } = renderHook(() => useFormUserInfo());
 
-    expect(result.current.primaryAccountBalance).toBe(0);
+    expect(result.current.balanceBreakdown).toBeNull();
   });
 });
