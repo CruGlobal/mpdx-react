@@ -43,7 +43,7 @@ const average = (values: Array<number | null | undefined>) => {
 // out too, the same as the Dashboard's donation average.
 export const monthlyAverages = (
   months: MonthAmounts[],
-): Omit<MonthlySummaryAverages, 'period'> => {
+): MonthlySummaryAverages => {
   const pastMonths = months.slice(0, -1);
   return {
     income: average(pastMonths.map((month) => month.contributions)),

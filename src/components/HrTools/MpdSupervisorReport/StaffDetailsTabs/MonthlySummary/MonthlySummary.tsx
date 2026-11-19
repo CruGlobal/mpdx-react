@@ -75,14 +75,6 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
     [monthlySummary, locale],
   );
 
-  const averages = useMemo(
-    () => ({
-      ...monthlyAverages(monthlySummary),
-      period: t('last 11 full months'),
-    }),
-    [monthlySummary, t],
-  );
-
   const tableRows = useMemo(
     () => [...monthlySummary].reverse(),
     [monthlySummary],
@@ -127,15 +119,22 @@ export const StaffTabMonthlySummary: React.FC<StaffTabMonthlySummaryProps> = ({
         />
       </Box>
       {showChart ? (
-        <MonthlySummaryChart
-          data={hasData ? chartData : emptyChartData}
-          currency="USD"
-          aspect={2.5}
-          width={100}
-          overrideIncomeText={t('Contributions')}
-          noDataLabel={hasData ? undefined : t('N/A')}
-          averages={averages}
-        />
+        <>
+          {hasData && (
+            <Typography variant="body2" color="text.secondary">
+              {t('Averages: last 11 full months')}
+            </Typography>
+          )}
+          <MonthlySummaryChart
+            data={hasData ? chartData : emptyChartData}
+            currency="USD"
+            aspect={2.5}
+            width={100}
+            overrideIncomeText={t('Contributions')}
+            noDataLabel={hasData ? undefined : t('N/A')}
+            averages={monthlyAverages(monthlySummary)}
+          />
+        </>
       ) : (
         <TableContainer>
           <Table size="small" aria-label={t('Monthly Summary Table')}>

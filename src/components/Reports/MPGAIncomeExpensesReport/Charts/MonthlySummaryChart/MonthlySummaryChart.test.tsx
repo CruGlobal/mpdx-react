@@ -56,10 +56,7 @@ const averagesData = [
 const ChartWithAverages: React.FC<{
   noDataLabel?: string;
   averages?: MonthlySummaryAverages;
-}> = ({
-  noDataLabel,
-  averages = { income: 3800, expenses: 3700, period: 'last 2 months' },
-}) => (
+}> = ({ noDataLabel, averages = { income: 3800, expenses: 3700 } }) => (
   <MPGAIncomeExpensesReportTestWrapper onCall={mutationSpy}>
     <MonthlySummaryChart
       data={averagesData}
@@ -144,12 +141,10 @@ describe('MonthlySummaryChart', () => {
     const region = await findByRole('region');
 
     expect(
-      await within(region).findByText(
-        'Contributions average (last 2 months): $3,800.00',
-      ),
+      await within(region).findByText('Contributions average: $3,800.00'),
     ).toBeInTheDocument();
     expect(
-      within(region).getByText('Expenses average (last 2 months): $3,700.00'),
+      within(region).getByText('Expenses average: $3,700.00'),
     ).toBeInTheDocument();
     const lines = region.querySelectorAll('.recharts-reference-line line');
     expect(lines).toHaveLength(2);
@@ -162,9 +157,7 @@ describe('MonthlySummaryChart', () => {
     const { findByRole } = render(<ChartWithAverages />);
 
     const region = await findByRole('region');
-    await within(region).findByText(
-      'Contributions average (last 2 months): $3,800.00',
-    );
+    await within(region).findByText('Contributions average: $3,800.00');
 
     const [income, expenses] = Array.from(
       region.querySelectorAll('.recharts-reference-line'),
@@ -178,11 +171,11 @@ describe('MonthlySummaryChart', () => {
 
   it('puts a lone $0 average label above its line, clear of the axis', async () => {
     const { findByRole } = render(
-      <ChartWithAverages averages={{ expenses: 0, period: 'last 2 months' }} />,
+      <ChartWithAverages averages={{ expenses: 0 }} />,
     );
 
     const region = await findByRole('region');
-    await within(region).findByText('Expenses average (last 2 months): $0.00');
+    await within(region).findByText('Expenses average: $0.00');
 
     const line = region.querySelector('.recharts-reference-line');
     expect(Number(line?.querySelector('text')?.getAttribute('y'))).toBeLessThan(

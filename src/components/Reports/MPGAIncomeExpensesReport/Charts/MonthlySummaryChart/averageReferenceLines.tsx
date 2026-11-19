@@ -53,9 +53,8 @@ export const averageReferenceLines = ({
         strokeWidth={2}
         strokeDasharray="6 4"
         label={{
-          value: t('{{name}} average ({{period}}): {{amount}}', {
+          value: t('{{name}} average: {{amount}}', {
             name,
-            period: averages.period,
             amount: formatCurrency(value),
           }),
           // On a flat line, "insideBottom" sits above it and "insideTop" below
