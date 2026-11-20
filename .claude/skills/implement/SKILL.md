@@ -23,9 +23,11 @@ Anything else goes in the PR description.
    - Would a wrong build still pass?
    - Is anything in the ticket or spec unclear or contradictory?
 
-   Fix the answer keys from its report and commit, before the build. Risky
-   work: ask the developer to make those fixes in the fresh session, on
-   answer-key/<KEY>, so step 5 picks them up. A question
+   Fix the answer keys from its report and commit, before the build. The
+   checker accepts a criterion the answer-key commit message says is left to
+   its unit tests. Risky work: the checker sends its report to the developer,
+   not to you, and the developer makes the fixes in the fresh session on
+   answer-key/<KEY>. Wait until they say the fixes are committed. A question
    only the developer or the BA can answer: if the answer changes what gets
    built, stop and ask. If not, note it for the PR and keep going.
    Write down that commit's SHA now (the tip of answer-key/<KEY> for risky
@@ -66,8 +68,10 @@ Anything else goes in the PR description.
    check only the fix commits and what they touch. That is the one review round. Nits go in
    the PR description.
 9. Run locally: the answer keys, the new tests and the test files near the
-   change. The full suite runs on the PR's CI.
-10. Write down the spec's scenarios to walk on staging: the links to try and
+   change. The full suite runs on the PR's CI. If an existing test now fails,
+   send it to the checker: it updates the test when the spec changed that
+   behaviour, or reports that the code is wrong and a builder fixes it.
+10. Write down the spec's scenarios to walk on the preview environment: the links to try and
     what to check at each. There is no local database, so the developer signs
     in with their own staging account; never create or guess one.
 11. Read .claude/skills/pr/SKILL.md and do every step in it, without stopping.
