@@ -7,7 +7,9 @@ disable-model-invocation: true
 
 Write a spec for ticket $ARGUMENTS.
 
-1. Read the ticket and any project docs the developer gives you.
+1. Read the ticket and any project docs the developer gives you. Work on a
+   branch named for the ticket key (for example MPDX-1234); create it from the
+   latest base branch if you are not on one.
 2. Use superpowers:brainstorming to write the spec. Ask one question at a time.
 3. If the change is visual (a layout, a new screen, anything that changes with
    the window size), build a throwaway mockup before the spec is final. Let the
@@ -17,8 +19,8 @@ Write a spec for ticket $ARGUMENTS.
    Delete the mockup.
 4. Save it to docs/superpowers/specs/YYYY-MM-DD-<KEY>-<topic>-design.md with:
    Why, In scope, Out of scope, Acceptance criteria (numbered, each one
-   testable), Risky (does it touch a one-way-door path in CLAUDE.md?),
-   Questions for the BA.
+   testable), a line that reads exactly "Risky: yes" or "Risky: no" (yes when
+   it touches a path in .github/CODEOWNERS), Questions for the BA.
 5. Ask the developer to read every line. Then:
    - Not clear: pause and research. Explain how it works, or point them to
      the screen in the app.

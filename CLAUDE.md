@@ -20,7 +20,7 @@ Next.js 15, React, TypeScript, Material UI v7, Apollo Client, Jest with Testing 
 
 **Demo data:** there is no local database. The local app talks to the staging MPDX API through Okta, so walk features with a staging account. Ask the developer for one; never create or guess one. The `.env` file comes from another developer.
 
-**Full suite on a PR:** CI runs every test in 12 chunks on every PR. Nothing to turn on. Add the `Preview` label for a preview environment.
+**Full suite on a PR:** CI runs every test in 12 chunks on every PR. Nothing to turn on. Add the `Preview Environment` label for a preview environment.
 
 **Hooks:** pre-commit runs lint-staged. Pre-push runs gitleaks, the typecheck and the tests next to changed files. Do not skip them with `--no-verify`.
 
@@ -184,7 +184,8 @@ Critical environment setup:
 
 `/spec`, then `/answer-key`, then `/implement`, then `/pr`. The skills are in `.claude/skills/`.
 
-- The builder never writes the tests it is graded by. The checker writes the unit tests and reviews; it never writes app code.
+- Work on a branch named for the ticket key (for example `MPDX-1234`). `/spec` makes it if needed.
+- The builder writes app code and never writes or edits tests. The checker writes every test (unit tests and fix tests) and reviews; it never commits app code.
 - Answer-key tests live in `src/answer-key/<KEY>/`. Never special-case inputs to make tests pass. Once the build starts, nobody edits an answer key without the developer's OK.
 - The session commits.
 - At each step, post one line: what is done, what is next.
@@ -192,16 +193,17 @@ Critical environment setup:
 
 ## One-way-door paths
 
-A mistake here gets money math or HR data wrong, breaks sign-in, or switches off a guardrail. Work that touches these uses the stricter setup in `.claude/skills/implement/SKILL.md`, and a person from the code owners must approve the PR. pr-guard sets the one-way-door label from `.github/CODEOWNERS`, so this list must match it.
+A mistake here gets money math or HR data wrong, breaks sign-in, leaks a secret, or switches off a guardrail. Work that touches these uses the stricter setup in `.claude/skills/implement/SKILL.md`, and a person from the code owners must approve the PR.
 
-- HR tools (goal, NS and PDS calculators, salary, ASR, MHA, savings fund, HCM data): `src/components/HrTools/`
-- Reports that read HCM data: `src/components/Reports/MPGAIncomeExpensesReport/`, `src/components/Reports/StaffExpenseReport/`
-- Sign-in and impersonation: `pages/api/auth/`, `pages/api/stop-impersonating.page.ts`
-- REST proxy and CSV import: `pages/api/graphql-rest.page.ts`, `pages/api/Schema/`, `pages/api/csv-update.page.ts`
-- Monitoring and safety nets: `src/lib/dataDog.ts`, `scripts/safety-nets/`
-- Guardrail files and deploy config: `.github/`, `.husky/`, `.claude/`, `CLAUDE.md`, `AGENTS.md`, `.gitleaksignore`, `.eslintrc*`, `amplify.yml`
+`.github/CODEOWNERS` is the one list of exact paths. pr-guard reads it to set the one-way-door label, so add or remove paths there, not here. It covers:
 
-Tests follow their folder: a test inside one of these folders is a one-way door too.
+- HR tools and the reports that read HCM data
+- Sign-in, impersonation, auth cookies, file uploads and the Apollo auth link
+- The REST proxy and CSV import
+- Monitoring and safety nets
+- Guardrail files and build config: CI, hooks, Claude config, CLAUDE.md, lint, test, TypeScript, Yarn and Next.js config, and Amplify
+
+Tests follow their folder: a test inside a one-way-door folder is a one-way door too.
 
 ## Do-not-touch list
 

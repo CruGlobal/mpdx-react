@@ -1,5 +1,5 @@
 # Only one-way-door paths need a code owner; there is no * line, so the rest can merge on the agent-review approval.
-# pr-guard also labels PRs one-way-door from these paths; keep the list in CLAUDE.md in sync.
+# pr-guard also labels PRs one-way-door from these paths. This file is the one list; CLAUDE.md only says what it covers.
 
 # HR tools: goal, NS and PDS calculators, salary, ASR, MHA, savings fund, HCM data
 /src/components/HrTools/                                @CruGlobal/mpdx-developers
@@ -8,9 +8,13 @@
 /src/components/Reports/MPGAIncomeExpensesReport/       @CruGlobal/mpdx-developers
 /src/components/Reports/StaffExpenseReport/             @CruGlobal/mpdx-developers
 
-# Sign-in and impersonation
+# Sign-in, impersonation, auth cookies, file uploads and the Apollo auth link
 /pages/api/auth/                                        @CruGlobal/mpdx-developers
 /pages/api/stop-impersonating.page.ts                   @CruGlobal/mpdx-developers
+/pages/api/utils/cookies.ts                             @CruGlobal/mpdx-developers
+/pages/api/uploads/                                     @CruGlobal/mpdx-developers
+/src/lib/apollo/link.ts                                 @CruGlobal/mpdx-developers
+/src/lib/apollo/client.ts                               @CruGlobal/mpdx-developers
 
 # REST proxy and CSV import
 /pages/api/graphql-rest.page.ts                         @CruGlobal/mpdx-developers
@@ -21,7 +25,7 @@
 /src/lib/dataDog.ts                                     @CruGlobal/mpdx-developers
 /scripts/safety-nets/                                   @CruGlobal/mpdx-developers
 
-# Guardrail files and deploy config
+# Guardrail files and build config
 /.github/                                               @CruGlobal/mpdx-developers
 /.husky/                                                @CruGlobal/mpdx-developers
 /.claude/                                               @CruGlobal/mpdx-developers
@@ -30,3 +34,12 @@
 /.gitleaksignore                                        @CruGlobal/mpdx-developers
 /.eslintrc*                                             @CruGlobal/mpdx-developers
 /amplify.yml                                            @CruGlobal/mpdx-developers
+/next.config.ts                                         @CruGlobal/mpdx-developers
+/.yarnrc.yml                                            @CruGlobal/mpdx-developers
+/jest.config.js                                         @CruGlobal/mpdx-developers
+/tsconfig.json                                          @CruGlobal/mpdx-developers
+
+# agent-review writes these on PR branches; no owner, so they never make a PR one-way-door
+/.claude/review/learnings/
+/.claude/review/metrics/
+/.claude/review/index/

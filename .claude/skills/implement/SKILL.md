@@ -22,7 +22,9 @@ Anything else goes in the PR description.
    - Would a wrong build still pass?
    - Is anything in the ticket or spec unclear or contradictory?
 
-   Fix the answer keys from its report and commit, before the build. A question
+   Fix the answer keys from its report and commit, before the build. Risky
+   work: ask the developer to make those fixes in the fresh session, on
+   answer-key/<KEY>, so step 5 picks them up. A question
    only the developer or the BA can answer: if the answer changes what gets
    built, stop and ask. If not, note it for the PR and keep going.
 
@@ -38,7 +40,9 @@ Anything else goes in the PR description.
    A failing test means the code is wrong, not the test. Send the failure back
    to a builder. If the build shows an answer key itself is wrong, ask the
    developer before changing it.
-6. This must print nothing: git diff --name-only <answer-key commit> -- <answer-key folder>
+6. This must print nothing, where <answer-key commit> is the last commit that
+   changed the answer keys (the tip of answer-key/<KEY> for risky work):
+   git diff --name-only <answer-key commit> -- <answer-key folder>
    If it prints a file the developer did not approve, that is a fail. Stop and
    tell the developer.
 7. Send the checker its second job (SendMessage, same agent):
@@ -54,12 +58,13 @@ Anything else goes in the PR description.
    screens, the API as well as the UI)? What input can these tests not
    express? Report what it checked and found clean, not only problems.
    Risky work: a second fresh agent does part b, not the checker.
-8. A builder fixes the blocking and should-fix findings, each with a test that
-   fails without the fix. Then send the checker its last job: check only the
-   fix commits and what they touch. That is the one review round. Nits go in
+8. A builder fixes the blocking and should-fix findings. The checker writes a
+   test for each fix that fails without it. Then send the checker its last job:
+   check only the fix commits and what they touch. That is the one review round. Nits go in
    the PR description.
 9. Run locally: the answer keys, the new tests and the test files near the
    change. The full suite runs on the PR's CI.
-10. Write a small demo-data script for the spec's scenarios (development only),
-    with the links to try and how to sign in.
+10. Write down the spec's scenarios to walk on staging: the links to try and
+    what to check at each. There is no local database, so the developer signs
+    in with their own staging account; never create or guess one.
 11. Read .claude/skills/pr/SKILL.md and do every step in it, without stopping.
