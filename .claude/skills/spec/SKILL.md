@@ -20,7 +20,7 @@ Write a spec for ticket $ARGUMENTS.
 4. Save it to docs/superpowers/specs/YYYY-MM-DD-<KEY>-<topic>-design.md with:
    Why, In scope, Out of scope, Acceptance criteria (numbered, each one
    testable), a line that reads exactly "Risky: yes" or "Risky: no" (yes when
-   it touches a path in .github/CODEOWNERS), Questions for the BA.
+   it touches a path .github/CODEOWNERS gives an owner), Questions for the BA.
 5. Ask the developer to read every line. Then:
    - Not clear: pause and research. Explain how it works, or point them to
      the screen in the app.

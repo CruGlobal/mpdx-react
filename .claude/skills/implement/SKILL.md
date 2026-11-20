@@ -13,10 +13,11 @@ Anything else goes in the PR description.
 
 1. Preflight: run the preflight from CLAUDE.md. If dependencies are missing or
    the app does not boot, fix it or tell the developer before anything else.
-2. Start the checker: a fresh agent (Agent tool) that never writes app code.
+2. Start the checker: a fresh agent (Agent tool) that never commits app code.
    Keep its id, because you will send it more work later with SendMessage.
    Its first job: read the ticket, the spec and the answer-key tests (not the
-   code) and report:
+   code; for risky work, read them with git show answer-key/<KEY>:<path>) and
+   report:
    - Is every requirement in the ticket, and every acceptance criterion, tested?
    - Do the tests check behaviour, not names or pixel positions?
    - Would a wrong build still pass?
@@ -27,21 +28,23 @@ Anything else goes in the PR description.
    answer-key/<KEY>, so step 5 picks them up. A question
    only the developer or the BA can answer: if the answer changes what gets
    built, stop and ask. If not, note it for the PR and keep going.
+   Write down that commit's SHA now (the tip of answer-key/<KEY> for risky
+   work). It is <answer-key commit> in step 6 and never changes after this.
 
 3. Use superpowers:writing-plans to write a plan from the spec. Save it in
    docs/superpowers/plans/. Cut anything the spec did not ask for. Do not wait
    for anyone to read or approve it; go straight on to the build.
 4. Build with ultracode: call the Workflow tool with builder agents. Give them
-   the spec and the plan. Tell every agent: "Do not edit anything in
-   <answer-key folder>. Do not special-case inputs to make tests pass."
+   the spec and the plan. Tell every agent: "Do not write or edit any test,
+   and nothing in <answer-key folder>. Do not special-case inputs to make tests
+   pass."
    Retry an agent once if it dies on a network error.
 5. Run the answer-key tests. If they are on the answer-key/<KEY> branch, first
    run: git checkout answer-key/<KEY> -- <answer-key folder>
    A failing test means the code is wrong, not the test. Send the failure back
    to a builder. If the build shows an answer key itself is wrong, ask the
    developer before changing it.
-6. This must print nothing, where <answer-key commit> is the last commit that
-   changed the answer keys (the tip of answer-key/<KEY> for risky work):
+6. This must print nothing, with <answer-key commit> from step 2:
    git diff --name-only <answer-key commit> -- <answer-key folder>
    If it prints a file the developer did not approve, that is a fail. Stop and
    tell the developer.
