@@ -1,17 +1,18 @@
 import { ReactElement } from 'react';
-import { renderHook } from '@testing-library/react-hooks';
+import { act, renderHook } from '@testing-library/react-hooks';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { mockSession } from '__tests__/util/mockSession';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
-import { UserTypeEnum } from 'src/graphql/types.generated';
+import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
 import { NewStaffQuestionnaireStatusQuery } from './NewStaffQuestionnaireStatus.generated';
 import { UserOptionQuery } from './UserPreference.generated';
 import { useNavPages } from './useNavPages';
 
 const accountListId = 'account-list-1';
+const mutationSpy = jest.fn();
 
-// Wrapper for asserting HR Tools visibility by user type (verified, reports enabled).
+// Wrapper for asserting HR Tools visibility by user type for a New Staff household.
 // The household is in no open training unless a questionnaire is passed.
 const makeWrapper = (
   userType: UserTypeEnum,
@@ -26,12 +27,19 @@ const makeWrapper = (
         NewStaffQuestionnaireStatus: NewStaffQuestionnaireStatusQuery;
       }>
         mocks={{
-          GetUser: { user: { userType } },
+          GetUser: {
+            user: {
+              userType,
+              usStaffGroup: UsStaffGroupEnum.NewStaff,
+              spouseUsStaffGroup: UsStaffGroupEnum.NewStaff,
+            },
+          },
           UserOption: {
             userOption: { key: 'user_type_verified', value: userTypeVerified },
           },
           NewStaffQuestionnaireStatus: { newStaffQuestionnaire },
         }}
+        onCall={mutationSpy}
       >
         {children}
       </GqlMockedProvider>
@@ -166,10 +174,13 @@ describe('useNavPages', () => {
   it('hides the HR Tools tab when reports are disabled and there is no questionnaire', async () => {
     mockSession({ developer: false });
 
-    const { result, waitForNextUpdate } = renderHook(() => useNavPages(false), {
+    const { result, waitFor } = renderHook(() => useNavPages(false), {
       wrapper: makeWrapper(UserTypeEnum.UsStaff, 'false'),
     });
-    await waitForNextUpdate();
+    await waitFor(() => {
+      expect(mutationSpy).toHaveGraphqlOperation('NewStaffQuestionnaireStatus');
+    });
+    await act(async () => {});
 
     expect(result.current.navPages.map((page) => page.id)).not.toContain(
       'hr-tools-page',
