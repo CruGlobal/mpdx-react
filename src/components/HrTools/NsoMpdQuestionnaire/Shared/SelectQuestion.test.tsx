@@ -87,13 +87,14 @@ describe('SelectQuestion', () => {
     expect(getByText('Nearest city')).toHaveClass('Mui-error');
   });
 
-  it('disables the select when disabled is set', () => {
-    const { getByRole } = render(<TestComponent disabled />);
+  it('disables the select and its label when disabled is set', () => {
+    const { getByRole, getByText } = render(<TestComponent disabled />);
 
     expect(getByRole('combobox', { name: 'Nearest city' })).toHaveAttribute(
       'aria-disabled',
       'true',
     );
+    expect(getByText('Nearest city')).toHaveClass('Mui-disabled');
   });
   it('disables the select once the questionnaire is submitted', async () => {
     const { getByRole } = render(

@@ -76,17 +76,6 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
   const questionnaire = questionnaireData?.newStaffQuestionnaire ?? null;
   const readOnly = questionnaire?.completed ?? false;
 
-  // A submitted questionnaire opens on its Summary; the step pages stay reachable from there
-  useEffect(() => {
-    if (readOnly) {
-      setCurrentIndex(
-        steps.findIndex(
-          (step) => step.step === NsoMpdQuestionnaireStepEnum.Summary,
-        ),
-      );
-    }
-  }, [readOnly, steps]);
-
   const hasSpouse = getHasSpouse(questionnaire?.maritalStatus);
 
   const percentComplete = useMemo(
@@ -138,6 +127,13 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
     },
     [steps],
   );
+
+  // A submitted questionnaire opens on its Summary; the step pages stay reachable from there
+  useEffect(() => {
+    if (readOnly) {
+      handleStepChange(NsoMpdQuestionnaireStepEnum.Summary);
+    }
+  }, [readOnly, handleStepChange]);
 
   const handleContinue = useCallback(() => {
     if (currentIndex < steps.length - 1) {

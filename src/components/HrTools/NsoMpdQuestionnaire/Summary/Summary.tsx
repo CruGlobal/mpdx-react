@@ -17,18 +17,21 @@ import { getIncompleteSteps } from '../Shared/stepCompletion';
 import { SummarySection } from './SummarySection';
 import { useSummarySections } from './useSummarySections';
 
-const SummaryIntro: React.FC<{ completedAt: string | null | undefined }> = ({
-  completedAt,
-}) => {
+const SummaryIntro: React.FC<{
+  readOnly: boolean;
+  completedAt: string | null | undefined;
+}> = ({ readOnly, completedAt }) => {
   const { t } = useTranslation();
   const locale = useLocale();
 
-  if (completedAt) {
+  if (readOnly) {
     return (
       <Alert severity="info">
-        {t('Submitted on {{date}}', {
-          date: dateFormatShort(DateTime.fromISO(completedAt), locale),
-        })}
+        {completedAt
+          ? t('Submitted on {{date}}', {
+              date: dateFormatShort(DateTime.fromISO(completedAt), locale),
+            })
+          : t('This questionnaire has been submitted.')}
       </Alert>
     );
   }
@@ -105,7 +108,10 @@ export const Summary: React.FC = () => {
       <Box mx={4} my={2}>
         <Stack spacing={2}>
           <Typography variant="h5">{t('Summary')}</Typography>
-          <SummaryIntro completedAt={questionnaire?.completedAt} />
+          <SummaryIntro
+            readOnly={readOnly}
+            completedAt={questionnaire?.completedAt}
+          />
         </Stack>
         <Divider sx={{ mx: -4, my: 4 }} />
         <Stack spacing={4}>
