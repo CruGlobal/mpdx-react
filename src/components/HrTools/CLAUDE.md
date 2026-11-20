@@ -63,7 +63,7 @@ The table below is an orientation aid — verify against each tool's
 | SalaryCalculator         | SeniorStaff / NationalExpat                              |
 | GoalCalculator (MPD)     | SeniorStaff                                              |
 | NsGoalCalculator         | NewStaff                                                 |
-| NsoMpdQuestionnaire      | none: shown when the API returns one (open training)     |
+| NsoMpdQuestionnaire      | none: shown when the API returns one, even submitted     |
 | PdsGoalCalculator        | PaidWithDesignation                                      |
 | StaffSavingFund          | staff account, not PaidWithDesignation (`StaffAccount`)  |
 | MinistryPartnerReminders | any staff account (`requireStaffAccount`, no group gate) |
@@ -256,7 +256,14 @@ has a distinct `Complete` mutation, and the request forms autosave a draft but
   about). `0` and `false` are valid answers (only null/undefined/'' count as
   empty). Required fields are variant-driven (`Sosa`, `SpouseSeniorStaff`); the
   ministry dropdown is a separate OneApp source with brittle string-matched
-  labels.
+  labels. A **submitted** questionnaire (`completed`) still comes back while the
+  training's questionnaire is open: the context sets `readOnly`, opens on
+  Summary ("Submitted on {date}", no Edit/Submit), no-ops `saveField` and
+  `completeQuestionnaire`, and every field is disabled, so route any new input
+  through `useQuestionnaireAutoSave` or `readOnly`. `viewerIsStaffMember` says
+  whether the viewer is the staff member or the spouse; it is null when the API
+  can't tell, and only then does `useStaffCardViewer` guess from the staff
+  group.
 
 ## Every tool in this tree is wired to the primary API
 

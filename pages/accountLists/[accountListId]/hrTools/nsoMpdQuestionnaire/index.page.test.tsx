@@ -29,7 +29,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
         mocks={{
           GetUser: { user: { userType, usStaffGroup } },
           NewStaffQuestionnaire: {
-            newStaffQuestionnaire: { updatedAt },
+            newStaffQuestionnaire: { updatedAt, completed: false },
           },
         }}
       >

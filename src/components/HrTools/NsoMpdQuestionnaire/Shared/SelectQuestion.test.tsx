@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as yup from 'yup';
 import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrapper';
@@ -93,6 +93,28 @@ describe('SelectQuestion', () => {
     expect(getByRole('combobox', { name: 'Nearest city' })).toHaveAttribute(
       'aria-disabled',
       'true',
+    );
+  });
+  it('disables the select once the questionnaire is submitted', async () => {
+    const { getByRole } = render(
+      <NsoMpdQuestionnaireTestWrapper
+        newStaffQuestionnaire={{ completed: true }}
+      >
+        <SelectQuestion
+          fieldName="geographicLocation"
+          schema={schema}
+          label="Nearest city"
+          placeholder="Select a city"
+          options={options}
+        />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
+
+    await waitFor(() =>
+      expect(getByRole('combobox', { name: 'Nearest city' })).toHaveAttribute(
+        'aria-disabled',
+        'true',
+      ),
     );
   });
 });

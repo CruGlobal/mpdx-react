@@ -76,6 +76,7 @@ export const MinistryDetails: React.FC = () => {
         label={t('What city is your expected ministry assignment in?')}
         required
         error={locationError}
+        disabled={locationFieldProps.disabled}
         helperText={locationHelperText}
       >
         {(aria) => (

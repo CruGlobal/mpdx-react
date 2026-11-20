@@ -28,7 +28,7 @@ export function useNsoMpdQuestionnaireHidden(): boolean {
   if (error) {
     return inNsGoalCalcIneligibleGroup;
   }
-  const questionnaire = data?.newStaffQuestionnaire;
+  // A submitted questionnaire stays listed so the household can read it.
   // Cached data keeps the item steady through a cache-and-network refetch
-  return (loading && !data) || !questionnaire || questionnaire.completed;
+  return (loading && !data) || !data?.newStaffQuestionnaire;
 }

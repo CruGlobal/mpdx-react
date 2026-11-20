@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NsoMpdQuestionnaireStepEnum } from '../NsoMpdQuestionnaireHelper';
 import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrapper';
@@ -16,6 +16,21 @@ const SaveComponent: React.FC = () => {
     <button onClick={() => saveField({ phoneNumber: '305-555-1234' })}>
       Save
     </button>
+  );
+};
+
+const ReadOnlyComponent: React.FC = () => {
+  const { currentStep, readOnly, saveField, completeQuestionnaire } =
+    useNsoMpdQuestionnaire();
+  return (
+    <div>
+      <h2>{currentStep.title}</h2>
+      <div aria-label="read only state" data-read-only={readOnly} />
+      <button onClick={() => saveField({ phoneNumber: '305-555-1234' })}>
+        Save
+      </button>
+      <button onClick={() => completeQuestionnaire()}>complete</button>
+    </div>
   );
 };
 
@@ -164,5 +179,50 @@ describe('NsoMpdQuestionnaireContext', () => {
         },
       ),
     );
+  });
+  describe('submitted questionnaire', () => {
+    const renderSubmitted = (mutationSpy = jest.fn()) =>
+      render(
+        <NsoMpdQuestionnaireTestWrapper
+          onCall={mutationSpy}
+          newStaffQuestionnaire={{ completed: true }}
+        >
+          <ReadOnlyComponent />
+        </NsoMpdQuestionnaireTestWrapper>,
+      );
+
+    it('opens on the Summary step and reports read-only', async () => {
+      const { getByRole, getByLabelText } = renderSubmitted();
+
+      await waitFor(() =>
+        expect(getByLabelText('read only state')).toHaveAttribute(
+          'data-read-only',
+          'true',
+        ),
+      );
+      expect(getByRole('heading')).toHaveTextContent('Summary');
+    });
+
+    it('sends no update or complete mutation', async () => {
+      const mutationSpy = jest.fn();
+      const { getByRole, getByLabelText } = renderSubmitted(mutationSpy);
+      await waitFor(() =>
+        expect(getByLabelText('read only state')).toHaveAttribute(
+          'data-read-only',
+          'true',
+        ),
+      );
+
+      userEvent.click(getByRole('button', { name: 'Save' }));
+      userEvent.click(getByRole('button', { name: 'complete' }));
+      await act(async () => {});
+
+      expect(mutationSpy).not.toHaveGraphqlOperation(
+        'UpdateNewStaffQuestionnaire',
+      );
+      expect(mutationSpy).not.toHaveGraphqlOperation(
+        'CompleteNewStaffQuestionnaire',
+      );
+    });
   });
 });

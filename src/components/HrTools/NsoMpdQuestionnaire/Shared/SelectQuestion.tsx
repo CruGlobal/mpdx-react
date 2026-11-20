@@ -63,6 +63,7 @@ export const SelectQuestion: React.FC<SelectQuestionProps> = ({
       label={label}
       required
       error={error}
+      disabled={fieldProps.disabled}
       helperText={shownHelperText}
     >
       {(aria) => (
@@ -88,7 +89,7 @@ export const SelectQuestion: React.FC<SelectQuestionProps> = ({
               : undefined,
           }}
           {...fieldProps}
-          disabled={disabled}
+          disabled={disabled || fieldProps.disabled}
         >
           <MenuItem value="" disabled>
             <Typography component="span" color="text.secondary">

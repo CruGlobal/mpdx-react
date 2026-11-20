@@ -18,6 +18,9 @@ fragment NewStaffInformationFields on NewStaffQuestionnaire {
 fragment NewStaffQuestionnaireFields on NewStaffQuestionnaire {
   id
   updatedAt
+  completed
+  completedAt
+  viewerIsStaffMember
   accountTransfers
   assignmentType
   carLoanMonthlyPayment

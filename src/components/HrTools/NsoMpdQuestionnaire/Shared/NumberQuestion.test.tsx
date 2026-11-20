@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as yup from 'yup';
 import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrapper';
@@ -108,5 +108,23 @@ describe('NumberQuestion', () => {
     );
 
     expect(getByTestId('end-adornment')).toBeInTheDocument();
+  });
+  it('disables the input once the questionnaire is submitted', async () => {
+    const { getByRole } = render(
+      <NsoMpdQuestionnaireTestWrapper
+        newStaffQuestionnaire={{ completed: true }}
+      >
+        <NumberQuestion
+          fieldName="childcareChildrenCount"
+          schema={schema}
+          question="How many?"
+          helperText="Enter 0 if none."
+        />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
+
+    await waitFor(() =>
+      expect(getByRole('spinbutton', { name: 'How many?' })).toBeDisabled(),
+    );
   });
 });

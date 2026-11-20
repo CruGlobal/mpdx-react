@@ -94,15 +94,13 @@ describe('useNsoMpdQuestionnaireHidden', () => {
     await waitFor(() => expect(result.current).toBe(false));
   });
 
-  it('hides it once the household has completed it', async () => {
+  it('keeps it visible once the household has submitted it, so they can read it', async () => {
     const { result } = renderHidden({
       ...openQuestionnaire,
       completed: true,
     });
-    await statusQueried();
-    await act(async () => {});
 
-    expect(result.current).toBe(true);
+    await waitFor(() => expect(result.current).toBe(false));
   });
 
   it('hides it when the household has none to fill in', async () => {
