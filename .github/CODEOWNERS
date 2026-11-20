@@ -1,0 +1,53 @@
+# Only one-way-door paths need a code owner; there is no * line, so the rest can merge on the agent-review approval.
+# pr-guard also labels PRs one-way-door from these paths. This file is the one list; CLAUDE.md only says what it covers.
+
+# HR tools and their pages: goal, NS and PDS calculators, salary, ASR, MHA, savings fund, HCM data
+/src/components/HrTools/                                @CruGlobal/mpdx-developers
+/pages/accountLists/*/hrTools/                          @CruGlobal/mpdx-developers
+
+# Reports that read HCM data, and their pages
+/src/components/Reports/MPGAIncomeExpensesReport/       @CruGlobal/mpdx-developers
+/src/components/Reports/StaffExpenseReport/             @CruGlobal/mpdx-developers
+/pages/accountLists/*/reports/mpgaIncomeExpenses/       @CruGlobal/mpdx-developers
+/pages/accountLists/*/reports/staffExpense/             @CruGlobal/mpdx-developers
+
+# Sign-in, impersonation, page access gates, auth cookies, file uploads and the Apollo clients
+/pages/api/auth/                                        @CruGlobal/mpdx-developers
+/pages/api/stop-impersonating.page.ts                   @CruGlobal/mpdx-developers
+/pages/api/utils/cookies.ts                             @CruGlobal/mpdx-developers
+/pages/api/uploads/                                     @CruGlobal/mpdx-developers
+/src/lib/apollo/link.ts                                 @CruGlobal/mpdx-developers
+/src/lib/apollo/client.ts                               @CruGlobal/mpdx-developers
+/src/lib/apollo/ssrClient.ts                            @CruGlobal/mpdx-developers
+/pages/api/utils/pagePropsHelpers.ts                    @CruGlobal/mpdx-developers
+
+# REST proxy and CSV import
+/pages/api/graphql-rest.page.ts                         @CruGlobal/mpdx-developers
+/pages/api/Schema/                                      @CruGlobal/mpdx-developers
+/pages/api/csv-update.page.ts                           @CruGlobal/mpdx-developers
+
+# Monitoring and safety nets
+/src/lib/dataDog.ts                                     @CruGlobal/mpdx-developers
+/scripts/safety-nets/                                   @CruGlobal/mpdx-developers
+
+# Guardrail files and build config
+/.github/                                               @CruGlobal/mpdx-developers
+/.husky/                                                @CruGlobal/mpdx-developers
+/.claude/                                               @CruGlobal/mpdx-developers
+**/CLAUDE.md                                            @CruGlobal/mpdx-developers
+**/AGENTS.md                                            @CruGlobal/mpdx-developers
+/.gitleaksignore                                        @CruGlobal/mpdx-developers
+/.eslintrc*                                             @CruGlobal/mpdx-developers
+/amplify.yml                                            @CruGlobal/mpdx-developers
+/next.config.ts                                         @CruGlobal/mpdx-developers
+/.yarnrc.yml                                            @CruGlobal/mpdx-developers
+/jest.config.js                                         @CruGlobal/mpdx-developers
+/tsconfig.json                                          @CruGlobal/mpdx-developers
+/.eslintignore                                          @CruGlobal/mpdx-developers
+/__tests__/util/setup.ts                                @CruGlobal/mpdx-developers
+/scripts/jest-shards/*.js                               @CruGlobal/mpdx-developers
+/.yarn/releases/                                        @CruGlobal/mpdx-developers
+
+# agent-review's address step commits these outcome logs on PR branches; no owner, so they never make a PR one-way-door
+/.claude/review/learnings/feedback/*.jsonl
+/.claude/review/learnings/feedback.jsonl
