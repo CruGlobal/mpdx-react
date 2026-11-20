@@ -185,7 +185,7 @@ Critical environment setup:
 `/spec`, then `/answer-key`, then `/implement`, then `/pr`. The skills are in `.claude/skills/`.
 
 - Work on a branch named for the ticket key (for example `MPDX-1234`). `/spec` makes it if needed.
-- The builder writes app code and never writes or edits tests. The checker writes every test (unit tests and fix tests) and reviews; it never commits app code.
+- The builder writes app code and never writes or edits tests. The checker writes every test (unit tests, fix tests, and updates to existing tests the spec changes) and reviews; it never commits app code. `/agent-review:yolo-review` fixes code and tests together and is the one exception.
 - Answer-key tests live in `src/answer-key/<KEY>/`. Never special-case inputs to make tests pass. Once the build starts, nobody edits an answer key without the developer's OK.
 - The session commits.
 - At each step, post one line: what is done, what is next.
@@ -195,13 +195,13 @@ Critical environment setup:
 
 A mistake here gets money math or HR data wrong, breaks sign-in, leaks a secret, or switches off a guardrail. Work that touches these uses the stricter setup in `.claude/skills/implement/SKILL.md`, and a person from the code owners must approve the PR.
 
-`.github/CODEOWNERS` is the one list of exact paths. pr-guard reads it to set the one-way-door label, so add or remove paths there, not here. It covers:
+`.github/CODEOWNERS` is the one list of exact paths. A path is a one-way door when CODEOWNERS gives it an owner; the few lines with no owner at the end are carve-outs. pr-guard reads it to set the one-way-door label, so add or remove paths there, not here. It covers:
 
-- HR tools and the reports that read HCM data
-- Sign-in, impersonation, auth cookies, file uploads and the Apollo auth link
+- HR tools, the reports that read HCM data, and their pages
+- Sign-in, impersonation, page access gates, auth cookies, file uploads and the Apollo clients
 - The REST proxy and CSV import
 - Monitoring and safety nets
-- Guardrail files and build config: CI, hooks, Claude config, CLAUDE.md, lint, test, TypeScript, Yarn and Next.js config, and Amplify
+- Guardrail files and build config: CI, hooks, Claude config, CLAUDE.md, AGENTS.md, the gitleaks ignore list, lint, test, TypeScript, Yarn and Next.js config, and Amplify
 
 Tests follow their folder: a test inside a one-way-door folder is a one-way door too.
 
