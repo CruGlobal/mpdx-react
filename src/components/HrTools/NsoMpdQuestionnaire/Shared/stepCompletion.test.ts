@@ -21,6 +21,7 @@ const completeSingle: Questionnaire = {
   id: 'questionnaire-1',
   personNumber: '000123456',
   updatedAt: '2026-01-01T00:00:00Z',
+  completed: false,
   maritalStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
   variant: NewStaffQuestionnaireVariantEnum.SingleMarried,
   phoneNumber: '(305) 000-1111',

@@ -23,12 +23,13 @@ export const useQuestionnaireAutoSave = ({
   fieldName,
   ...options
 }: UseQuestionnaireAutoSaveOptions) => {
-  const { questionnaire, saveField } = useNsoMpdQuestionnaire();
+  const { questionnaire, saveField, readOnly } = useNsoMpdQuestionnaire();
 
   return useAutoSave({
     value: questionnaire?.[fieldName],
     saveValue: (value) => saveField({ [fieldName]: value }),
     fieldName,
+    disabled: readOnly,
     ...options,
   });
 };

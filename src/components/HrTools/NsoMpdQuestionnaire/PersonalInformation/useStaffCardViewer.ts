@@ -1,14 +1,18 @@
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { useIneligibleByGroup } from 'src/hooks/useIneligibleByGroup';
+import { useNsoMpdQuestionnaire } from '../Shared/NsoMpdQuestionnaireContext';
 
 /** How the Staff Information card relates to the signed-in viewer. */
 export const useStaffCardViewer = (
   viewingSpouse: boolean,
 ): { avatarSrc: string | null; otherIsViewer: boolean } => {
   const { data } = useGetUserQuery();
-  // The questionnaire's staff member is always new staff, so any other viewer is their spouse
+  const { questionnaire } = useNsoMpdQuestionnaire();
+  // When the API cannot tell (viewer has no person number), guess from the staff group: the
+  // questionnaire's staff member is always new staff, so any other viewer is their spouse
   const { inNsGoalCalcIneligibleGroup } = useIneligibleByGroup();
-  const viewerIsStaffMember = !inNsGoalCalcIneligibleGroup;
+  const viewerIsStaffMember =
+    questionnaire?.viewerIsStaffMember ?? !inNsGoalCalcIneligibleGroup;
   const showsStaffMember = !viewingSpouse;
 
   return {

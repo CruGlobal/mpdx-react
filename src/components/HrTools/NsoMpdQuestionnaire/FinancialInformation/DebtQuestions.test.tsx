@@ -197,4 +197,14 @@ describe('DebtQuestions', () => {
       ),
     );
   });
+  it('disables the debt question once the questionnaire is submitted', async () => {
+    const { getByRole } = render(
+      <TestComponent newStaffQuestionnaire={{ completed: true }} />,
+    );
+
+    await waitFor(() =>
+      expect(getByRole('radio', { name: 'Yes' })).toBeDisabled(),
+    );
+    expect(getByRole('radio', { name: 'No' })).toBeDisabled();
+  });
 });

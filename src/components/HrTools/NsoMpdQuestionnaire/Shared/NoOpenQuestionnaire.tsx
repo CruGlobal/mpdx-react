@@ -3,9 +3,9 @@ import { Alert, AlertTitle, Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 /**
- * Shown when the account list has no in-progress questionnaire to complete. A questionnaire is
- * created by the OneApp import (never by this frontend), so when the query returns nothing there is
- * no form to render. Surface an informational message instead of a blank, unsaveable form.
+ * Shown when the query returns no questionnaire, in progress or submitted. A questionnaire is
+ * created by the OneApp import (never by this frontend), so there is no form to render. Surface an
+ * informational message instead of a blank, unsaveable form.
  */
 export const NoOpenQuestionnaire: React.FC = () => {
   const { t } = useTranslation();

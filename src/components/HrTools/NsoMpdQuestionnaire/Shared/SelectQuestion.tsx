@@ -54,6 +54,7 @@ export const SelectQuestion: React.FC<SelectQuestionProps> = ({
     ...fieldProps
   } = useQuestionnaireAutoSave({ fieldName, schema, saveOnChange: true });
 
+  const isDisabled = disabled || fieldProps.disabled;
   const error = Boolean(errorText) || Boolean(fieldError);
   const shownHelperText =
     errorText ?? (fieldError ? fieldErrorText : helperText);
@@ -63,6 +64,7 @@ export const SelectQuestion: React.FC<SelectQuestionProps> = ({
       label={label}
       required
       error={error}
+      disabled={isDisabled}
       helperText={shownHelperText}
     >
       {(aria) => (
@@ -88,7 +90,7 @@ export const SelectQuestion: React.FC<SelectQuestionProps> = ({
               : undefined,
           }}
           {...fieldProps}
-          disabled={disabled}
+          disabled={isDisabled}
         >
           <MenuItem value="" disabled>
             <Typography component="span" color="text.secondary">

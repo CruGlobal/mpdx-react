@@ -5,6 +5,8 @@ interface LabeledFieldProps {
   label: React.ReactNode;
   required?: boolean;
   error?: boolean;
+  /** Disables the label and any radios inside, which read it from the FormControl. */
+  disabled?: boolean;
   helperText?: React.ReactNode;
   /**
    * Renders the control, wiring the supplied aria attributes onto its focusable element so the
@@ -24,6 +26,7 @@ export const LabeledField: React.FC<LabeledFieldProps> = ({
   label,
   required,
   error,
+  disabled,
   helperText,
   children,
 }) => {
@@ -34,6 +37,7 @@ export const LabeledField: React.FC<LabeledFieldProps> = ({
     <FormControl
       error={error}
       required={required}
+      disabled={disabled}
       sx={{ '.MuiTextField-root': { maxWidth: { xs: '100%', md: '50%' } } }}
     >
       <FormLabel component="span" id={labelId} sx={{ color: 'text.primary' }}>
