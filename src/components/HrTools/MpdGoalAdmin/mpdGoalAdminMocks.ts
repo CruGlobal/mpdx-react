@@ -78,6 +78,7 @@ export const cohortsMock: NewStaffCohortsQuery = {
         hasTrainingCosts: true,
         canRunAndSend: true,
         runAndSendBlockers: [],
+        questionnaireOpen: false,
         ...costFields,
       },
       {
@@ -91,6 +92,7 @@ export const cohortsMock: NewStaffCohortsQuery = {
         runAndSendBlockers: [
           NewStaffCohortRunAndSendBlockerEnum.TrainingCostsMissing,
         ],
+        questionnaireOpen: false,
         ...noCostFields,
       },
     ],

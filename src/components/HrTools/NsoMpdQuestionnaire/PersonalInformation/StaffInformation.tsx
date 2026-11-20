@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Stack, TextField, Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
-import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { getLocalizedAge } from 'src/lib/functions/getLocalizedAge';
 import { StaffInfoCard } from '../../Shared/StaffInfoCard/StaffInfoCard';
 import { useNsoMpdQuestionnaire } from '../Shared/NsoMpdQuestionnaireContext';
 import { getFamilyStatusLabel } from '../Shared/helpers/getFamilyStatusLabel';
+import { useStaffCardViewer } from './useStaffCardViewer';
 
 interface StaffInfoField {
   label: string;
@@ -16,9 +16,8 @@ interface StaffInfoField {
 export const StaffInformation: React.FC = () => {
   const { t } = useTranslation();
   const { questionnaire, hasSpouse } = useNsoMpdQuestionnaire();
-  const { data: userData } = useGetUserQuery();
-
   const [viewingSpouse, setViewingSpouse] = useState(false);
+  const { avatarSrc, otherIsViewer } = useStaffCardViewer(viewingSpouse);
 
   // Primary user is always new/joining staff
   const isJoining = viewingSpouse ? questionnaire?.spouseJoining : true;
@@ -40,7 +39,7 @@ export const StaffInformation: React.FC = () => {
   const name =
     [firstName, questionnaire?.lastName].filter(Boolean).join(' ') || t('User');
   const toggleName =
-    otherFirstName ?? (viewingSpouse ? t('Yourself') : t('Spouse'));
+    otherFirstName ?? (otherIsViewer ? t('Yourself') : t('Spouse'));
 
   const fields: StaffInfoField[] = [
     {
@@ -90,8 +89,7 @@ export const StaffInformation: React.FC = () => {
       <StaffInfoCard
         person={{
           name,
-          // Backend doesn't currently support accessing the spouse's avatar
-          avatarSrc: viewingSpouse ? null : userData?.user.avatar,
+          avatarSrc,
         }}
         toggle={
           hasSpouse

@@ -1,7 +1,10 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
+import {
+  NewStaffQuestionnaireMaritalStatusEnum,
+  UsStaffGroupEnum,
+} from 'src/graphql/types.generated';
 import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrapper';
 import { StaffInformation } from './StaffInformation';
 
@@ -36,6 +39,69 @@ describe('StaffInformation', () => {
     expect(getByRole('textbox', { name: 'Address' })).toHaveValue(
       '123 Main St, Apt 4, Miami, FL 33101',
     );
+  });
+
+  it("shows the viewer's avatar on the staff member's card only to new staff", async () => {
+    const { findByRole, container, unmount } = render(
+      <NsoMpdQuestionnaireTestWrapper>
+        <StaffInformation />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
+    await findByRole('heading', { name: 'John Doe' });
+    await waitFor(() =>
+      expect(container.querySelector('img[src="avatar.jpg"]')).not.toBeNull(),
+    );
+    unmount();
+
+    // A senior staff spouse can open the questionnaire, but the card is not about them
+    const onCall = jest.fn();
+    const spouseView = render(
+      <NsoMpdQuestionnaireTestWrapper
+        usStaffGroup={UsStaffGroupEnum.SeniorStaff}
+        onCall={onCall}
+      >
+        <StaffInformation />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
+    await spouseView.findByRole('heading', { name: 'John Doe' });
+    await waitFor(() => expect(onCall).toHaveGraphqlOperation('GetUser'));
+    await act(async () => {});
+    expect(
+      spouseView.container.querySelector('img[src="avatar.jpg"]'),
+    ).toBeNull();
+  });
+
+  it('shows international and stint new staff their own avatar', async () => {
+    const { findByRole, container } = render(
+      <NsoMpdQuestionnaireTestWrapper
+        usStaffGroup={UsStaffGroupEnum.NewInternationalStaff}
+      >
+        <StaffInformation />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
+
+    await findByRole('heading', { name: 'John Doe' });
+    await waitFor(() =>
+      expect(container.querySelector('img[src="avatar.jpg"]')).not.toBeNull(),
+    );
+  });
+
+  it('offers a spouse viewer a way back to themselves when the spouse name is blank', async () => {
+    const onCall = jest.fn();
+    const { findByRole } = render(
+      <NsoMpdQuestionnaireTestWrapper
+        usStaffGroup={UsStaffGroupEnum.SeniorStaff}
+        newStaffQuestionnaire={{ spouseFirstName: null }}
+        onCall={onCall}
+      >
+        <StaffInformation />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
+
+    await waitFor(() => expect(onCall).toHaveGraphqlOperation('GetUser'));
+    expect(
+      await findByRole('button', { name: 'View Yourself' }),
+    ).toBeInTheDocument();
   });
 
   it("toggles to the spouse's information", async () => {
