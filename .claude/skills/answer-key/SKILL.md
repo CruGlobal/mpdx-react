@@ -20,15 +20,16 @@ sees them.
 3. Test what the user sees and what the system does, not how it is built:
    - no class, method or helper names, unless the spec fixes them
    - for layout, test the spec's rules, not exact pixel positions
-4. Put them in their own folder named for the ticket, where the test runner
-   finds it, for example src/answer-key/<KEY>/. Check the folder and file names
+4. Put them in src/answer-key/<KEY>/, where the test runner finds them. Check the folder and file names
    don't trip the repo's own checks (linters, scanners, tests that search file
    names or contents).
 5. Run them. They must fail because the feature is missing, not because of
-   a typo or a bad import. Import only modules that exist today: test a new
-   module through the existing page or component that will use it, so the
-   typecheck and ESLint still pass. Do not push until /pr: pre-push runs the
-   tests next to changed files.
+   a typo or a bad import. Import only modules that exist today, so ESLint
+   passes at commit and the typecheck passes at push: test a new module through
+   the existing page, route or component that will use it. If a criterion has
+   no such entry point, say so in the commit message and leave it to the
+   checker's unit tests. Do not push until /pr: pre-push runs the typecheck and
+   the tests next to changed files.
 6. Commit them. Then read .claude/skills/implement/SKILL.md and follow it for
    this spec, without stopping. (Risky change: stop here instead, and tell the
    developer to run /implement in their main session.)
