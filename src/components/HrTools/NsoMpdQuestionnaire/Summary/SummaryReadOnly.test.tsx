@@ -63,7 +63,7 @@ describe('Summary of a submitted questionnaire', () => {
         newStaffQuestionnaire={{
           completed: false,
           locked: true,
-          deadline: '2027-01-20T22:00:00Z',
+          deadline: '2019-11-20T17:00:00Z',
         }}
       >
         <Summary />

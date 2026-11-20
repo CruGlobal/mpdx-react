@@ -255,6 +255,7 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
                   <GoalRowActions
                     row={row}
                     canRunAndSend={canRunAndSendRow(row)}
+                    questionnaireOpen={!!selectedCohort?.questionnaireOpen}
                     onRunAndSend={(actionRow) =>
                       openRunAndSend(
                         t('Run and Send this MPD Goal?'),

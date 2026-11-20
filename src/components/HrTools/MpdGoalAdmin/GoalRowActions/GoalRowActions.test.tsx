@@ -28,12 +28,14 @@ const baseRow = attendeeToRow(attendees[0]);
 interface TestComponentProps {
   row?: Partial<StaffGoalRow>;
   canRunAndSend?: boolean;
+  questionnaireOpen?: boolean;
   failReopen?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   row = {},
   canRunAndSend = false,
+  questionnaireOpen = true,
   failReopen = false,
 }) => (
   <ThemeProvider theme={theme}>
@@ -56,6 +58,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
       <GoalRowActions
         row={{ ...baseRow, ...row }}
         canRunAndSend={canRunAndSend}
+        questionnaireOpen={questionnaireOpen}
         onRunAndSend={onRunAndSend}
       />
     </GqlMockedProvider>
@@ -82,7 +85,7 @@ describe('GoalRowActions', () => {
     userEvent.click(getByRole('button', actionsButton));
 
     expect(
-      getByRole('menuitem', { name: 'Run & Send this goal' }),
+      getByRole('menuitem', { name: /^Run & Send this goal/ }),
     ).toHaveAttribute('aria-disabled', 'true');
     expect(
       getByRole('menuitem', { name: 'Reopen Questionnaire' }),
@@ -111,15 +114,17 @@ describe('GoalRowActions', () => {
   });
 
   it('shows no success when the reopen fails', async () => {
-    const { getByRole } = render(<TestComponent failReopen />);
+    const { getByRole, queryByRole } = render(<TestComponent failReopen />);
 
     userEvent.click(getByRole('button', actionsButton));
     userEvent.click(getByRole('menuitem', { name: 'Reopen Questionnaire' }));
     userEvent.click(getByRole('button', { name: 'Reopen' }));
 
+    // The confirmation closes once the failed request settles
     await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('ReopenNewStaffQuestionnaire'),
+      expect(queryByRole('button', { name: 'Reopen' })).not.toBeInTheDocument(),
     );
+    expect(mutationSpy).toHaveGraphqlOperation('ReopenNewStaffQuestionnaire');
     expect(mockEnqueue).not.toHaveBeenCalled();
   });
 
@@ -140,6 +145,53 @@ describe('GoalRowActions', () => {
     expect(
       getByRole('menuitem', { name: 'Reopen Questionnaire' }),
     ).toHaveAttribute('aria-disabled', 'true');
+  });
+
+  it('reopens a household the deadline locked out before it submitted', () => {
+    const { getByRole } = render(
+      <TestComponent
+        row={{
+          questionnaireState:
+            NewStaffCohortAttendeeQuestionnaireStateEnum.InProgress,
+          questionnaireLocked: true,
+        }}
+      />,
+    );
+
+    userEvent.click(getByRole('button', actionsButton));
+
+    expect(
+      getByRole('menuitem', { name: 'Reopen Questionnaire' }),
+    ).not.toHaveAttribute('aria-disabled');
+  });
+
+  it('offers no reopen while the training has its questionnaire closed', () => {
+    const { getByRole } = render(
+      <TestComponent canRunAndSend questionnaireOpen={false} />,
+    );
+
+    userEvent.click(getByRole('button', actionsButton));
+
+    expect(
+      getByRole('menuitem', { name: 'Reopen Questionnaire' }),
+    ).toHaveAttribute('aria-disabled', 'true');
+  });
+
+  it('gives no missing-inputs tooltip on a reopened row', () => {
+    const { getByRole, queryByRole } = render(
+      <TestComponent
+        row={{
+          questionnaireState:
+            NewStaffCohortAttendeeQuestionnaireStateEnum.InProgress,
+          questionnaireReopenedAt: '2027-01-21T15:00:00Z',
+        }}
+      />,
+    );
+    const button = getByRole('button', actionsButton);
+    expect(button).toBeDisabled();
+
+    userEvent.hover(button, undefined, { skipPointerEventsCheck: true });
+    expect(queryByRole('tooltip')).not.toBeInTheDocument();
   });
 
   it('blocks the menu, with the reason, when nothing can be done yet', async () => {

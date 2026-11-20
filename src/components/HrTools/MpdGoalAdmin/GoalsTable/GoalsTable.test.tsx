@@ -317,15 +317,13 @@ describe('GoalsTable', () => {
   });
 
   it('blocks Run & Send on the row while the cohort is missing training costs', async () => {
-    const { getAllByRole, getByRole } = await renderLoadedTable(
+    // That cohort's questionnaire is also closed, so the row has no action left
+    const { getAllByRole } = await renderLoadedTable(
       rows,
       cohortsWithoutCostsMock,
     );
 
-    userEvent.click(getAllByRole('button', { name: /Actions for/ })[0]);
-    expect(
-      getByRole('menuitem', { name: 'Run & Send this goal' }),
-    ).toHaveAttribute('aria-disabled', 'true');
+    expect(getAllByRole('button', { name: /Actions for/ })[0]).toBeDisabled();
   });
 
   it('shows the first coordinator and hides the rest behind a chip', () => {

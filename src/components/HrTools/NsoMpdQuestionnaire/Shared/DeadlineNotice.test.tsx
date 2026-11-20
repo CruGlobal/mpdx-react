@@ -37,13 +37,32 @@ describe('DeadlineNotice', () => {
   });
 
   it('says the deadline passed and who can reopen it', async () => {
-    const { findByText } = renderNotice({ deadline, locked: true });
+    const { findByText } = renderNotice({
+      deadline: '2019-11-20T17:00:00Z',
+      locked: true,
+    });
 
     expect(
       await findByText(
-        'The deadline for this questionnaire passed on Jan 20, 2027, 5:00 PM EST. To change or submit it, ask the MPD team at mpdhelp@cru.org to reopen it.',
+        'The deadline for this questionnaire passed on Nov 20, 2019, 12:00 PM EST. To change or submit it, ask the MPD team at mpdhelp@cru.org to reopen it.',
       ),
     ).toBeInTheDocument();
+  });
+
+  it('says the goal was already sent when that, not the deadline, locks it', async () => {
+    const { findByText, queryByText } = renderNotice({
+      deadline,
+      locked: true,
+    });
+
+    expect(
+      await findByText(
+        "Your MPD goal was already sent, so this questionnaire can't change.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      queryByText(/deadline for this questionnaire passed/),
+    ).not.toBeInTheDocument();
   });
 
   it('says nothing when the training has no deadline', async () => {

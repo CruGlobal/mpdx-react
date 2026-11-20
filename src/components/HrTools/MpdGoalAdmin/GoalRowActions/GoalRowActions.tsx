@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { IconButton, Menu, MenuItem } from '@mui/material';
+import { IconButton, ListItemText, Menu, MenuItem } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
@@ -12,6 +12,8 @@ import { useReopenNewStaffQuestionnaireMutation } from './ReopenNewStaffQuestion
 interface GoalRowActionsProps {
   row: StaffGoalRow;
   canRunAndSend: boolean;
+  /** A closed training hides the questionnaire, so a reopen would leave nothing to edit. */
+  questionnaireOpen: boolean;
   onRunAndSend: (row: StaffGoalRow) => void;
 }
 
@@ -19,6 +21,7 @@ interface GoalRowActionsProps {
 export const GoalRowActions: React.FC<GoalRowActionsProps> = ({
   row,
   canRunAndSend,
+  questionnaireOpen,
   onRunAndSend,
 }) => {
   const { t } = useTranslation();
@@ -32,6 +35,7 @@ export const GoalRowActions: React.FC<GoalRowActionsProps> = ({
   // taken back, so neither can the answers behind it.
   const canReopen =
     !sent &&
+    questionnaireOpen &&
     (row.questionnaireLocked ||
       row.questionnaireState ===
         NewStaffCohortAttendeeQuestionnaireStateEnum.Completed);
@@ -40,8 +44,6 @@ export const GoalRowActions: React.FC<GoalRowActionsProps> = ({
   const handleReopen = async () => {
     await reopenQuestionnaire({
       variables: { input: { attendeeId: row.id } },
-      // A reopen also changes the row's goalStatus, which the payload doesn't carry
-      refetchQueries: ['NewStaffCohortAttendees'],
     });
     enqueueSnackbar(
       t('Questionnaire reopened for {{name}}.', { name: row.name }),
@@ -53,8 +55,10 @@ export const GoalRowActions: React.FC<GoalRowActionsProps> = ({
 
   return (
     <>
-      {/* A Sent row's chip already explains itself; the blocked copy would claim its inputs are missing. */}
-      <RunAndSendTooltip show={!hasAction && !sent}>
+      {/* A Sent or reopened row's chip already explains itself; the blocked copy would claim inputs are missing. */}
+      <RunAndSendTooltip
+        show={!hasAction && !sent && !row.questionnaireReopenedAt}
+      >
         <IconButton
           size="small"
           aria-label={t('Actions for {{name}}', { name: row.name })}
@@ -70,17 +74,23 @@ export const GoalRowActions: React.FC<GoalRowActionsProps> = ({
         open={Boolean(anchorEl)}
         onClose={() => setAnchorEl(null)}
       >
-        <RunAndSendTooltip show={!canRunAndSend && !sent}>
-          <MenuItem
-            disabled={!canRunAndSend}
-            onClick={() => {
-              onRunAndSend(row);
-              setAnchorEl(null);
-            }}
-          >
-            {t('Run & Send this goal')}
-          </MenuItem>
-        </RunAndSendTooltip>
+        {/* The reason is text in the item: a tooltip wrapper would take the menu's keyboard focus */}
+        <MenuItem
+          disabled={!canRunAndSend}
+          onClick={() => {
+            onRunAndSend(row);
+            setAnchorEl(null);
+          }}
+        >
+          <ListItemText
+            primary={t('Run & Send this goal')}
+            secondary={
+              canRunAndSend || sent
+                ? undefined
+                : t('Needs all inputs and training costs')
+            }
+          />
+        </MenuItem>
         <MenuItem
           disabled={!canReopen}
           onClick={() => {
