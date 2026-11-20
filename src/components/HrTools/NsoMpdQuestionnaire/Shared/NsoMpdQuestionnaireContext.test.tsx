@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import i18n from 'src/lib/i18n';
 import { NsoMpdQuestionnaireStepEnum } from '../NsoMpdQuestionnaireHelper';
 import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrapper';
 import { useNsoMpdQuestionnaire } from './NsoMpdQuestionnaireContext';
@@ -201,6 +202,32 @@ describe('NsoMpdQuestionnaireContext', () => {
         ),
       );
       expect(getByRole('heading')).toHaveTextContent('Summary');
+    });
+
+    it('keeps the reader on the step they picked when the language changes', async () => {
+      const { getByRole } = render(
+        <NsoMpdQuestionnaireTestWrapper
+          newStaffQuestionnaire={{ completed: true }}
+        >
+          <InnerComponent />
+        </NsoMpdQuestionnaireTestWrapper>,
+      );
+      await waitFor(() =>
+        expect(getByRole('heading')).toHaveTextContent('Summary'),
+      );
+      userEvent.click(getByRole('button', { name: 'Back' }));
+
+      try {
+        await act(async () => {
+          await i18n.changeLanguage('fr');
+        });
+
+        expect(getByRole('heading')).toHaveTextContent('Questionnaire Step 4');
+      } finally {
+        await act(async () => {
+          await i18n.changeLanguage('en');
+        });
+      }
     });
 
     it('sends no update or complete mutation', async () => {

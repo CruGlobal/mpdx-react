@@ -28,6 +28,7 @@ export function useNsoMpdQuestionnaireHidden(): boolean {
   if (error) {
     return inNsGoalCalcIneligibleGroup;
   }
-  // A submitted questionnaire stays listed so the household can read it
+  // A submitted questionnaire stays listed so the household can read it.
+  // Cached data keeps the item steady through a cache-and-network refetch
   return !data?.newStaffQuestionnaire;
 }

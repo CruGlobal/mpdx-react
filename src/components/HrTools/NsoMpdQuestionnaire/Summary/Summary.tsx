@@ -76,6 +76,10 @@ export const Summary: React.FC = () => {
 
   // Complete the questionnaire, then redirect to the dashboard on success.
   const handleSubmit = async () => {
+    // A spouse may have submitted since this dialog opened
+    if (readOnly) {
+      return;
+    }
     await completeQuestionnaire();
 
     if (geographicLocationChanged) {
@@ -161,7 +165,7 @@ export const Summary: React.FC = () => {
       </Stack>
 
       <Confirmation
-        isOpen={confirmOpen && !readOnly}
+        isOpen={confirmOpen}
         title={t('Submit Questionnaire')}
         message={message}
         confirmLabel={t('Submit')}
