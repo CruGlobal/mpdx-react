@@ -1,13 +1,10 @@
 import NextLink from 'next/link';
 import React, { useEffect, useState } from 'react';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {
   Box,
   Checkbox,
-  IconButton,
   Link,
-  Menu,
-  MenuItem,
+  Stack,
   SxProps,
   Table,
   TableBody,
@@ -28,9 +25,9 @@ import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import { AssignCoachModal } from '../../Shared/AssignCoach/AssignCoachModal';
 import { coachLabel } from '../../Shared/AssignCoach/coachHelpers';
 import { StatusChip } from '../../Shared/StatusChip';
+import { GoalRowActions } from '../GoalRowActions/GoalRowActions';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
 import { RunAndSendModal } from '../RunAndSendModal/RunAndSendModal';
-import { RunAndSendTooltip } from '../RunAndSendTooltip';
 import {
   DEFAULT_ROWS_PER_PAGE,
   GoalStatusEnum,
@@ -44,6 +41,7 @@ import {
 import { useRunAndSendFlow } from '../useRunAndSendFlow';
 import { CoordinatorsCell } from './CoordinatorsCell';
 import { GoalsTableContainer } from './GoalsTableScroll';
+import { QuestionnaireLockChip } from './QuestionnaireLockChip';
 
 // Lowest-priority columns drop out below md so the table fits without sideways scrolling.
 const lowPriorityColumnSx = {
@@ -103,10 +101,6 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ROWS_PER_PAGE);
   // The staff row whose coach is being assigned; null when the modal is closed.
   const [coachRow, setCoachRow] = useState<StaffGoalRow | null>(null);
-  const [actionsMenu, setActionsMenu] = useState<{
-    row: StaffGoalRow;
-    anchorEl: HTMLElement;
-  } | null>(null);
   const { openRunAndSend, modalProps } = useRunAndSendFlow();
 
   // Rejecting keeps the modal open with its error; the row updates on success.
@@ -213,10 +207,13 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
                   : currencyFormat(row.mpdGoal, 'USD', locale)}
               </TableCell>
               <TableCell>
-                <GoalStatusChip
-                  status={row.goalStatus}
-                  sentAt={row.goalSentAt}
-                />
+                <Stack spacing={0.5} alignItems="flex-start">
+                  <GoalStatusChip
+                    status={row.goalStatus}
+                    sentAt={row.goalSentAt}
+                  />
+                  <QuestionnaireLockChip row={row} />
+                </Stack>
               </TableCell>
               <TableCell sx={lowPriorityColumnSx}>
                 {familyStatusLabel(row.familyStatus, t)}
@@ -255,25 +252,18 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
               </TableCell>
               {isGoalsAdmin && (
                 <TableCell padding="checkbox" align="right">
-                  {/* A Sent row's chip already explains itself; the blocked copy would claim its inputs are missing. */}
-                  <RunAndSendTooltip
-                    show={
-                      !canRunAndSendRow(row) &&
-                      row.goalStatus !== GoalStatusEnum.Sent
+                  <GoalRowActions
+                    row={row}
+                    canRunAndSend={canRunAndSendRow(row)}
+                    questionnaireOpen={!!selectedCohort?.questionnaireOpen}
+                    onRunAndSend={(actionRow) =>
+                      openRunAndSend(
+                        t('Run and Send this MPD Goal?'),
+                        [actionRow],
+                        { clearsSelection: false },
+                      )
                     }
-                  >
-                    <IconButton
-                      size="small"
-                      aria-label={t('Actions for {{name}}', { name: row.name })}
-                      aria-haspopup="menu"
-                      disabled={!canRunAndSendRow(row)}
-                      onClick={(event) =>
-                        setActionsMenu({ row, anchorEl: event.currentTarget })
-                      }
-                    >
-                      <MoreVertIcon fontSize="small" />
-                    </IconButton>
-                  </RunAndSendTooltip>
+                  />
                 </TableCell>
               )}
             </TableRow>
@@ -293,27 +283,6 @@ export const GoalsTable: React.FC<GoalsTableProps> = ({ rows }) => {
         }}
         labelRowsPerPage={t('Rows per page')}
       />
-      <Menu
-        anchorEl={actionsMenu?.anchorEl ?? null}
-        open={Boolean(actionsMenu)}
-        onClose={() => setActionsMenu(null)}
-      >
-        <MenuItem
-          onClick={() => {
-            if (!actionsMenu) {
-              return;
-            }
-            openRunAndSend(
-              t('Run and Send this MPD Goal?'),
-              [actionsMenu.row],
-              { clearsSelection: false },
-            );
-            setActionsMenu(null);
-          }}
-        >
-          {t('Run & Send this goal')}
-        </MenuItem>
-      </Menu>
       <RunAndSendModal {...modalProps} />
       {coachRow && (
         <AssignCoachModal

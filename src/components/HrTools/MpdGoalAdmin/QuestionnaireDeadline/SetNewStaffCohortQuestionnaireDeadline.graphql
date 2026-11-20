@@ -1,0 +1,10 @@
+mutation SetNewStaffCohortQuestionnaireDeadline(
+  $input: NewStaffCohortSetQuestionnaireDeadlineMutationInput!
+) {
+  setNewStaffCohortQuestionnaireDeadline(input: $input) {
+    newStaffCohort {
+      id
+      questionnaireDeadline
+    }
+  }
+}

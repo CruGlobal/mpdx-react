@@ -213,8 +213,13 @@ has a distinct `Complete` mutation, and the request forms autosave a draft but
 - **MpdGoalAdmin** — no longer a mock. It runs `NewStaffCohorts.graphql`
   (`NewStaffCohorts`, `NewStaffCohortAttendees`, `UpdateNewStaffCohort`),
   `QuestionnaireOpenSwitch/SetNewStaffCohortQuestionnaireOpen.graphql` (the
-  training bar's Questionnaire Open/Closed switch, admins only) and
-  `ScenarioGoals/ScenarioGoals.graphql`. `trainingSize` only counts attendees
+  training bar's Questionnaire Open/Closed switch, admins only),
+  `QuestionnaireDeadline/` (the training's questionnaire deadline, entered and
+  shown in Eastern time through `Shared/questionnaireDeadline.ts`; admins edit
+  it), `GoalRowActions/` (the row menu: Run & Send, and Reopen Questionnaire,
+  refused by the API once the goal was sent) and
+  `ScenarioGoals/ScenarioGoals.graphql`. Rows the deadline locked out before
+  submitting show "Not submitted"; reopened rows show "Reopened". `trainingSize` only counts attendees
   the caller can see, so for coordinators (not `mpdSupervisorAdmin`) the context
   **drops cohorts with `trainingSize` 0**, and a coordinator can get an empty
   list while cohorts exist. The list is held empty until GetUser data exists, so
@@ -260,7 +265,11 @@ has a distinct `Complete` mutation, and the request forms autosave a draft but
   training's questionnaire is open: the context sets `readOnly`, opens on
   Summary ("Submitted on {date}", no Edit/Submit), no-ops `saveField` and
   `completeQuestionnaire`, and every field is disabled, so route any new input
-  through `useQuestionnaireAutoSave` or `readOnly`. `viewerIsStaffMember` says
+  through `useQuestionnaireAutoSave` or `readOnly`. Past the training's
+  deadline the API returns `locked` and refuses saves (`QUESTIONNAIRE_LOCKED`),
+  so `readOnly` covers `locked` too and `DeadlineNotice` explains it on every
+  step; a reopen clears `deadline` until the household submits again.
+  `viewerIsStaffMember` says
   whether the viewer is the staff member or the spouse; it is null when the API
   can't tell, and only then does `useStaffCardViewer` guess from the staff
   group.

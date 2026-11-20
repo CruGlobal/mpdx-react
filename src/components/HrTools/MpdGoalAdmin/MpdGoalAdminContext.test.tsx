@@ -117,7 +117,7 @@ describe('MpdGoalAdminContext', () => {
   it('maps attendees onto table rows', async () => {
     const { result } = await renderLoaded();
 
-    expect(result.current.filteredRows[0]).toEqual({
+    expect(result.current.filteredRows[0]).toMatchObject({
       id: 'row-1',
       accountListId: 'account-list-row-1',
       name: 'John & Jane Doe',

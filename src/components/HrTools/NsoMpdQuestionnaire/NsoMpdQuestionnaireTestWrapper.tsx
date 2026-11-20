@@ -24,6 +24,8 @@ export const newStaffQuestionnaireMock: DeepPartial<
   // Editable unless a test submits it; a null viewer flag falls back to the staff-group guess
   completed: false,
   completedAt: null,
+  deadline: null,
+  locked: false,
   viewerIsStaffMember: null,
   personNumber: '000123456',
   firstName: 'John',

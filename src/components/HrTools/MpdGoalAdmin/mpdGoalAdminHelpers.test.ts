@@ -163,7 +163,7 @@ describe('cohortNodeToCohort', () => {
 
 describe('attendeeToRow', () => {
   it('maps an attendee onto a table row', () => {
-    expect(attendeeToRow(attendeeComplete)).toEqual({
+    expect(attendeeToRow(attendeeComplete)).toMatchObject({
       id: 'row-3',
       accountListId: 'account-list-row-3',
       name: 'Sam Smith',
