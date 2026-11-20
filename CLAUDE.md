@@ -2,6 +2,28 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Stack and commands
+
+Next.js 15, React, TypeScript, Material UI v7, Apollo Client, Jest with Testing Library. Node version is in `.tool-versions`. Yarn 4, never npm.
+
+| Task            | Command                                       |
+| --------------- | --------------------------------------------- |
+| Install         | `yarn install --immutable`                    |
+| Generate types  | `yarn gql` (after any `.graphql` change)      |
+| Run locally     | `yarn start`, then open http://localhost:3000 |
+| Test one file   | `yarn test ComponentName.test.tsx`            |
+| Test everything | `yarn test`                                   |
+| Lint            | `yarn lint:ci`, `yarn prettier:check`         |
+| Typecheck       | `yarn lint:ts`                                |
+
+**Preflight:** `yarn install --immutable && yarn gql && yarn lint:ts && yarn test src/lib/intlFormat.test.ts`. If that passes, the box can build and test.
+
+**Demo data:** there is no local database. The local app talks to the staging MPDX API through Okta, so walk features with a staging account. Ask the developer for one; never create or guess one. The `.env` file comes from another developer.
+
+**Full suite on a PR:** CI runs every test in 12 chunks on every PR. Nothing to turn on. Add the `Preview` label for a preview environment.
+
+**Hooks:** pre-commit runs lint-staged. Pre-push runs gitleaks, the typecheck and the tests next to changed files. Do not skip them with `--no-verify`.
+
 ## Architecture Overview
 
 MPDX is a Next.js 15 React application using the Pages Router with TypeScript and Material UI v7.
@@ -157,3 +179,35 @@ Critical environment setup:
 2. Install Node v22.14.0 (use asdf version manager)
 3. Install Git LFS: `git lfs pull`
 4. Run `yarn && yarn gql && yarn start`
+
+## Agent workflow
+
+`/spec`, then `/answer-key`, then `/implement`, then `/pr`. The skills are in `.claude/skills/`.
+
+- The builder never writes the tests it is graded by. The checker writes the unit tests and reviews; it never writes app code.
+- Answer-key tests live in `src/answer-key/<KEY>/`. Never special-case inputs to make tests pass. Once the build starts, nobody edits an answer key without the developer's OK.
+- The session commits.
+- At each step, post one line: what is done, what is next.
+- `/pr` runs `/agent-review:yolo-review` once the PR is up (config is in `.claude/review/`). The bot's approval lets a two-way-door PR merge on green.
+
+## One-way-door paths
+
+A mistake here gets money math or HR data wrong, breaks sign-in, or switches off a guardrail. Work that touches these uses the stricter setup in `.claude/skills/implement/SKILL.md`, and a person from the code owners must approve the PR. pr-guard sets the one-way-door label from `.github/CODEOWNERS`, so this list must match it.
+
+- HR tools (goal, NS and PDS calculators, salary, ASR, MHA, savings fund, HCM data): `src/components/HrTools/`
+- Reports that read HCM data: `src/components/Reports/MPGAIncomeExpensesReport/`, `src/components/Reports/StaffExpenseReport/`
+- Sign-in and impersonation: `pages/api/auth/`, `pages/api/stop-impersonating.page.ts`
+- REST proxy and CSV import: `pages/api/graphql-rest.page.ts`, `pages/api/Schema/`, `pages/api/csv-update.page.ts`
+- Monitoring and safety nets: `src/lib/dataDog.ts`, `scripts/safety-nets/`
+- Guardrail files and deploy config: `.github/`, `.husky/`, `.claude/`, `CLAUDE.md`, `AGENTS.md`, `.gitleaksignore`, `.eslintrc*`, `amplify.yml`
+
+Tests follow their folder: a test inside one of these folders is a one-way door too.
+
+## Do-not-touch list
+
+- `*.generated.ts`: made by `yarn gql`. Change the `.graphql` file and regenerate.
+- `yarn.lock` and `.yarn/cache/`: change them only through `yarn add`, `yarn remove` or `yarn up`.
+- `public/locales/`: Crowdin owns the translations. Add strings with `t()` and let `yarn extract` and Crowdin do the rest.
+- `scripts/jest-shards/timings.json`: refresh it only with the steps under CI Test Chunks.
+- `.gitleaksignore`: never add entries to hide a new secret.
+- `.env` files: never commit them.
