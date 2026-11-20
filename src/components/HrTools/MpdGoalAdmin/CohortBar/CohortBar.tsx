@@ -38,6 +38,22 @@ const Stat: React.FC<StatProps> = ({ label, children }) => (
   </Box>
 );
 
+/** The training's questionnaire switch and deadline. */
+const QuestionnaireStats: React.FC = () => {
+  const { t } = useTranslation();
+
+  return (
+    <>
+      <Stat label={t('Questionnaire')}>
+        <QuestionnaireOpenSwitch />
+      </Stat>
+      <Stat label={t('Questionnaire Deadline')}>
+        <QuestionnaireDeadline />
+      </Stat>
+    </>
+  );
+};
+
 export const CohortBar: React.FC = () => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -153,12 +169,7 @@ export const CohortBar: React.FC = () => {
           trainingCostLink
         )}
       </Stat>
-      <Stat label={t('Questionnaire')}>
-        <QuestionnaireOpenSwitch />
-      </Stat>
-      <Stat label={t('Questionnaire Deadline')}>
-        <QuestionnaireDeadline />
-      </Stat>
+      <QuestionnaireStats />
       {trainingCostsOpen && (
         <DynamicEditTrainingCostsModal
           open
