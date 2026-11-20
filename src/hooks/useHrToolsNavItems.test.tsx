@@ -56,7 +56,11 @@ const makeWrapper = (mocks: DeepPartial<Mocks>) => {
   return MocksWrapper;
 };
 
-const Wrapper = makeWrapper({ GetUser: { user: ineligibleUser } });
+// The household is in no open training, so the API returns no questionnaire
+const Wrapper = makeWrapper({
+  GetUser: { user: ineligibleUser },
+  NewStaffQuestionnaireStatus: { newStaffQuestionnaire: null },
+});
 
 const MpdGoalEligibleWrapper = makeWrapper({
   GetUser: { user: mpdGoalEligibleUser },

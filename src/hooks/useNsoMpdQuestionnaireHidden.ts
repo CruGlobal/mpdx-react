@@ -2,13 +2,15 @@ import { isUsStaffLike } from 'src/components/Shared/UserTypeAccess/UserTypeAcce
 import { useNewStaffQuestionnaireStatusQuery } from './NewStaffQuestionnaireStatus.generated';
 import { useAccountListId } from './useAccountListId';
 import { useIneligibleByGroup } from './useIneligibleByGroup';
-import { useNsGoalCalculatorAccess } from './useNsGoalCalculatorAccess';
 
 /** Whether to hide the NSO MPD Questionnaire menu item. */
 export function useNsoMpdQuestionnaireHidden(): boolean {
   const { inNsGoalCalcIneligibleGroup, userPending, userType } =
     useIneligibleByGroup();
-  const { featureEnabled } = useNsGoalCalculatorAccess();
+  // Only the feature flags, not the user group prompt: new staff often reach NSO before answering it
+  const featureEnabled =
+    process.env.DISABLE_NEW_REPORTS !== 'true' &&
+    process.env.DISABLE_NS_GOAL_CALCULATOR !== 'true';
   // HR Tools exist only for Cru US and hybrid staff
   const canSeeHrTools = isUsStaffLike(userType);
   const accountListId = useAccountListId();
