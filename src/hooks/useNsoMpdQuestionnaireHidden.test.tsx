@@ -75,9 +75,11 @@ const failingQuery = () => {
 
 describe('useNsoMpdQuestionnaireHidden', () => {
   const originalFlag = process.env.DISABLE_NS_GOAL_CALCULATOR;
+  const originalReportsFlag = process.env.DISABLE_NEW_REPORTS;
 
   afterEach(() => {
     process.env.DISABLE_NS_GOAL_CALCULATOR = originalFlag;
+    process.env.DISABLE_NEW_REPORTS = originalReportsFlag;
   });
 
   it('shows it to new staff with one to fill in', async () => {
@@ -127,21 +129,30 @@ describe('useNsoMpdQuestionnaireHidden', () => {
     expect(result.current).toBe(true);
   });
 
-  it('hides it until the user confirms their user group', async () => {
+  // New staff often reach NSO before answering the dashboard's user group prompt
+  it('shows it before the user confirms their user group', async () => {
     const { result } = renderHidden(openQuestionnaire, {
       userGroupVerified: false,
     });
-    await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('UserOption'),
-    );
 
-    await waitFor(() => expect(result.current).toBe(true));
+    await waitFor(() => expect(result.current).toBe(false));
   });
 
   it('hides it, without asking, from staff outside Cru US', async () => {
     const { result, waitForNextUpdate } = renderHidden(openQuestionnaire, {
       userType: UserTypeEnum.GlobalStaff,
     });
+    await waitForNextUpdate();
+
+    expect(result.current).toBe(true);
+    expect(mutationSpy).not.toHaveGraphqlOperation(
+      'NewStaffQuestionnaireStatus',
+    );
+  });
+
+  it('hides it, without asking, when the new reports are turned off', async () => {
+    process.env.DISABLE_NEW_REPORTS = 'true';
+    const { result, waitForNextUpdate } = renderHidden(openQuestionnaire);
     await waitForNextUpdate();
 
     expect(result.current).toBe(true);

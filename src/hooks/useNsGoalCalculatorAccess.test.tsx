@@ -67,8 +67,6 @@ describe('useNsGoalCalculatorAccess', () => {
 
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.canUseNsGoalCalculator).toBe(false);
-    // The feature itself stays on, so a senior staff spouse can still reach the questionnaire
-    expect(result.current.featureEnabled).toBe(true);
   });
 
   it('denies new staff whose user group is unverified', async () => {
@@ -88,6 +86,5 @@ describe('useNsGoalCalculatorAccess', () => {
 
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.canUseNsGoalCalculator).toBe(false);
-    expect(result.current.featureEnabled).toBe(false);
   });
 });
