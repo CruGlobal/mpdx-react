@@ -46,7 +46,8 @@
 /.eslintignore                                          @CruGlobal/mpdx-developers
 /__tests__/util/setup.ts                                @CruGlobal/mpdx-developers
 /scripts/jest-shards/*.js                               @CruGlobal/mpdx-developers
+/.yarn/releases/                                        @CruGlobal/mpdx-developers
 
 # agent-review's address step commits these outcome logs on PR branches; no owner, so they never make a PR one-way-door
-/.claude/review/learnings/feedback/
+/.claude/review/learnings/feedback/*.jsonl
 /.claude/review/learnings/feedback.jsonl

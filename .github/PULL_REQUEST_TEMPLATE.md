@@ -33,6 +33,6 @@ Findings I did not fix, and why:
 - [ ] I have applied the appropriate labels (_Add the label "Preview Environment" to automatically create a preview environment_)
 - [ ] I have run the Claude Code `/agent-review:review` command locally and fixed each finding or listed it above
 - [ ] The `github-actions` bot has approved the PR (it approves once `/agent-review:review` leaves no open blockers)
-- [ ] I have asked a person to review, if this is a one-way door (it touches a path in `.github/CODEOWNERS`)
+- [ ] I have asked a person to review, if this is a one-way door (it touches a path `.github/CODEOWNERS` gives an owner)
 - [ ] I have tested my changes in preview or in staging
 - [ ] I have cleaned up my commit history

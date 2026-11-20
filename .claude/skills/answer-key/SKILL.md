@@ -24,8 +24,9 @@ sees them.
    don't trip the repo's own checks (linters, scanners, tests that search file
    names or contents).
 5. Run them. They must fail because the feature is missing, not because of
-   a typo or a bad import. Import only modules that exist today, so ESLint
-   passes at commit and the typecheck passes at push: test a new module through
+   a typo or a bad import. Every answer key must pass `yarn lint:ts` today:
+   import only modules, exports and props that exist now, so ESLint passes at
+   commit and the typecheck passes at push and in the /implement preflight: test a new module through
    the existing page, route or component that will use it. If a criterion has
    no such entry point, say so in the commit message and leave it to the
    checker's unit tests. Do not push until /pr: pre-push runs the typecheck and
