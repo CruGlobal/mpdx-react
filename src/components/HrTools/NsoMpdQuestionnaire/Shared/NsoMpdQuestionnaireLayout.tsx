@@ -17,8 +17,9 @@ interface NsoMpdQuestionnaireLayoutProps {
 /**
  * Layout shared by all NSO MPD Questionnaire pages. The icon rail holds a completion progress ring
  * and one navigable icon per view step, so users can jump directly to any step; the content has Back
- * and Continue buttons below it on every step except the last, which supplies its own Back and Submit
- * buttons. Each step has a single section, so there is no sub-step sidebar.
+ * and Continue buttons below it on every step except the last (Summary), which supplies its own Back
+ * button and, unless the questionnaire is read-only, a Submit button. Each step has a single section,
+ * so there is no sub-step sidebar.
  */
 export const NsoMpdQuestionnaireLayout: React.FC<
   NsoMpdQuestionnaireLayoutProps

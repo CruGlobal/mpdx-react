@@ -21,6 +21,10 @@ import { NsoMpdQuestionnaireProvider } from './Shared/NsoMpdQuestionnaireContext
 export const newStaffQuestionnaireMock: DeepPartial<
   NewStaffQuestionnaireQuery['newStaffQuestionnaire']
 > = {
+  // Editable unless a test submits it; a null viewer flag falls back to the staff-group guess
+  completed: false,
+  completedAt: null,
+  viewerIsStaffMember: null,
   personNumber: '000123456',
   firstName: 'John',
   lastName: 'Doe',

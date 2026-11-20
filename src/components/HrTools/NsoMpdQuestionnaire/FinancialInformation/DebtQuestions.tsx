@@ -29,7 +29,7 @@ export const DebtQuestions: React.FC = () => {
 
   const schema = useMemo(() => getDebtSchema(t), [t]);
 
-  const { saveField, questionnaire } = useNsoMpdQuestionnaire();
+  const { saveField, questionnaire, readOnly } = useNsoMpdQuestionnaire();
 
   const {
     studentLoanMonthlyPayment,
@@ -98,6 +98,7 @@ export const DebtQuestions: React.FC = () => {
       <LabeledField
         required
         error={showHasDebtError}
+        disabled={readOnly}
         helperText={
           showHasDebtError ? t('Please select an answer.') : undefined
         }

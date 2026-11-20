@@ -1,11 +1,14 @@
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { Alert, Box, Divider, Link, Stack, Typography } from '@mui/material';
+import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useApplyGoalAndLocation } from 'src/hooks/useApplyGoalAndLocation';
+import { useLocale } from 'src/hooks/useLocale';
+import { dateFormatShort } from 'src/lib/intlFormat';
 import { BackButton } from '../Shared/BackButton';
 import { useNsoMpdQuestionnaire } from '../Shared/NsoMpdQuestionnaireContext';
 import { NsoMpdQuestionnaireLayout } from '../Shared/NsoMpdQuestionnaireLayout';
@@ -14,13 +17,47 @@ import { getIncompleteSteps } from '../Shared/stepCompletion';
 import { SummarySection } from './SummarySection';
 import { useSummarySections } from './useSummarySections';
 
+const SummaryIntro: React.FC<{
+  readOnly: boolean;
+  completedAt: string | null | undefined;
+}> = ({ readOnly, completedAt }) => {
+  const { t } = useTranslation();
+  const locale = useLocale();
+
+  if (readOnly) {
+    const submittedAt = completedAt ? DateTime.fromISO(completedAt) : null;
+    return (
+      <Alert severity="info">
+        {submittedAt?.isValid
+          ? t('Submitted on {{date}}', {
+              date: dateFormatShort(submittedAt, locale),
+            })
+          : t('This questionnaire has been submitted.')}
+      </Alert>
+    );
+  }
+
+  return (
+    <Typography variant="body1">
+      {t(
+        'Please review your information below, then select Submit to finish. Once submitted, you will be redirected to the dashboard and will not be able to make any further changes.',
+      )}
+    </Typography>
+  );
+};
+
 export const Summary: React.FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const accountListId = useAccountListId();
-  const { questionnaire, handleStepChange, handleBack, completeQuestionnaire } =
-    useNsoMpdQuestionnaire();
+  const {
+    questionnaire,
+    readOnly,
+    handleStepChange,
+    handleBack,
+    completeQuestionnaire,
+  } = useNsoMpdQuestionnaire();
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   const sections = useSummarySections();
@@ -39,6 +76,10 @@ export const Summary: React.FC = () => {
 
   // Complete the questionnaire, then redirect to the dashboard on success.
   const handleSubmit = async () => {
+    // A spouse may have submitted since this dialog opened
+    if (readOnly) {
+      return;
+    }
     await completeQuestionnaire();
 
     if (geographicLocationChanged) {
@@ -72,11 +113,10 @@ export const Summary: React.FC = () => {
       <Box mx={4} my={2}>
         <Stack spacing={2}>
           <Typography variant="h5">{t('Summary')}</Typography>
-          <Typography variant="body1">
-            {t(
-              'Please review your information below, then select Submit to finish. Once submitted, you will be redirected to the dashboard and will not be able to make any further changes.',
-            )}
-          </Typography>
+          <SummaryIntro
+            readOnly={readOnly}
+            completedAt={questionnaire?.completedAt}
+          />
         </Stack>
         <Divider sx={{ mx: -4, my: 4 }} />
         <Stack spacing={4}>
@@ -85,13 +125,15 @@ export const Summary: React.FC = () => {
               key={section.title}
               title={section.title}
               rows={section.rows}
-              onEdit={() => handleStepChange(section.step)}
+              onEdit={
+                readOnly ? undefined : () => handleStepChange(section.step)
+              }
             />
           ))}
         </Stack>
       </Box>
 
-      {!canSubmit && (
+      {!readOnly && !canSubmit && (
         <Alert severity="error" sx={{ mx: 4, '& ul': { m: 0, pl: 3 } }}>
           {t('Your form is missing information.')}
           <ul>
@@ -112,12 +154,14 @@ export const Summary: React.FC = () => {
 
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} mx={4}>
         <BackButton onClick={handleBack} />
-        <QuestionnaireActionButton
-          onClick={() => setConfirmOpen(true)}
-          disabled={!canSubmit}
-        >
-          {t('Submit')}
-        </QuestionnaireActionButton>
+        {!readOnly && (
+          <QuestionnaireActionButton
+            onClick={() => setConfirmOpen(true)}
+            disabled={!canSubmit}
+          >
+            {t('Submit')}
+          </QuestionnaireActionButton>
+        )}
       </Stack>
 
       <Confirmation
