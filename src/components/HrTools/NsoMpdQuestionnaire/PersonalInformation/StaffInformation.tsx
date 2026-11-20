@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { Stack, TextField, Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
-import { useGetUserQuery } from 'src/components/User/GetUser.generated';
-import { useIneligibleByGroup } from 'src/hooks/useIneligibleByGroup';
 import { getLocalizedAge } from 'src/lib/functions/getLocalizedAge';
 import { StaffInfoCard } from '../../Shared/StaffInfoCard/StaffInfoCard';
 import { useNsoMpdQuestionnaire } from '../Shared/NsoMpdQuestionnaireContext';
 import { getFamilyStatusLabel } from '../Shared/helpers/getFamilyStatusLabel';
+import { useStaffCardViewer } from './useStaffCardViewer';
 
 interface StaffInfoField {
   label: string;
@@ -17,12 +16,8 @@ interface StaffInfoField {
 export const StaffInformation: React.FC = () => {
   const { t } = useTranslation();
   const { questionnaire, hasSpouse } = useNsoMpdQuestionnaire();
-  const { data: userData } = useGetUserQuery();
-  // The questionnaire's staff member is always new staff, so any other viewer is their spouse
-  const { inNsGoalCalcIneligibleGroup } = useIneligibleByGroup();
-  const viewerIsStaffMember = !inNsGoalCalcIneligibleGroup;
-
   const [viewingSpouse, setViewingSpouse] = useState(false);
+  const { avatarSrc, otherIsViewer } = useStaffCardViewer(viewingSpouse);
 
   // Primary user is always new/joining staff
   const isJoining = viewingSpouse ? questionnaire?.spouseJoining : true;
@@ -43,9 +38,6 @@ export const StaffInformation: React.FC = () => {
 
   const name =
     [firstName, questionnaire?.lastName].filter(Boolean).join(' ') || t('User');
-  // The card's other person is the viewer when the viewer is the staff member
-  // looking at the spouse, or the spouse looking at the staff member
-  const otherIsViewer = viewingSpouse === viewerIsStaffMember;
   const toggleName =
     otherFirstName ?? (otherIsViewer ? t('Yourself') : t('Spouse'));
 
@@ -97,11 +89,7 @@ export const StaffInformation: React.FC = () => {
       <StaffInfoCard
         person={{
           name,
-          // Backend doesn't currently support accessing the spouse's avatar
-          avatarSrc:
-            viewingSpouse || !viewerIsStaffMember
-              ? null
-              : userData?.user.avatar,
+          avatarSrc,
         }}
         toggle={
           hasSpouse
