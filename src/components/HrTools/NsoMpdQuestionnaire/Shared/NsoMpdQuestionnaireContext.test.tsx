@@ -5,6 +5,8 @@ import { NsoMpdQuestionnaireStepEnum } from '../NsoMpdQuestionnaireHelper';
 import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrapper';
 import { useNsoMpdQuestionnaire } from './NsoMpdQuestionnaireContext';
 
+const mutationSpy = jest.fn();
+
 const CompleteComponent: React.FC = () => {
   const { completeQuestionnaire } = useNsoMpdQuestionnaire();
   return <button onClick={() => completeQuestionnaire()}>complete</button>;
@@ -139,7 +141,6 @@ describe('NsoMpdQuestionnaireContext', () => {
   });
 
   it('fires the upsert mutation with coerced attributes', async () => {
-    const mutationSpy = jest.fn();
     const { getByRole } = render(
       <NsoMpdQuestionnaireTestWrapper onCall={mutationSpy}>
         <SaveComponent />
@@ -162,7 +163,6 @@ describe('NsoMpdQuestionnaireContext', () => {
   });
 
   it('completeQuestionnaire fires the CompleteNewStaffQuestionnaire mutation', async () => {
-    const mutationSpy = jest.fn();
     const { getByRole } = render(
       <NsoMpdQuestionnaireTestWrapper onCall={mutationSpy}>
         <CompleteComponent />
@@ -181,7 +181,7 @@ describe('NsoMpdQuestionnaireContext', () => {
     );
   });
   describe('submitted questionnaire', () => {
-    const renderSubmitted = (mutationSpy = jest.fn()) =>
+    const renderSubmitted = () =>
       render(
         <NsoMpdQuestionnaireTestWrapper
           onCall={mutationSpy}
@@ -204,8 +204,7 @@ describe('NsoMpdQuestionnaireContext', () => {
     });
 
     it('sends no update or complete mutation', async () => {
-      const mutationSpy = jest.fn();
-      const { getByRole, getByLabelText } = renderSubmitted(mutationSpy);
+      const { getByRole, getByLabelText } = renderSubmitted();
       await waitFor(() =>
         expect(getByLabelText('read only state')).toHaveAttribute(
           'data-read-only',

@@ -110,7 +110,7 @@ describe('NumberQuestion', () => {
     expect(getByTestId('end-adornment')).toBeInTheDocument();
   });
   it('disables the input once the questionnaire is submitted', async () => {
-    const { getByRole } = render(
+    const { getByRole, getByText } = render(
       <NsoMpdQuestionnaireTestWrapper
         newStaffQuestionnaire={{ completed: true }}
       >
@@ -126,5 +126,6 @@ describe('NumberQuestion', () => {
     await waitFor(() =>
       expect(getByRole('spinbutton', { name: 'How many?' })).toBeDisabled(),
     );
+    expect(getByText('How many?')).toHaveClass('Mui-disabled');
   });
 });

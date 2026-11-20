@@ -39,6 +39,14 @@ describe('Summary of a submitted questionnaire', () => {
     expect(queryByText(/then select Submit to finish/)).not.toBeInTheDocument();
   });
 
+  it('says it was submitted when the date cannot be read', async () => {
+    const { findByText } = render(<TestComponent completedAt="not a date" />);
+
+    expect(
+      await findByText('This questionnaire has been submitted.'),
+    ).toBeInTheDocument();
+  });
+
   it('asks for review while not submitted, even with a submission date', async () => {
     const { findByText, getByText, queryByText } = render(
       <TestComponent completed={false} />,

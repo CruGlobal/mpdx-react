@@ -15,7 +15,7 @@ export function useNsoMpdQuestionnaireHidden(): boolean {
 
   // The API returns a questionnaire only to households in a training with the questionnaire open,
   // whatever either spouse's staff group, so everyone asks.
-  const { data, loading, error } = useNewStaffQuestionnaireStatusQuery({
+  const { data, error } = useNewStaffQuestionnaireStatusQuery({
     variables: { accountListId },
     skip: userPending || !featureEnabled || !canSeeHrTools,
   });
@@ -28,7 +28,6 @@ export function useNsoMpdQuestionnaireHidden(): boolean {
   if (error) {
     return inNsGoalCalcIneligibleGroup;
   }
-  // A submitted questionnaire stays listed so the household can read it.
-  // Cached data keeps the item steady through a cache-and-network refetch
-  return (loading && !data) || !data?.newStaffQuestionnaire;
+  // A submitted questionnaire stays listed so the household can read it
+  return !data?.newStaffQuestionnaire;
 }

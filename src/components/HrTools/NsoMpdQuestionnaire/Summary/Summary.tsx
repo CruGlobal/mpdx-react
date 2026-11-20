@@ -25,11 +25,12 @@ const SummaryIntro: React.FC<{
   const locale = useLocale();
 
   if (readOnly) {
+    const submittedAt = completedAt ? DateTime.fromISO(completedAt) : null;
     return (
       <Alert severity="info">
-        {completedAt
+        {submittedAt?.isValid
           ? t('Submitted on {{date}}', {
-              date: dateFormatShort(DateTime.fromISO(completedAt), locale),
+              date: dateFormatShort(submittedAt, locale),
             })
           : t('This questionnaire has been submitted.')}
       </Alert>
@@ -160,7 +161,7 @@ export const Summary: React.FC = () => {
       </Stack>
 
       <Confirmation
-        isOpen={confirmOpen}
+        isOpen={confirmOpen && !readOnly}
         title={t('Submit Questionnaire')}
         message={message}
         confirmLabel={t('Submit')}
