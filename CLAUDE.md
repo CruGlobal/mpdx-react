@@ -195,7 +195,7 @@ Critical environment setup:
 
 A mistake here gets money math or HR data wrong, breaks sign-in, leaks a secret, or switches off a guardrail. Work that touches these uses the stricter setup in `.claude/skills/implement/SKILL.md`, and a person from the code owners must approve the PR.
 
-`.github/CODEOWNERS` is the one list of exact paths. A path is a one-way door when CODEOWNERS gives it an owner; the few lines with no owner at the end are carve-outs. pr-guard reads it to set the one-way-door label, so add or remove paths there, not here. It covers:
+`.github/CODEOWNERS` holds the exact paths. A path is a one-way door when CODEOWNERS gives it an owner; the few lines with no owner at the end are carve-outs. pr-guard reads it to set the one-way-door label. `human_approval` in `.claude/review/config.yml` lists the same paths so the agent-review bot never approves these PRs. Add or remove a path in both files together, not here. It covers:
 
 - HR tools, the reports that read HCM data, and their pages
 - Sign-in, impersonation, page access gates, auth cookies, file uploads and the Apollo clients

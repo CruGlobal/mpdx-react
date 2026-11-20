@@ -1,5 +1,5 @@
 # Only one-way-door paths need a code owner; there is no * line, so the rest can merge on the agent-review approval.
-# pr-guard also labels PRs one-way-door from these paths. This file is the one list; CLAUDE.md only says what it covers.
+# pr-guard also labels PRs one-way-door from these paths. human_approval in .claude/review/config.yml mirrors them; change both together.
 
 # HR tools and their pages: goal, NS and PDS calculators, salary, ASR, MHA, savings fund, HCM data
 /src/components/HrTools/                                @CruGlobal/mpdx-developers
