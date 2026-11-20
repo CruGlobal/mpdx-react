@@ -56,17 +56,18 @@ variants.** `useIneligibleByGroup.ts` treats `SeniorInternationalStaff` and
 The table below is an orientation aid — verify against each tool's
 `UserTypeAccess` guard, which is authoritative and can lag this list.
 
-| Tool                                   | Eligible group (self unless noted)                       |
-| -------------------------------------- | -------------------------------------------------------- |
-| AdditionalSalaryRequest                | SeniorStaff / NationalExpat (self **or spouse**)         |
-| MinisterHousingAllowance               | SeniorStaff / NationalExpat (self **or spouse**)         |
-| SalaryCalculator                       | SeniorStaff / NationalExpat                              |
-| GoalCalculator (MPD)                   | SeniorStaff                                              |
-| NsGoalCalculator + NsoMpdQuestionnaire | NewStaff                                                 |
-| PdsGoalCalculator                      | PaidWithDesignation                                      |
-| StaffSavingFund                        | staff account, not PaidWithDesignation (`StaffAccount`)  |
-| MinistryPartnerReminders               | any staff account (`requireStaffAccount`, no group gate) |
-| MpdSupervisorReport                    | `supervisesStaff` (no group gate)                        |
+| Tool                     | Eligible group (self unless noted)                       |
+| ------------------------ | -------------------------------------------------------- |
+| AdditionalSalaryRequest  | SeniorStaff / NationalExpat (self **or spouse**)         |
+| MinisterHousingAllowance | SeniorStaff / NationalExpat (self **or spouse**)         |
+| SalaryCalculator         | SeniorStaff / NationalExpat                              |
+| GoalCalculator (MPD)     | SeniorStaff                                              |
+| NsGoalCalculator         | NewStaff                                                 |
+| NsoMpdQuestionnaire      | none: shown when the API returns one (open training)     |
+| PdsGoalCalculator        | PaidWithDesignation                                      |
+| StaffSavingFund          | staff account, not PaidWithDesignation (`StaffAccount`)  |
+| MinistryPartnerReminders | any staff account (`requireStaffAccount`, no group gate) |
+| MpdSupervisorReport      | `supervisesStaff` (no group gate)                        |
 
 **MpdSupervisorReport gates on supervision, not a staff group.**
 `useIneligibleByGroup` derives `inMpdSupervisorIneligibleGroup` from
@@ -210,7 +211,9 @@ has a distinct `Complete` mutation, and the request forms autosave a draft but
   processing. The request list is assumed newest-first; married state is derived
   from the HCM query returning a second record (the spouse).
 - **MpdGoalAdmin** — no longer a mock. It runs `NewStaffCohorts.graphql`
-  (`NewStaffCohorts`, `NewStaffCohortAttendees`, `UpdateNewStaffCohort`) and
+  (`NewStaffCohorts`, `NewStaffCohortAttendees`, `UpdateNewStaffCohort`),
+  `QuestionnaireOpenSwitch/SetNewStaffCohortQuestionnaireOpen.graphql` (the
+  training bar's Questionnaire Open/Closed switch, admins only) and
   `ScenarioGoals/ScenarioGoals.graphql`. `trainingSize` only counts attendees
   the caller can see, so for coordinators (not `mpdSupervisorAdmin`) the context
   **drops cohorts with `trainingSize` 0**, and a coordinator can get an empty

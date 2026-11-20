@@ -1,5 +1,4 @@
 import { ReactElement } from 'react';
-import { waitFor } from '@testing-library/dom';
 import { renderHook } from '@testing-library/react-hooks';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
@@ -29,7 +28,7 @@ const mpdGoalEligibleUser = {
   canViewNewStaffCohorts: true,
 };
 
-// A New Staff user, the only group offered the NSO MPD Questionnaire
+// A New Staff user, the only group offered the New Staff Goal Calculator
 const newStaffUser = {
   userType: UserTypeEnum.UsStaff,
   usStaffGroup: UsStaffGroupEnum.NewStaff,
@@ -384,46 +383,28 @@ describe('useHrToolsNavItems', () => {
       );
     });
 
-    it('is hidden once new staff have completed it', async () => {
-      const { result, waitForNextUpdate } = renderWithQuestionnaire({
-        id: 'questionnaire-1',
-        completed: true,
-      });
+    it('is shown to a senior staff spouse in the household with one to fill in', async () => {
+      const { result, waitForNextUpdate } = renderHook(
+        () => useHrToolsNavItems(),
+        {
+          wrapper: makeWrapper({
+            GetUser: { user: mpdGoalEligibleUser },
+            UserOption: verifiedUserOption,
+            NewStaffQuestionnaireStatus: {
+              newStaffQuestionnaire: {
+                id: 'questionnaire-1',
+                completed: false,
+              },
+            },
+          }),
+        },
+      );
       await waitForNextUpdate();
 
       const ids = result.current.items.map((item) => item.id);
-      expect(ids).not.toContain('nsoMpdQuestionnaire');
-      // The sibling New Staff tool, gated only by group, stays visible
-      expect(ids).toContain('nsGoalCalculator');
-    });
-
-    it('is hidden when new staff have no questionnaire at all', async () => {
-      const { result, waitForNextUpdate } = renderWithQuestionnaire(null);
-      await waitForNextUpdate();
-
-      expect(result.current.items.map((item) => item.id)).not.toContain(
-        'nsoMpdQuestionnaire',
-      );
-    });
-
-    it('stays visible for new staff when the status query fails', async () => {
-      const { result } = renderHook(() => useHrToolsNavItems(), {
-        wrapper: makeWrapper({
-          GetUser: { user: newStaffUser },
-          UserOption: verifiedUserOption,
-          NewStaffQuestionnaireStatus: {
-            newStaffQuestionnaire: () => {
-              throw new Error('Not authorized');
-            },
-          },
-        } as unknown as DeepPartial<Mocks>),
-      });
-
-      await waitFor(() =>
-        expect(result.current.items.map((item) => item.id)).toContain(
-          'nsoMpdQuestionnaire',
-        ),
-      );
+      expect(ids).toContain('nsoMpdQuestionnaire');
+      // The New Staff Goal Calculator keeps its New Staff group rule
+      expect(ids).not.toContain('nsGoalCalculator');
     });
   });
 });
