@@ -19,11 +19,16 @@ import { useSummarySections } from './useSummarySections';
 
 const SummaryIntro: React.FC<{
   readOnly: boolean;
+  completed: boolean;
   completedAt: string | null | undefined;
-}> = ({ readOnly, completedAt }) => {
+}> = ({ readOnly, completed, completedAt }) => {
   const { t } = useTranslation();
   const locale = useLocale();
 
+  // Locked by the deadline before submitting: the layout's deadline notice says so
+  if (readOnly && !completed) {
+    return null;
+  }
   if (readOnly) {
     const submittedAt = completedAt ? DateTime.fromISO(completedAt) : null;
     return (
@@ -115,6 +120,7 @@ export const Summary: React.FC = () => {
           <Typography variant="h5">{t('Summary')}</Typography>
           <SummaryIntro
             readOnly={readOnly}
+            completed={!!questionnaire?.completed}
             completedAt={questionnaire?.completedAt}
           />
         </Stack>

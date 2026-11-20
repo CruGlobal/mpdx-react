@@ -20,6 +20,8 @@ fragment NewStaffQuestionnaireFields on NewStaffQuestionnaire {
   updatedAt
   completed
   completedAt
+  deadline
+  locked
   viewerIsStaffMember
   accountTransfers
   assignmentType

@@ -1,0 +1,12 @@
+mutation ReopenNewStaffQuestionnaire(
+  $input: NewStaffCohortAttendeeReopenQuestionnaireMutationInput!
+) {
+  reopenNewStaffQuestionnaire(input: $input) {
+    newStaffCohortAttendee {
+      id
+      questionnaireState
+      questionnaireLocked
+      questionnaireReopenedAt
+    }
+  }
+}

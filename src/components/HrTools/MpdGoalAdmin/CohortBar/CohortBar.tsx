@@ -16,6 +16,7 @@ import {
   preloadEditTrainingCostsModal,
 } from '../EditTrainingCostsModal/DynamicEditTrainingCostsModal';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
+import { QuestionnaireDeadline } from '../QuestionnaireDeadline/QuestionnaireDeadline';
 import { QuestionnaireOpenSwitch } from '../QuestionnaireOpenSwitch/QuestionnaireOpenSwitch';
 import { TrainingCosts } from '../mpdGoalAdminHelpers';
 
@@ -154,6 +155,9 @@ export const CohortBar: React.FC = () => {
       </Stat>
       <Stat label={t('Questionnaire')}>
         <QuestionnaireOpenSwitch />
+      </Stat>
+      <Stat label={t('Questionnaire Deadline')}>
+        <QuestionnaireDeadline />
       </Stat>
       {trainingCostsOpen && (
         <DynamicEditTrainingCostsModal

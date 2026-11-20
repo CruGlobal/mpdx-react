@@ -230,6 +230,23 @@ describe('NsoMpdQuestionnaireContext', () => {
       }
     });
 
+    it('is read-only once the deadline locks it, even unsubmitted', async () => {
+      const { getByLabelText } = render(
+        <NsoMpdQuestionnaireTestWrapper
+          newStaffQuestionnaire={{ completed: false, locked: true }}
+        >
+          <ReadOnlyComponent />
+        </NsoMpdQuestionnaireTestWrapper>,
+      );
+
+      await waitFor(() =>
+        expect(getByLabelText('read only state')).toHaveAttribute(
+          'data-read-only',
+          'true',
+        ),
+      );
+    });
+
     it('sends no update or complete mutation', async () => {
       const { getByRole, getByLabelText } = renderSubmitted();
       await waitFor(() =>

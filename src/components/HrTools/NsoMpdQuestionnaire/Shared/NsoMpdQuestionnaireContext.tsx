@@ -74,7 +74,8 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
     variables: { accountListId },
   });
   const questionnaire = questionnaireData?.newStaffQuestionnaire ?? null;
-  const readOnly = questionnaire?.completed ?? false;
+  // Past the deadline nothing saves either, so a locked questionnaire reads like a submitted one
+  const readOnly = !!(questionnaire?.completed || questionnaire?.locked);
 
   const hasSpouse = getHasSpouse(questionnaire?.maritalStatus);
 
