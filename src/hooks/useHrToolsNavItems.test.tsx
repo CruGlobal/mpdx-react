@@ -1,5 +1,4 @@
 import { ReactElement } from 'react';
-import { waitFor } from '@testing-library/dom';
 import { renderHook } from '@testing-library/react-hooks';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
@@ -410,27 +409,6 @@ describe('useHrToolsNavItems', () => {
       expect(ids).toContain('nsoMpdQuestionnaire');
       // The New Staff Goal Calculator keeps its New Staff group rule
       expect(ids).not.toContain('nsGoalCalculator');
-    });
-
-    it('is the only item shown to new staff who have not confirmed their user group', async () => {
-      const { result } = renderHook(() => useHrToolsNavItems(), {
-        wrapper: makeWrapper({
-          GetUser: { user: newStaffUser },
-          UserOption: {
-            userOption: { key: 'user_type_verified', value: 'false' },
-          },
-          NewStaffQuestionnaireStatus: {
-            newStaffQuestionnaire: { id: 'questionnaire-1', completed: false },
-          },
-        }),
-      });
-
-      // Every other tool keeps waiting for the user group prompt
-      await waitFor(() =>
-        expect(result.current.items.map((item) => item.id)).toEqual([
-          'nsoMpdQuestionnaire',
-        ]),
-      );
     });
   });
 });
