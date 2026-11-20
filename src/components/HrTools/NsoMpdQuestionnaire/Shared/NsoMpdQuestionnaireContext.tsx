@@ -1,4 +1,10 @@
-import React, { createContext, useCallback, useMemo, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { NewStaffQuestionnaireAttributesInput } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
@@ -28,6 +34,8 @@ export type NsoMpdQuestionnaireType = {
   questionnaire: NewStaffQuestionnaire | null;
   /** Whether the questionnaire belongs to a married staff member (has a spouse to collect info for). */
   hasSpouse: boolean;
+  /** A submitted or deadline-locked questionnaire can be read but not changed. */
+  readOnly: boolean;
   loading: boolean;
   isMutating: boolean;
   saveField: (
@@ -66,6 +74,8 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
     variables: { accountListId },
   });
   const questionnaire = questionnaireData?.newStaffQuestionnaire ?? null;
+  // Past the deadline nothing saves either, so a locked questionnaire reads like a submitted one
+  const readOnly = !!(questionnaire?.completed || questionnaire?.locked);
 
   const hasSpouse = getHasSpouse(questionnaire?.maritalStatus);
 
@@ -81,20 +91,21 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
   const [completeNewStaffQuestionnaire] =
     useCompleteNewStaffQuestionnaireMutation();
 
+  // The API refuses changes to a submitted questionnaire, so don't send any
   const completeQuestionnaire = useCallback(async (): Promise<void> => {
-    if (!accountListId) {
+    if (!accountListId || readOnly) {
       return;
     }
     await completeNewStaffQuestionnaire({
       variables: { input: { accountListId } },
     });
-  }, [accountListId, completeNewStaffQuestionnaire]);
+  }, [accountListId, readOnly, completeNewStaffQuestionnaire]);
 
   const saveField = useCallback(
     async (
       attributes: Partial<NewStaffQuestionnaireAttributesInput>,
     ): Promise<void> => {
-      if (!accountListId) {
+      if (!accountListId || readOnly) {
         return;
       }
       await trackMutation(
@@ -105,7 +116,7 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
         }),
       );
     },
-    [accountListId, updateNewStaffQuestionnaire, trackMutation],
+    [accountListId, readOnly, updateNewStaffQuestionnaire, trackMutation],
   );
 
   const handleStepChange = useCallback(
@@ -117,6 +128,17 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
     },
     [steps],
   );
+
+  const summaryIndex = steps.findIndex(
+    (step) => step.step === NsoMpdQuestionnaireStepEnum.Summary,
+  );
+
+  // A submitted questionnaire opens on its Summary once; the step pages stay reachable from there
+  useEffect(() => {
+    if (readOnly) {
+      setCurrentIndex(summaryIndex);
+    }
+  }, [readOnly, summaryIndex]);
 
   const handleContinue = useCallback(() => {
     if (currentIndex < steps.length - 1) {
@@ -142,6 +164,7 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
       handleBack,
       questionnaire,
       hasSpouse,
+      readOnly,
       loading,
       isMutating,
       saveField,
@@ -158,6 +181,7 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
       handleBack,
       questionnaire,
       hasSpouse,
+      readOnly,
       loading,
       isMutating,
       saveField,

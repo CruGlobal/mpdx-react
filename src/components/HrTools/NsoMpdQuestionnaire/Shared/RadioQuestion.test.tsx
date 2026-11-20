@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as yup from 'yup';
 import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrapper';
@@ -107,6 +107,24 @@ describe('RadioQuestion', () => {
 
     expect(getByRole('radiogroup', { name: 'Pick one' })).toHaveClass(
       'MuiFormGroup-row',
+    );
+  });
+  it('disables the options once the questionnaire is submitted', async () => {
+    const { getByRole } = render(
+      <NsoMpdQuestionnaireTestWrapper
+        newStaffQuestionnaire={{ completed: true }}
+      >
+        <RadioQuestion
+          fieldName="geographicLocation"
+          schema={schema}
+          label="Pick one"
+          options={options}
+        />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
+
+    await waitFor(() =>
+      expect(getByRole('radio', { name: 'Option A' })).toBeDisabled(),
     );
   });
 });

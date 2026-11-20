@@ -29,7 +29,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
         mocks={{
           GetUser: { user: { userType, usStaffGroup } },
           NewStaffQuestionnaire: {
-            newStaffQuestionnaire: { updatedAt },
+            newStaffQuestionnaire: { updatedAt, completed: false },
           },
         }}
       >
@@ -58,9 +58,19 @@ describe('NsoMpdQuestionnaire page', () => {
     expect(await findByText(/Last saved/)).toBeInTheDocument();
   });
 
-  it('shows limited access when the user is ineligible', async () => {
+  it('renders the questionnaire for a spouse in any staff group', async () => {
+    const { findByRole } = render(
+      <TestComponent usStaffGroup={UsStaffGroupEnum.SeniorStaff} />,
+    );
+
+    expect(
+      await findByRole('button', { name: 'Questionnaire Step 1' }),
+    ).toBeInTheDocument();
+  });
+
+  it('shows limited access to users who are not US staff', async () => {
     const { findByText } = render(
-      <TestComponent usStaffGroup={UsStaffGroupEnum.PaidWithDesignation} />,
+      <TestComponent userType={UserTypeEnum.GlobalStaff} />,
     );
 
     expect(

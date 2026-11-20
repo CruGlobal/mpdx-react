@@ -27,6 +27,8 @@ query NewStaffCohorts($after: String) {
       goalsSentAt
       hasTrainingCosts
       goalsSentAt
+      questionnaireOpen
+      questionnaireDeadline
       canRunAndSend
       runAndSendBlockers
       ...CohortTrainingCosts
@@ -51,6 +53,9 @@ query NewStaffCohortAttendees($cohortId: ID!, $search: String, $after: String) {
         subministry
         goalStatus
         goalSentAt
+        questionnaireState
+        questionnaireLocked
+        questionnaireReopenedAt
         coordinators
         coach {
           id

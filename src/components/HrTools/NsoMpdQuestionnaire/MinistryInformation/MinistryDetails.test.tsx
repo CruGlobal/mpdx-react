@@ -175,4 +175,21 @@ describe('MinistryDetails', () => {
       }),
     ).toHaveAttribute('aria-disabled', 'true');
   });
+  it('disables the city field once the questionnaire is submitted', async () => {
+    const { getByRole } = render(
+      <NsoMpdQuestionnaireTestWrapper
+        newStaffQuestionnaire={{ completed: true }}
+      >
+        <MinistryDetails />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
+
+    await waitFor(() =>
+      expect(
+        getByRole('textbox', {
+          name: 'What city is your expected ministry assignment in?',
+        }),
+      ).toBeDisabled(),
+    );
+  });
 });

@@ -30,7 +30,8 @@ export interface SummaryRow {
 interface SummarySectionProps {
   title: string;
   rows: SummaryRow[];
-  onEdit: () => void;
+  /** Omit to hide the Edit button, e.g. on a submitted questionnaire. */
+  onEdit?: () => void;
 }
 
 export const SummarySection: React.FC<SummarySectionProps> = ({
@@ -45,13 +46,15 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
     <Box>
       <StyledStack>
         <Typography variant="h6">{title}</Typography>
-        <Button
-          size="small"
-          onClick={onEdit}
-          aria-label={t('Edit {{section}}', { section: title })}
-        >
-          {t('Edit')}
-        </Button>
+        {onEdit && (
+          <Button
+            size="small"
+            onClick={onEdit}
+            aria-label={t('Edit {{section}}', { section: title })}
+          >
+            {t('Edit')}
+          </Button>
+        )}
       </StyledStack>
       <Table size="small" sx={{ tableLayout: 'fixed' }}>
         <TableHead>

@@ -2,6 +2,7 @@ import { DeepPartialMock } from '__tests__/util/graphqlMocking';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   NewStaffCohortAttendeeGoalStatusEnum,
+  NewStaffCohortAttendeeQuestionnaireStateEnum,
   NewStaffCohortRunAndSendBlockerEnum,
   NewStaffQuestionnaireMaritalStatusEnum,
 } from 'src/graphql/types.generated';
@@ -78,6 +79,8 @@ export const cohortsMock: NewStaffCohortsQuery = {
         hasTrainingCosts: true,
         canRunAndSend: true,
         runAndSendBlockers: [],
+        questionnaireOpen: false,
+        questionnaireDeadline: null,
         ...costFields,
       },
       {
@@ -91,6 +94,8 @@ export const cohortsMock: NewStaffCohortsQuery = {
         runAndSendBlockers: [
           NewStaffCohortRunAndSendBlockerEnum.TrainingCostsMissing,
         ],
+        questionnaireOpen: false,
+        questionnaireDeadline: null,
         ...noCostFields,
       },
     ],
@@ -177,6 +182,9 @@ const attendee = (
   subministry: 'CMCH01',
   goalStatus: NewStaffCohortAttendeeGoalStatusEnum.Complete,
   goalSentAt: null,
+  questionnaireState: NewStaffCohortAttendeeQuestionnaireStateEnum.Completed,
+  questionnaireLocked: false,
+  questionnaireReopenedAt: null,
   coordinators: ['Kim Coordinator'],
   coach: null,
   ministry: { id: 'ministry-1', name: 'Campus' },

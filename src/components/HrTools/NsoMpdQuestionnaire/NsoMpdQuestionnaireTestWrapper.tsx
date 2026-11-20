@@ -9,6 +9,7 @@ import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   GoalCalculationAge,
   NewStaffQuestionnaireMaritalStatusEnum,
+  UsStaffGroupEnum,
 } from 'src/graphql/types.generated';
 import { AccountGeographicLocationQuery } from 'src/hooks/AccountGeographicLocation.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
@@ -20,6 +21,12 @@ import { NsoMpdQuestionnaireProvider } from './Shared/NsoMpdQuestionnaireContext
 export const newStaffQuestionnaireMock: DeepPartial<
   NewStaffQuestionnaireQuery['newStaffQuestionnaire']
 > = {
+  // Editable unless a test submits it; a null viewer flag falls back to the staff-group guess
+  completed: false,
+  completedAt: null,
+  deadline: null,
+  locked: false,
+  viewerIsStaffMember: null,
   personNumber: '000123456',
   firstName: 'John',
   lastName: 'Doe',
@@ -63,6 +70,8 @@ export interface NsoMpdQuestionnaireTestWrapperProps {
   ministries?: MinistryMock[];
   /** The account's saved Geographic Location preference. Defaults to null. */
   accountGeographicLocation?: string | null;
+  /** The signed-in viewer's HR staff group. Defaults to New Staff. */
+  usStaffGroup?: UsStaffGroupEnum;
   children?: React.ReactNode;
 }
 
@@ -75,6 +84,7 @@ export const NsoMpdQuestionnaireTestWrapper: React.FC<
   mockPush,
   ministries = defaultMinistries,
   accountGeographicLocation = null,
+  usStaffGroup = UsStaffGroupEnum.NewStaff,
   children,
 }) => {
   return (
@@ -89,7 +99,11 @@ export const NsoMpdQuestionnaireTestWrapper: React.FC<
         }>
           mocks={{
             GetUser: {
-              user: { avatar: 'avatar.jpg', staffAccountId: '000123456' },
+              user: {
+                avatar: 'avatar.jpg',
+                staffAccountId: '000123456',
+                usStaffGroup,
+              },
             },
             AccountGeographicLocation: {
               accountList: {

@@ -41,6 +41,7 @@ export const NumberQuestion: React.FC<NumberQuestionProps> = ({
       label={question}
       required
       error={error}
+      disabled={fieldProps.disabled}
       helperText={error ? errorText : helperText}
     >
       {(aria) => (

@@ -35,16 +35,23 @@ export const RadioQuestion: React.FC<RadioQuestionProps> = ({
   options,
   row = false,
 }) => {
-  const { error, helperText, ...fieldProps } = useQuestionnaireAutoSave({
-    fieldName,
-    schema,
-    saveOnChange: true,
-  });
+  const { error, helperText, disabled, ...fieldProps } =
+    useQuestionnaireAutoSave({
+      fieldName,
+      schema,
+      saveOnChange: true,
+    });
 
   const hasDescriptions = options.some((option) => option.description);
 
   return (
-    <LabeledField label={label} required error={error} helperText={helperText}>
+    <LabeledField
+      label={label}
+      required
+      error={error}
+      disabled={disabled}
+      helperText={helperText}
+    >
       {(aria) => (
         <RadioGroup
           row={row}

@@ -1,7 +1,10 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { NewStaffQuestionnaireMaritalStatusEnum } from 'src/graphql/types.generated';
+import {
+  NewStaffCohortAttendeeQuestionnaireStateEnum,
+  NewStaffQuestionnaireMaritalStatusEnum,
+} from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { GoalStatusEnum, StaffGoalRow } from '../mpdGoalAdminHelpers';
 import { coach } from '../mpdGoalAdminMocks';
@@ -22,6 +25,9 @@ const makeRow = (
   goalStatus,
   goalSentAt:
     goalStatus === GoalStatusEnum.Sent ? '2026-08-10T15:40:00Z' : null,
+  questionnaireState: NewStaffCohortAttendeeQuestionnaireStateEnum.Completed,
+  questionnaireLocked: false,
+  questionnaireReopenedAt: null,
   familyStatus: NewStaffQuestionnaireMaritalStatusEnum.Single,
   coach: coach('coach-1', 'Amy', 'Wilson'),
   coordinators: ['Coordinator'],

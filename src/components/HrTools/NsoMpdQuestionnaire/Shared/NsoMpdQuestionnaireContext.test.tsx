@@ -1,9 +1,12 @@
 import React, { useEffect } from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import i18n from 'src/lib/i18n';
 import { NsoMpdQuestionnaireStepEnum } from '../NsoMpdQuestionnaireHelper';
 import { NsoMpdQuestionnaireTestWrapper } from '../NsoMpdQuestionnaireTestWrapper';
 import { useNsoMpdQuestionnaire } from './NsoMpdQuestionnaireContext';
+
+const mutationSpy = jest.fn();
 
 const CompleteComponent: React.FC = () => {
   const { completeQuestionnaire } = useNsoMpdQuestionnaire();
@@ -16,6 +19,21 @@ const SaveComponent: React.FC = () => {
     <button onClick={() => saveField({ phoneNumber: '305-555-1234' })}>
       Save
     </button>
+  );
+};
+
+const ReadOnlyComponent: React.FC = () => {
+  const { currentStep, readOnly, saveField, completeQuestionnaire } =
+    useNsoMpdQuestionnaire();
+  return (
+    <div>
+      <h2>{currentStep.title}</h2>
+      <div aria-label="read only state" data-read-only={readOnly} />
+      <button onClick={() => saveField({ phoneNumber: '305-555-1234' })}>
+        Save
+      </button>
+      <button onClick={() => completeQuestionnaire()}>complete</button>
+    </div>
   );
 };
 
@@ -124,7 +142,6 @@ describe('NsoMpdQuestionnaireContext', () => {
   });
 
   it('fires the upsert mutation with coerced attributes', async () => {
-    const mutationSpy = jest.fn();
     const { getByRole } = render(
       <NsoMpdQuestionnaireTestWrapper onCall={mutationSpy}>
         <SaveComponent />
@@ -147,7 +164,6 @@ describe('NsoMpdQuestionnaireContext', () => {
   });
 
   it('completeQuestionnaire fires the CompleteNewStaffQuestionnaire mutation', async () => {
-    const mutationSpy = jest.fn();
     const { getByRole } = render(
       <NsoMpdQuestionnaireTestWrapper onCall={mutationSpy}>
         <CompleteComponent />
@@ -164,5 +180,95 @@ describe('NsoMpdQuestionnaireContext', () => {
         },
       ),
     );
+  });
+  describe('submitted questionnaire', () => {
+    const renderSubmitted = () =>
+      render(
+        <NsoMpdQuestionnaireTestWrapper
+          onCall={mutationSpy}
+          newStaffQuestionnaire={{ completed: true }}
+        >
+          <ReadOnlyComponent />
+        </NsoMpdQuestionnaireTestWrapper>,
+      );
+
+    it('opens on the Summary step and reports read-only', async () => {
+      const { getByRole, getByLabelText } = renderSubmitted();
+
+      await waitFor(() =>
+        expect(getByLabelText('read only state')).toHaveAttribute(
+          'data-read-only',
+          'true',
+        ),
+      );
+      // The jump to Summary is an effect, so it can land a render after the flag
+      await waitFor(() =>
+        expect(getByRole('heading')).toHaveTextContent('Summary'),
+      );
+    });
+
+    it('keeps the reader on the step they picked when the language changes', async () => {
+      const { getByRole } = render(
+        <NsoMpdQuestionnaireTestWrapper
+          newStaffQuestionnaire={{ completed: true }}
+        >
+          <InnerComponent />
+        </NsoMpdQuestionnaireTestWrapper>,
+      );
+      await waitFor(() =>
+        expect(getByRole('heading')).toHaveTextContent('Summary'),
+      );
+      userEvent.click(getByRole('button', { name: 'Back' }));
+
+      try {
+        await act(async () => {
+          await i18n.changeLanguage('fr');
+        });
+
+        expect(getByRole('heading')).toHaveTextContent('Questionnaire Step 4');
+      } finally {
+        await act(async () => {
+          await i18n.changeLanguage('en');
+        });
+      }
+    });
+
+    it('is read-only once the deadline locks it, even unsubmitted', async () => {
+      const { getByLabelText } = render(
+        <NsoMpdQuestionnaireTestWrapper
+          newStaffQuestionnaire={{ completed: false, locked: true }}
+        >
+          <ReadOnlyComponent />
+        </NsoMpdQuestionnaireTestWrapper>,
+      );
+
+      await waitFor(() =>
+        expect(getByLabelText('read only state')).toHaveAttribute(
+          'data-read-only',
+          'true',
+        ),
+      );
+    });
+
+    it('sends no update or complete mutation', async () => {
+      const { getByRole, getByLabelText } = renderSubmitted();
+      await waitFor(() =>
+        expect(getByLabelText('read only state')).toHaveAttribute(
+          'data-read-only',
+          'true',
+        ),
+      );
+
+      userEvent.click(getByRole('button', { name: 'Save' }));
+      userEvent.click(getByRole('button', { name: 'complete' }));
+      await act(async () => {});
+
+      expect(mutationSpy).not.toHaveGraphqlOperation(
+        'UpdateNewStaffQuestionnaire',
+      );
+      expect(mutationSpy).not.toHaveGraphqlOperation(
+        'CompleteNewStaffQuestionnaire',
+      );
+    });
   });
 });
