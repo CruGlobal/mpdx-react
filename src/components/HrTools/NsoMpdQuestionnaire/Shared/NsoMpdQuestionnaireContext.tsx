@@ -34,7 +34,7 @@ export type NsoMpdQuestionnaireType = {
   questionnaire: NewStaffQuestionnaire | null;
   /** Whether the questionnaire belongs to a married staff member (has a spouse to collect info for). */
   hasSpouse: boolean;
-  /** A submitted questionnaire can be read but never changed. */
+  /** A submitted or deadline-locked questionnaire can be read but not changed. */
   readOnly: boolean;
   loading: boolean;
   isMutating: boolean;

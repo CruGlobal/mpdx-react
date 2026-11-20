@@ -3,16 +3,16 @@ import {
   Box,
   Button,
   CircularProgress,
-  Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
   Typography,
 } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import { DateTimeFieldPair } from 'src/components/Shared/DateTimePickers/DateTimeFieldPair';
+import { CustomDateField } from 'src/components/Shared/DateTimePickers/CustomDateField';
+import { CustomTimeField } from 'src/components/Shared/DateTimePickers/CustomTimeField';
+import Modal from 'src/components/Shared/Modal/Modal';
 import {
   deadlineToPickerValue,
   pickerValueToDeadline,
@@ -31,16 +31,21 @@ export const QuestionnaireDeadlineDialog: React.FC<
 > = ({ cohort, onClose }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const [value, setValue] = useState<DateTime | null>(
-    deadlineToPickerValue(cohort.questionnaireDeadline),
-  );
+  const initial = deadlineToPickerValue(cohort.questionnaireDeadline);
+  const [date, setDate] = useState<DateTime | null>(initial);
+  const [time, setTime] = useState<DateTime | null>(initial);
   const [setDeadline, { loading }] =
     useSetNewStaffCohortQuestionnaireDeadlineMutation();
+
+  // Both are required: a date alone would lock at midnight, a time alone on whatever day the picker chose
+  const complete = !!date?.isValid && !!time?.isValid;
 
   const save = async (deadline: string | null) => {
     try {
       await setDeadline({
         variables: { input: { id: cohort.id, deadline } },
+        // Each row's questionnaireLocked is computed from the deadline on the server
+        refetchQueries: ['NewStaffCohortAttendees'],
       });
     } catch {
       // The global Apollo error link already toasts; the dialog stays open to retry.
@@ -59,31 +64,39 @@ export const QuestionnaireDeadlineDialog: React.FC<
     onClose();
   };
 
+  const handleSave = () => {
+    if (date && time) {
+      save(
+        pickerValueToDeadline(
+          date.startOf('day').set({ hour: time.hour, minute: time.minute }),
+        ),
+      );
+    }
+  };
+
   return (
-    <Dialog open onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle>
-        {t('Questionnaire Deadline for {{training}}', {
-          training: cohort.name,
-        })}
-      </DialogTitle>
+    <Modal
+      isOpen
+      size="xs"
+      title={t('Questionnaire Deadline for {{training}}', {
+        training: cohort.name,
+      })}
+      handleClose={onClose}
+    >
       <DialogContent>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           {t(
             "After this time, households in this training can't change or submit their NSO MPD Questionnaire. Enter it in Eastern time.",
           )}
         </Typography>
-        <DateTimeFieldPair
-          dateLabel={t('Date')}
-          timeLabel={t('Time (Eastern)')}
-          value={value}
-          onChange={setValue}
-          render={(dateField, timeField) => (
-            <Box display="flex" gap={2}>
-              {dateField}
-              {timeField}
-            </Box>
-          )}
-        />
+        <Box display="flex" gap={2}>
+          <CustomDateField label={t('Date')} value={date} onChange={setDate} />
+          <CustomTimeField
+            label={t('Time (Eastern)')}
+            value={time}
+            onChange={setTime}
+          />
+        </Box>
       </DialogContent>
       <DialogActions>
         {cohort.questionnaireDeadline && (
@@ -99,15 +112,15 @@ export const QuestionnaireDeadlineDialog: React.FC<
         <Button onClick={onClose}>{t('Cancel')}</Button>
         <Button
           variant="contained"
-          disabled={loading || !value?.isValid}
+          disabled={loading || !complete}
           startIcon={
             loading ? <CircularProgress size={16} color="inherit" /> : null
           }
-          onClick={() => value && save(pickerValueToDeadline(value))}
+          onClick={handleSave}
         >
           {t('Save')}
         </Button>
       </DialogActions>
-    </Dialog>
+    </Modal>
   );
 };

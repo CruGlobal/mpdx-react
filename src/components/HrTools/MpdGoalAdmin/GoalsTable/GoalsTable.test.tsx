@@ -36,6 +36,7 @@ import {
   attendeesMock,
   coach,
   cohortsMock,
+  cohortsWithoutCostsMock,
   coordinatorUserMock,
   failedAssignableCoachesMock,
   goalsAdminUserMock,
@@ -313,6 +314,18 @@ describe('GoalsTable', () => {
       await findByText('1 MPD Goals were run and sent.'),
     ).toBeInTheDocument();
     expect(ctx.selectedRowIds.has('row-3')).toBe(true);
+  });
+
+  it('blocks Run & Send on the row while the cohort is missing training costs', async () => {
+    const { getAllByRole, getByRole } = await renderLoadedTable(
+      rows,
+      cohortsWithoutCostsMock,
+    );
+
+    userEvent.click(getAllByRole('button', { name: /Actions for/ })[0]);
+    expect(
+      getByRole('menuitem', { name: 'Run & Send this goal' }),
+    ).toHaveAttribute('aria-disabled', 'true');
   });
 
   it('shows the first coordinator and hides the rest behind a chip', () => {

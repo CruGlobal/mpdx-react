@@ -140,6 +140,34 @@ describe('QuestionnaireDeadline', () => {
     );
   });
 
+  it('needs both a date and a time before it saves', async () => {
+    const { findByRole, getByRole } = render(<TestComponent />);
+
+    userEvent.click(
+      await findByRole('button', { name: 'Edit questionnaire deadline' }),
+    );
+    userEvent.type(getByRole('textbox', { name: 'Date' }), '1/20/2027');
+    userEvent.tab();
+
+    expect(getByRole('button', { name: 'Save' })).toBeDisabled();
+  });
+
+  it('refreshes the rows, whose lock comes from the deadline', async () => {
+    const { findByRole, getByRole } = render(
+      <TestComponent startDeadline={deadline} />,
+    );
+
+    userEvent.click(
+      await findByRole('button', { name: 'Edit questionnaire deadline' }),
+    );
+    mutationSpy.mockClear();
+    userEvent.click(getByRole('button', { name: 'Remove Deadline' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('NewStaffCohortAttendees'),
+    );
+  });
+
   it('removes the deadline', async () => {
     const { findByRole, getByRole } = render(
       <TestComponent startDeadline={deadline} />,

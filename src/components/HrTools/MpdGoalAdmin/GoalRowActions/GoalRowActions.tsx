@@ -28,16 +28,19 @@ export const GoalRowActions: React.FC<GoalRowActionsProps> = ({
   const [reopenQuestionnaire] = useReopenNewStaffQuestionnaireMutation();
 
   const sent = row.goalStatus === GoalStatusEnum.Sent;
-  // A sent goal cannot be taken back, so neither can the answers behind it.
+  // Only a submitted or deadline-locked questionnaire has anything to reopen, and a sent goal cannot be
+  // taken back, so neither can the answers behind it.
   const canReopen =
     !sent &&
-    row.questionnaireState !==
-      NewStaffCohortAttendeeQuestionnaireStateEnum.None;
+    (row.questionnaireLocked ||
+      row.questionnaireState ===
+        NewStaffCohortAttendeeQuestionnaireStateEnum.Completed);
   const hasAction = canRunAndSend || canReopen;
 
   const handleReopen = async () => {
     await reopenQuestionnaire({
       variables: { input: { attendeeId: row.id } },
+      // A reopen also changes the row's goalStatus, which the payload doesn't carry
       refetchQueries: ['NewStaffCohortAttendees'],
     });
     enqueueSnackbar(
@@ -67,15 +70,17 @@ export const GoalRowActions: React.FC<GoalRowActionsProps> = ({
         open={Boolean(anchorEl)}
         onClose={() => setAnchorEl(null)}
       >
-        <MenuItem
-          disabled={!canRunAndSend}
-          onClick={() => {
-            onRunAndSend(row);
-            setAnchorEl(null);
-          }}
-        >
-          {t('Run & Send this goal')}
-        </MenuItem>
+        <RunAndSendTooltip show={!canRunAndSend && !sent}>
+          <MenuItem
+            disabled={!canRunAndSend}
+            onClick={() => {
+              onRunAndSend(row);
+              setAnchorEl(null);
+            }}
+          >
+            {t('Run & Send this goal')}
+          </MenuItem>
+        </RunAndSendTooltip>
         <MenuItem
           disabled={!canReopen}
           onClick={() => {

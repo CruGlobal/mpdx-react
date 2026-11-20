@@ -28,16 +28,29 @@ const baseRow = attendeeToRow(attendees[0]);
 interface TestComponentProps {
   row?: Partial<StaffGoalRow>;
   canRunAndSend?: boolean;
+  failReopen?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   row = {},
   canRunAndSend = false,
+  failReopen = false,
 }) => (
   <ThemeProvider theme={theme}>
     <GqlMockedProvider<{
       ReopenNewStaffQuestionnaire: ReopenNewStaffQuestionnaireMutation;
     }>
+      mocks={
+        failReopen
+          ? {
+              ReopenNewStaffQuestionnaire: {
+                reopenNewStaffQuestionnaire: (() => {
+                  throw new Error('Already sent');
+                }) as never,
+              },
+            }
+          : undefined
+      }
       onCall={mutationSpy}
     >
       <GoalRowActions
@@ -95,6 +108,38 @@ describe('GoalRowActions', () => {
         { variant: 'success' },
       ),
     );
+  });
+
+  it('shows no success when the reopen fails', async () => {
+    const { getByRole } = render(<TestComponent failReopen />);
+
+    userEvent.click(getByRole('button', actionsButton));
+    userEvent.click(getByRole('menuitem', { name: 'Reopen Questionnaire' }));
+    userEvent.click(getByRole('button', { name: 'Reopen' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ReopenNewStaffQuestionnaire'),
+    );
+    expect(mockEnqueue).not.toHaveBeenCalled();
+  });
+
+  it('offers no reopen while the household can still change its answers', () => {
+    const { getByRole } = render(
+      <TestComponent
+        canRunAndSend
+        row={{
+          questionnaireState:
+            NewStaffCohortAttendeeQuestionnaireStateEnum.InProgress,
+          questionnaireLocked: false,
+        }}
+      />,
+    );
+
+    userEvent.click(getByRole('button', actionsButton));
+
+    expect(
+      getByRole('menuitem', { name: 'Reopen Questionnaire' }),
+    ).toHaveAttribute('aria-disabled', 'true');
   });
 
   it('blocks the menu, with the reason, when nothing can be done yet', async () => {

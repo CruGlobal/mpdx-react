@@ -1,26 +1,19 @@
 import { DateTime } from 'luxon';
+import { dateTimeFormat } from 'src/lib/intlFormat';
 
 /** The MPD Goals team sets and reads NSO questionnaire deadlines in Eastern time. */
 const DEADLINE_ZONE = 'America/New_York';
 
 /** A deadline in Eastern time, e.g. "Jan 20, 2027, 5:00 PM EST", whatever the viewer's zone. */
 export const deadlineFormat = (deadline: string, locale: string): string =>
-  new Intl.DateTimeFormat(locale, {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    timeZoneName: 'short',
-    timeZone: DEADLINE_ZONE,
-  }).format(DateTime.fromISO(deadline).toJSDate());
+  dateTimeFormat(DateTime.fromISO(deadline), locale, DEADLINE_ZONE);
 
-/** The date/time pickers work in the browser zone, so they show the Eastern wall-clock time. */
+/** The date/time pickers work in Luxon's default zone, so they show the Eastern wall-clock time. */
 export const deadlineToPickerValue = (
   deadline: string | null,
 ): DateTime | null =>
   deadline
-    ? DateTime.fromISO(deadline, { zone: DEADLINE_ZONE }).setZone('local', {
+    ? DateTime.fromISO(deadline, { zone: DEADLINE_ZONE }).setZone('default', {
         keepLocalTime: true,
       })
     : null;

@@ -76,4 +76,16 @@ describe('QuestionnaireLockChip', () => {
 
     expect(getByText('Reopened')).toBeInTheDocument();
   });
+
+  it('says Reopened rather than Not submitted while a reopen is open', () => {
+    const { getByText, queryByText } = renderChip({
+      questionnaireReopenedAt: '2027-01-21T15:00:00Z',
+      questionnaireLocked: true,
+      questionnaireState:
+        NewStaffCohortAttendeeQuestionnaireStateEnum.InProgress,
+    });
+
+    expect(getByText('Reopened')).toBeInTheDocument();
+    expect(queryByText('Not submitted')).not.toBeInTheDocument();
+  });
 });

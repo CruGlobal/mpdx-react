@@ -46,6 +46,13 @@ describe('DeadlineNotice', () => {
     ).toBeInTheDocument();
   });
 
+  it('says nothing when the training has no deadline', async () => {
+    const { findByText, queryByText } = renderNotice({ deadline: null });
+    await findByText('loaded');
+
+    expect(queryByText(/deadline|Due/)).not.toBeInTheDocument();
+  });
+
   it('says nothing once the questionnaire is submitted', async () => {
     const { findByText, queryByText } = renderNotice({
       deadline,
