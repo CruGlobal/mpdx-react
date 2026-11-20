@@ -1,10 +1,9 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNewStaffQuestionnaireStatusQuery } from './NewStaffQuestionnaireStatus.generated';
-import { useAccountListId } from './useAccountListId';
 import { useDeveloperBypass } from './useDeveloperBypass';
 import { useIneligibleByGroup } from './useIneligibleByGroup';
 import { useNsGoalCalculatorAccess } from './useNsGoalCalculatorAccess';
+import { useNsoMpdQuestionnaireHidden } from './useNsoMpdQuestionnaireHidden';
 import { NavItems } from './useReportNavItems';
 import { useReportsDisabled } from './useReportsDisabled';
 import { useRequiredSession } from './useRequiredSession';
@@ -19,7 +18,6 @@ export function useHrToolsNavItems(): {
     inSalaryCalcIneligibleGroup,
     inMhaIneligibleGroup,
     inMpdGoalCalcIneligibleGroup,
-    inNsGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
     inMpdSupervisorIneligibleGroup,
     inStaffAccountIneligibleGroup,
@@ -36,23 +34,7 @@ export function useHrToolsNavItems(): {
   // the impersonated user, not the impersonator.
   const blockedImpersonation = !!impersonating && !isImpersonatorDeveloper;
 
-  const accountListId = useAccountListId();
-
-  // Only new staff are ever offered the questionnaire, so nobody else pays for this query.
-  const {
-    data: questionnaireData,
-    loading: questionnaireLoading,
-    error: questionnaireError,
-  } = useNewStaffQuestionnaireStatusQuery({
-    variables: { accountListId },
-    skip: userLoading || inNsGoalCalcIneligibleGroup,
-  });
-  const questionnaire = questionnaireData?.newStaffQuestionnaire;
-  const hasQuestionnaireToFillIn = !!questionnaire && !questionnaire.completed;
-  // A failed query must not hide the path to paperwork new staff still owe
-  const hideQuestionnaire = questionnaireError
-    ? false
-    : questionnaireLoading || !hasQuestionnaireToFillIn;
+  const hideQuestionnaire = useNsoMpdQuestionnaireHidden();
 
   const items = useMemo(() => {
     if (userLoading) {
@@ -79,7 +61,7 @@ export function useHrToolsNavItems(): {
       {
         id: 'nsoMpdQuestionnaire',
         title: t('NSO MPD Questionnaire'),
-        hideItem: !canUseNsGoalCalculator || hideQuestionnaire,
+        hideItem: hideQuestionnaire,
       },
       {
         id: 'goalCalculator',
@@ -130,7 +112,6 @@ export function useHrToolsNavItems(): {
     inSalaryCalcIneligibleGroup,
     inMhaIneligibleGroup,
     inMpdGoalCalcIneligibleGroup,
-    inNsGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
     inMpdSupervisorIneligibleGroup,
     inStaffAccountIneligibleGroup,
