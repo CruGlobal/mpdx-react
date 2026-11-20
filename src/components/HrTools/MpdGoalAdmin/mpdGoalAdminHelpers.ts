@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 import { TFunction } from 'react-i18next';
 import {
   NewStaffCohortAttendeeGoalStatusEnum,
+  NewStaffCohortAttendeeQuestionnaireStateEnum,
   NewStaffCohortAttributesInput,
   NewStaffQuestionnaireMaritalStatusEnum,
 } from 'src/graphql/types.generated';
@@ -76,6 +77,11 @@ export interface StaffGoalRow {
   goalStatus: NewStaffCohortAttendeeGoalStatusEnum;
   /** ISO timestamp of the batch that sent this household; null until sent. */
   goalSentAt: string | null;
+  questionnaireState: NewStaffCohortAttendeeQuestionnaireStateEnum;
+  /** Past the training's deadline, so the household cannot change its questionnaire. */
+  questionnaireLocked: boolean;
+  /** When the MPD Goals team reopened the questionnaire; null once the household submits again. */
+  questionnaireReopenedAt: string | null;
   /** null before the survey establishes the household's marital status. */
   familyStatus: NewStaffQuestionnaireMaritalStatusEnum | null;
   /** Raw fields, labelled at render time; null renders an "Assign Coach" prompt. */
@@ -143,6 +149,8 @@ export interface Cohort {
   canRunAndSend: boolean;
   /** Whether this training's households can see the NSO MPD Questionnaire. */
   questionnaireOpen: boolean;
+  /** ISO instant after which the questionnaire locks; null for no deadline. */
+  questionnaireDeadline: string | null;
   /** Saved training cost figures; undefined until every cost is entered. */
   trainingCosts?: TrainingCosts;
 }
@@ -185,6 +193,7 @@ export const cohortNodeToCohort = (
   hasTrainingCosts: node.hasTrainingCosts,
   canRunAndSend: node.canRunAndSend,
   questionnaireOpen: node.questionnaireOpen,
+  questionnaireDeadline: node.questionnaireDeadline ?? null,
   trainingCosts: cohortToTrainingCosts(node),
 });
 
@@ -199,6 +208,9 @@ export const attendeeToRow = (attendee: AttendeeNode): StaffGoalRow => ({
   mpdGoal: attendee.newStaffGoalCalculation?.monthlyGoal ?? null,
   goalStatus: attendee.goalStatus,
   goalSentAt: attendee.goalSentAt ?? null,
+  questionnaireState: attendee.questionnaireState,
+  questionnaireLocked: attendee.questionnaireLocked,
+  questionnaireReopenedAt: attendee.questionnaireReopenedAt ?? null,
   familyStatus: attendee.familyStatus ?? null,
   coach: attendee.coach ?? null,
   coordinators: [...attendee.coordinators],

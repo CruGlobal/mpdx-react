@@ -34,7 +34,7 @@ export type NsoMpdQuestionnaireType = {
   questionnaire: NewStaffQuestionnaire | null;
   /** Whether the questionnaire belongs to a married staff member (has a spouse to collect info for). */
   hasSpouse: boolean;
-  /** A submitted questionnaire can be read but never changed. */
+  /** A submitted or deadline-locked questionnaire can be read but not changed. */
   readOnly: boolean;
   loading: boolean;
   isMutating: boolean;
@@ -74,7 +74,8 @@ export const NsoMpdQuestionnaireProvider: React.FC<Props> = ({ children }) => {
     variables: { accountListId },
   });
   const questionnaire = questionnaireData?.newStaffQuestionnaire ?? null;
-  const readOnly = questionnaire?.completed ?? false;
+  // Past the deadline nothing saves either, so a locked questionnaire reads like a submitted one
+  const readOnly = !!(questionnaire?.completed || questionnaire?.locked);
 
   const hasSpouse = getHasSpouse(questionnaire?.maritalStatus);
 

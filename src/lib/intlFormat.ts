@@ -233,9 +233,11 @@ export const dateFromParts = (
   }
 };
 
+/** `timeZone` shows the instant in that IANA zone instead of the viewer's. */
 export const dateTimeFormat = (
   date: DateTime | null,
   locale: string,
+  timeZone?: string,
 ): string => {
   if (date === null) {
     return '';
@@ -247,6 +249,7 @@ export const dateTimeFormat = (
     hour: 'numeric',
     minute: 'numeric',
     timeZoneName: 'short',
+    timeZone,
   }).format(date.toJSDate());
 };
 

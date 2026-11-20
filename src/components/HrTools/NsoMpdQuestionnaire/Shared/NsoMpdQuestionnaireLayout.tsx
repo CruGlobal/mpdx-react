@@ -8,6 +8,7 @@ import {
 import { PanelTypeEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { BackButton } from './BackButton';
 import { ContinueButton } from './ContinueButton';
+import { DeadlineNotice } from './DeadlineNotice';
 import { useNsoMpdQuestionnaire } from './NsoMpdQuestionnaireContext';
 
 interface NsoMpdQuestionnaireLayoutProps {
@@ -58,6 +59,7 @@ export const NsoMpdQuestionnaireLayout: React.FC<
       hideSidebar
       mainContent={
         <Stack spacing={4}>
+          <DeadlineNotice />
           {children}
           {!isLastStep && (
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} mx={4}>

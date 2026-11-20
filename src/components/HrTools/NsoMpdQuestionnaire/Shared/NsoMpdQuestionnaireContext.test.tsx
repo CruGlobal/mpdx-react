@@ -201,7 +201,10 @@ describe('NsoMpdQuestionnaireContext', () => {
           'true',
         ),
       );
-      expect(getByRole('heading')).toHaveTextContent('Summary');
+      // The jump to Summary is an effect, so it can land a render after the flag
+      await waitFor(() =>
+        expect(getByRole('heading')).toHaveTextContent('Summary'),
+      );
     });
 
     it('keeps the reader on the step they picked when the language changes', async () => {
@@ -228,6 +231,23 @@ describe('NsoMpdQuestionnaireContext', () => {
           await i18n.changeLanguage('en');
         });
       }
+    });
+
+    it('is read-only once the deadline locks it, even unsubmitted', async () => {
+      const { getByLabelText } = render(
+        <NsoMpdQuestionnaireTestWrapper
+          newStaffQuestionnaire={{ completed: false, locked: true }}
+        >
+          <ReadOnlyComponent />
+        </NsoMpdQuestionnaireTestWrapper>,
+      );
+
+      await waitFor(() =>
+        expect(getByLabelText('read only state')).toHaveAttribute(
+          'data-read-only',
+          'true',
+        ),
+      );
     });
 
     it('sends no update or complete mutation', async () => {

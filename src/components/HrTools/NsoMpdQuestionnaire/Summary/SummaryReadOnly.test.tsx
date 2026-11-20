@@ -57,6 +57,28 @@ describe('Summary of a submitted questionnaire', () => {
     expect(queryByText('Submitted on 11/10/2026')).not.toBeInTheDocument();
   });
 
+  it('does not call a questionnaire submitted when only the deadline locked it', async () => {
+    const { findByText, queryByRole, queryByText } = render(
+      <NsoMpdQuestionnaireTestWrapper
+        newStaffQuestionnaire={{
+          completed: false,
+          locked: true,
+          deadline: '2019-11-20T17:00:00Z',
+        }}
+      >
+        <Summary />
+      </NsoMpdQuestionnaireTestWrapper>,
+    );
+
+    expect(
+      await findByText(/The deadline for this questionnaire passed/),
+    ).toBeInTheDocument();
+    expect(
+      queryByText('This questionnaire has been submitted.'),
+    ).not.toBeInTheDocument();
+    expect(queryByRole('button', { name: 'Submit' })).not.toBeInTheDocument();
+  });
+
   it('offers no way to edit or submit it', async () => {
     const { findByText, getByRole, getByText, queryByRole, queryByText } =
       render(<TestComponent />);

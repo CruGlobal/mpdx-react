@@ -16,6 +16,7 @@ import {
   preloadEditTrainingCostsModal,
 } from '../EditTrainingCostsModal/DynamicEditTrainingCostsModal';
 import { useMpdGoalAdmin } from '../MpdGoalAdminContext';
+import { QuestionnaireDeadline } from '../QuestionnaireDeadline/QuestionnaireDeadline';
 import { QuestionnaireOpenSwitch } from '../QuestionnaireOpenSwitch/QuestionnaireOpenSwitch';
 import { TrainingCosts } from '../mpdGoalAdminHelpers';
 
@@ -36,6 +37,22 @@ const Stat: React.FC<StatProps> = ({ label, children }) => (
     <Typography variant="body2">{children}</Typography>
   </Box>
 );
+
+/** The training's questionnaire switch and deadline. */
+const QuestionnaireStats: React.FC = () => {
+  const { t } = useTranslation();
+
+  return (
+    <>
+      <Stat label={t('Questionnaire')}>
+        <QuestionnaireOpenSwitch />
+      </Stat>
+      <Stat label={t('Questionnaire Deadline')}>
+        <QuestionnaireDeadline />
+      </Stat>
+    </>
+  );
+};
 
 export const CohortBar: React.FC = () => {
   const { t } = useTranslation();
@@ -152,9 +169,7 @@ export const CohortBar: React.FC = () => {
           trainingCostLink
         )}
       </Stat>
-      <Stat label={t('Questionnaire')}>
-        <QuestionnaireOpenSwitch />
-      </Stat>
+      <QuestionnaireStats />
       {trainingCostsOpen && (
         <DynamicEditTrainingCostsModal
           open
