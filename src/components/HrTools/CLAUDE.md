@@ -41,11 +41,14 @@ boundary — every HrTools operation (query and mutation) requires auth
 server-side, and resolvers scope data to the user's own account lists.
 
 - **Layer 1 — user type (whole tab):** `canSeeHrTools` in `useNavPages.tsx`
-  shows the group only for `userType` `UsStaff`/`HybridStaff` (plus
-  `reportsDisabled` + `developerBypass`). Hybrid staff are US-payroll global staff.
-  The NSO MPD Questionnaire skips the user group prompt: it checks only the
-  `DISABLE_NEW_REPORTS` and `DISABLE_NS_GOAL_CALCULATOR` flags, because new staff
-  often reach NSO before answering it.
+  shows the group only for `userType` `UsStaff`/`HybridStaff` (or with
+  `developerBypass`), and only when at least one tool is visible. Hybrid staff
+  are US-payroll global staff. Most tools also hide while `reportsDisabled`
+  (`useReportsDisabled.ts`: `DISABLE_NEW_REPORTS`, or the user has not yet
+  confirmed their user group in the `user_type_verified` option). The NSO MPD
+  Questionnaire skips that confirmation check, because new staff often reach NSO
+  before answering it: `useNsoMpdQuestionnaireHidden` reads the
+  `DISABLE_NEW_REPORTS` and `DISABLE_NS_GOAL_CALCULATOR` flags directly.
 - **Layer 2 — US staff group (per tool):** each tool gates on `usStaffGroup` /
   `spouseUsStaffGroup` via `useIneligibleByGroup.ts` (nav) **and** a page-level
   `UserTypeAccess` guard. The group is resolved server-side from HCM; the client
