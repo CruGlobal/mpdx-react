@@ -185,7 +185,7 @@ Critical environment setup:
 `/spec`, then `/answer-key`, then `/implement`, then `/pr`. The skills are in `.claude/skills/`.
 
 - Work on a branch named for the ticket key (for example `MPDX-1234`). `/spec` makes it if needed.
-- The builder writes app code and never writes or edits tests. The checker writes every test (unit tests, fix tests, and updates to existing tests the spec changes) and reviews; it never commits app code. `/agent-review:yolo-review` fixes code and tests together and is the one exception.
+- Builder agents write app code and never write or edit tests. The checker writes the unit tests and fix tests, updates existing tests the spec changes, and reviews; it never commits app code. The session writes the answer keys in `/answer-key`, and `/agent-review:yolo-review` may fix code and tests together.
 - Answer-key tests live in `src/answer-key/<KEY>/`. Never special-case inputs to make tests pass. Once the build starts, nobody edits an answer key without the developer's OK.
 - The session commits.
 - At each step, post one line: what is done, what is next.
@@ -203,7 +203,7 @@ A mistake here gets money math or HR data wrong, breaks sign-in, leaks a secret,
 - Monitoring and safety nets
 - Guardrail files and build config: CI, hooks, Claude config, CLAUDE.md, AGENTS.md, the gitleaks ignore list, lint, test, TypeScript, Yarn and Next.js config, and Amplify
 
-Tests follow their folder: a test inside a one-way-door folder is a one-way door too.
+Tests follow their folder: a test inside an owned folder is a one-way door too. A test next to a single owned file is not, unless CODEOWNERS lists it.
 
 ## Do-not-touch list
 
