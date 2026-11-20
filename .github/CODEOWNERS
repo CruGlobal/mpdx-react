@@ -1,0 +1,32 @@
+# Only one-way-door paths need a code owner; there is no * line, so the rest can merge on the agent-review approval.
+# pr-guard also labels PRs one-way-door from these paths; keep the list in CLAUDE.md in sync.
+
+# HR tools: goal, NS and PDS calculators, salary, ASR, MHA, savings fund, HCM data
+/src/components/HrTools/                                @CruGlobal/mpdx-developers
+
+# Reports that read HCM data
+/src/components/Reports/MPGAIncomeExpensesReport/       @CruGlobal/mpdx-developers
+/src/components/Reports/StaffExpenseReport/             @CruGlobal/mpdx-developers
+
+# Sign-in and impersonation
+/pages/api/auth/                                        @CruGlobal/mpdx-developers
+/pages/api/stop-impersonating.page.ts                   @CruGlobal/mpdx-developers
+
+# REST proxy and CSV import
+/pages/api/graphql-rest.page.ts                         @CruGlobal/mpdx-developers
+/pages/api/Schema/                                      @CruGlobal/mpdx-developers
+/pages/api/csv-update.page.ts                           @CruGlobal/mpdx-developers
+
+# Monitoring and safety nets
+/src/lib/dataDog.ts                                     @CruGlobal/mpdx-developers
+/scripts/safety-nets/                                   @CruGlobal/mpdx-developers
+
+# Guardrail files and deploy config
+/.github/                                               @CruGlobal/mpdx-developers
+/.husky/                                                @CruGlobal/mpdx-developers
+/.claude/                                               @CruGlobal/mpdx-developers
+**/CLAUDE.md                                            @CruGlobal/mpdx-developers
+**/AGENTS.md                                            @CruGlobal/mpdx-developers
+/.gitleaksignore                                        @CruGlobal/mpdx-developers
+/.eslintrc*                                             @CruGlobal/mpdx-developers
+/amplify.yml                                            @CruGlobal/mpdx-developers
