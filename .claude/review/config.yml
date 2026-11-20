@@ -471,7 +471,8 @@ engine:
 # locally, so no CI workflow reviews its PRs.
 reviews_run: local
 
-# People-only approval. The bot never approves a PR that touches these; keep in step with .github/CODEOWNERS.
+# People-only approval. The bot never approves a PR that touches these paths.
+# Keep this list in step with the owned paths in .github/CODEOWNERS.
 human_approval:
   paths:
     - 'src/components/HrTools/**'
@@ -495,19 +496,16 @@ human_approval:
     - 'scripts/safety-nets/**'
     - '.github/**'
     - '.husky/**'
-    # Every .claude path except agent-review's own outcome logs (learnings/feedback/*.jsonl, feedback.jsonl).
-    - '.claude/*.json'
-    - '.claude/skills/**'
-    - '.claude/agents/**'
-    - '.claude/commands/**'
-    - '.claude/hooks/**'
-    - '.claude/rules/**'
-    - '.claude/review/*.yml'
-    - '.claude/review/*.md'
-    - '.claude/review/learnings/*.yml'
-    - '.claude/review/rules/**'
-    - '.claude/review/static/**'
-    - '.claude/review/evals/**'
+    # All of .claude except agent-review's outcome logs (learnings/feedback/*.jsonl and
+    # learnings/feedback.jsonl), the same carve-out CODEOWNERS makes. A bare * here also
+    # matches subfolders, so each level names what it skips with !( ).
+    - '.claude/!(review)'
+    - '.claude/!(review)/**'
+    - '.claude/review/!(learnings)'
+    - '.claude/review/!(learnings)/**'
+    - '.claude/review/learnings/!(feedback|feedback.jsonl)'
+    - '.claude/review/learnings/!(feedback)/**'
+    - '.claude/review/learnings/feedback/**/!(*.jsonl)'
     - '**/CLAUDE.md'
     - '**/AGENTS.md'
     - '.gitleaksignore'
