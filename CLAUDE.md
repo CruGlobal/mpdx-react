@@ -195,10 +195,10 @@ Critical environment setup:
 
 These are the places where a person's approval adds something the bot and CI can't. A mistake here could switch off a guardrail, show one person's data to someone else, or leak a token or secret, and none of that can be taken back. Work that touches these uses the stricter setup in `.claude/skills/implement/SKILL.md`, and a code owner must approve the PR.
 
-`.github/CODEOWNERS` holds the exact paths. A path is a one-way door when CODEOWNERS gives it an owner; the two lines with no owner at the end are carve-outs. pr-guard reads it to set the one-way-door label. `human_approval` in `.claude/review/config.yml` lists the same paths so the agent-review bot never approves these PRs. Add or remove a path in both files together, not here. It covers:
+`.github/CODEOWNERS` holds the exact paths. A path is a one-way door when CODEOWNERS gives it an owner; the two lines with no owner at the end are carve-outs. pr-guard reads it to set the one-way-door label. `human_approval` in `.claude/review/config.yml` lists the same paths so the agent-review bot never approves these PRs. Add or remove a path in both files together, not here. The list covers:
 
 - The review's own rules: CI, hooks, Claude config, the root CLAUDE.md and AGENTS.md, the gitleaks ignore list, and lint, test and TypeScript config
-- Sign-in, page access, and the saved Apollo cache
+- Sign-in, page access, and clearing one user's data before the next: the saved Apollo cache, the sign-out wipe and the service worker's cache rules
 - The code that puts the user's API token on outgoing calls
 - Build and deploy config where secrets are in reach: Next.js, Amplify and Yarn
 

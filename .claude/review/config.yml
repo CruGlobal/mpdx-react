@@ -471,9 +471,7 @@ engine:
 # locally, so no CI workflow reviews its PRs.
 reviews_run: local
 
-# People-only approval. The bot never approves a PR that touches these paths. Only places
-# where a person's approval adds something the bot and CI can't: the review's own rules,
-# sign-in and page access, the user's API token, and config where secrets are in reach.
+# People-only approval: the bot never approves a PR that touches these paths.
 # Keep this list in step with the owned paths in .github/CODEOWNERS.
 human_approval:
   paths:
@@ -483,8 +481,7 @@ human_approval:
     - '.gitleaksignore'
     - 'CLAUDE.md'
     - 'AGENTS.md'
-    # All of .claude except agent-review's outcome logs (learnings/feedback/*.jsonl and
-    # learnings/feedback.jsonl), the same carve-out CODEOWNERS makes. A bare * here also
+    # All of .claude except the review's outcome logs, as in CODEOWNERS. A bare * also
     # matches subfolders, so each level names what it skips with !( ).
     - '.claude/!(review)'
     - '.claude/!(review)/**'
@@ -499,13 +496,16 @@ human_approval:
     - '__tests__/util/setup.ts'
     - 'scripts/jest-shards/*.js'
     - 'tsconfig.json'
-    # Sign-in, page access, and the saved Apollo cache
+    # Sign-in, page access, and clearing one user's data before the next
     - 'pages/api/auth/**'
     - 'pages/api/stop-impersonating.page.ts'
     - 'pages/api/utils/cookies.ts'
     - 'pages/api/utils/pagePropsHelpers.ts'
     - 'src/components/CacheRestoreGate/**'
     - 'src/lib/apollo/persistence/**'
+    - 'src/lib/clearSessionData.ts'
+    - 'src/sw/**'
+    - 'src/lib/serviceWorker/**'
     # Code that puts the user's API token on outgoing calls
     - 'src/lib/apollo/link.ts'
     - 'pages/api/graphql-rest.page.ts'
