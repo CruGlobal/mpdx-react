@@ -471,6 +471,53 @@ engine:
 # locally, so no CI workflow reviews its PRs.
 reviews_run: local
 
+# People-only approval: the bot never approves a PR that touches these paths.
+# Keep this list in step with the owned paths in .github/CODEOWNERS.
+human_approval:
+  paths:
+    # The review's own rules: what the bot and CI check
+    - '.github/**'
+    - '.husky/**'
+    - '.gitleaksignore'
+    - 'CLAUDE.md'
+    - 'AGENTS.md'
+    # All of .claude except the review's outcome logs, as in CODEOWNERS. A bare * also
+    # matches subfolders, so each level names what it skips with !( ).
+    - '.claude/!(review)'
+    - '.claude/!(review)/**'
+    - '.claude/review/!(learnings)'
+    - '.claude/review/!(learnings)/**'
+    - '.claude/review/learnings/!(feedback|feedback.jsonl)'
+    - '.claude/review/learnings/!(feedback)/**'
+    - '.claude/review/learnings/feedback/**/!(*.jsonl)'
+    - '.eslintrc*'
+    - '.eslintignore'
+    - 'jest.config.js'
+    - '__tests__/util/setup.ts'
+    - 'scripts/jest-shards/*.js'
+    - 'tsconfig.json'
+    # Sign-in, page access, and clearing one user's data before the next
+    - 'pages/api/auth/**'
+    - 'pages/api/stop-impersonating.page.ts'
+    - 'pages/api/utils/cookies.ts'
+    - 'pages/api/utils/pagePropsHelpers.ts'
+    - 'src/components/CacheRestoreGate/**'
+    - 'src/lib/apollo/persistence/**'
+    - 'src/lib/clearSessionData.ts'
+    - 'src/sw/**'
+    - 'src/lib/serviceWorker/**'
+    - 'serwist.config.mjs'
+    # Code that puts the user's API token on outgoing calls
+    - 'src/lib/apollo/link.ts'
+    - 'pages/api/graphql-rest.page.ts'
+    - 'pages/api/uploads/**'
+    - 'pages/api/csv-update.page.ts'
+    # Build and deploy config, where secrets are in reach
+    - 'next.config.ts'
+    - 'amplify.yml'
+    - '.yarnrc.yml'
+    - '.yarn/releases/**'
+
 # Reports approve by default (`advisory`). Set `shadow` to post advice only. This repo is
 # local-only, so there is no CI caller and this key is the only place the mode lives.
 # auto_approve in .github/workflows/agent-review-approve.yml decides whether a passing
