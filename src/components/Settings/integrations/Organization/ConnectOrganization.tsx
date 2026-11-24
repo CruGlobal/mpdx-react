@@ -110,11 +110,15 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
     } = {
       organizationId: id,
     };
-    if (attributes.password) {
-      createAccountAttributes.password = attributes.password;
-    }
-    if (attributes.username) {
-      createAccountAttributes.username = attributes.username;
+    // Formik keeps typed credentials after the user picks a different org, so only the org type
+    // that shows the fields may send them.
+    if (type === OrganizationTypesEnum.LOGIN) {
+      if (attributes.password) {
+        createAccountAttributes.password = attributes.password;
+      }
+      if (attributes.username) {
+        createAccountAttributes.username = attributes.username;
+      }
     }
 
     const cruUsa = apiClass === CRU_USA_API_CLASS;
