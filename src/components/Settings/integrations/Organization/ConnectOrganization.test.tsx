@@ -730,5 +730,31 @@ describe('Connect Organization', () => {
       });
       await waitFor(() => expect(onDone).toHaveBeenCalledTimes(1));
     });
+
+    it('clears typed credentials when a different organization is picked', async () => {
+      const utils = renderWithCreateMock();
+
+      await pickMinistry(utils, 'loginName');
+      userEvent.type(
+        await utils.findByRole('textbox', { name: /username/i }),
+        'MyUsername',
+      );
+      userEvent.type(utils.getByTestId('passwordInput'), 'MyPassword');
+
+      const field = utils.getByRole('combobox');
+      userEvent.clear(field);
+      userEvent.type(field, '{arrowdown}');
+      userEvent.click(
+        await utils.findByRole('option', { name: 'organizationName' }),
+      );
+      userEvent.clear(field);
+      userEvent.type(field, '{arrowdown}');
+      userEvent.click(await utils.findByRole('option', { name: 'loginName' }));
+
+      expect(
+        await utils.findByRole('textbox', { name: /username/i }),
+      ).toHaveValue('');
+      expect(utils.getByTestId('passwordInput')).toHaveValue('');
+    });
   });
 });
