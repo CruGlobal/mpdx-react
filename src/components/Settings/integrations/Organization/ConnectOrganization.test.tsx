@@ -622,5 +622,113 @@ describe('Connect Organization', () => {
       ).toBeInTheDocument();
       expect(utils.queryByRole('alert')).not.toBeInTheDocument();
     });
+
+    const renderWithCreateMock = (
+      createMock?: ReturnType<typeof accessError>,
+      mutationSpy?: jest.Mock,
+    ) =>
+      render(
+        <Components>
+          <GqlMockedProvider<{ GetOrganizations: GetOrganizationsQuery }>
+            mocks={{
+              GetOrganizations: { organizations: GetOrganizationsMock },
+              ...(createMock ? { CreateOrganizationAccount: createMock } : {}),
+            }}
+            onCall={mutationSpy}
+          >
+            <ConnectOrganization onDone={onDone} />
+          </GqlMockedProvider>
+        </Components>,
+      );
+
+    const pressConnect = async (utils: ReturnType<typeof render>) => {
+      userEvent.click(document.body);
+      const button = await utils.findByRole('button', { name: 'Connect' });
+      await waitFor(() => expect(button).toBeEnabled());
+      userEvent.click(button);
+      return button;
+    };
+
+    it('shows the no-access message with the Donation Services link for NO_MINISTRY_ACCESS', async () => {
+      const utils = renderWithCreateMock(accessError('NO_MINISTRY_ACCESS'));
+      await pickMinistry(utils);
+      const button = await pressConnect(utils);
+
+      const alert = await utils.findByRole('alert');
+      expect(alert).toHaveTextContent(
+        "We checked and you don't have access to this organization yet. Ask your donation services team for access. Once they've given it, come back and press Connect again.",
+      );
+      const link = utils.getByRole('link', {
+        name: 'Ask your donation services team for access.',
+      });
+      expect(link).toHaveAttribute(
+        'href',
+        expect.stringContaining(
+          '?subject=Request+access+to+ministry+organization&body=',
+        ),
+      );
+      expect(link.getAttribute('href')).toMatch(/^mailto:/);
+      expect(utils.queryByText(CHECK_FAILED_TEXT)).toBeNull();
+      await waitFor(() => expect(button).toBeEnabled());
+      expect(onDone).not.toHaveBeenCalled();
+      expect(mockEnqueue).not.toHaveBeenCalledWith(
+        'Invalid username or password.',
+        expect.anything(),
+      );
+    });
+
+    it.each([
+      ['ACCESS_CHECK_FAILED', 'ACCESS_CHECK_FAILED'],
+      ['a GraphQL error with no code', undefined],
+    ])(
+      'shows the check-failed message and never the no-access one for %s',
+      async (_label, code) => {
+        const utils = renderWithCreateMock(accessError(code));
+        await pickMinistry(utils);
+        const button = await pressConnect(utils);
+
+        expect(await utils.findByRole('alert')).toHaveTextContent(
+          CHECK_FAILED_TEXT,
+        );
+        expect(utils.queryByText(NO_ACCESS_TEXT, { exact: false })).toBeNull();
+        expect(
+          utils.queryByRole('link', {
+            name: 'Ask your donation services team for access.',
+          }),
+        ).toBeNull();
+        await waitFor(() => expect(button).toBeEnabled());
+        expect(onDone).not.toHaveBeenCalled();
+        expect(mockEnqueue).not.toHaveBeenCalledWith(
+          'Invalid username or password.',
+          expect.anything(),
+        );
+      },
+    );
+
+    it('does not send credentials typed for a login organization after switching to Cru USA', async () => {
+      const mutationSpy = jest.fn();
+      const utils = renderWithCreateMock(undefined, mutationSpy);
+
+      await pickMinistry(utils, 'loginName');
+      userEvent.type(
+        await utils.findByRole('textbox', { name: /username/i }),
+        'MyUsername',
+      );
+      userEvent.type(utils.getByTestId('passwordInput'), 'MyPassword');
+
+      const field = utils.getByRole('combobox');
+      userEvent.clear(field);
+      userEvent.type(field, '{arrowdown}');
+      userEvent.click(
+        await utils.findByRole('option', { name: 'ministryName' }),
+      );
+      await pressConnect(utils);
+
+      await waitFor(() => expect(createCalls(mutationSpy)).toHaveLength(1));
+      expect(createCalls(mutationSpy)[0][0].operation.variables.input).toEqual({
+        attributes: { organizationId: 'ministryId' },
+      });
+      await waitFor(() => expect(onDone).toHaveBeenCalledTimes(1));
+    });
   });
 });
