@@ -110,8 +110,7 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
     } = {
       organizationId: id,
     };
-    // Formik keeps typed credentials after the user picks a different org, so only the org type
-    // that shows the fields may send them.
+    // Only the org type that shows the credential fields may send them.
     if (type === OrganizationTypesEnum.LOGIN) {
       if (attributes.password) {
         createAccountAttributes.password = attributes.password;
@@ -221,6 +220,9 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
                 setSelectedOrg(org?.name ?? '');
                 setIsCruUsa(org?.apiClass === CRU_USA_API_CLASS);
                 setCruUsaCheck(null);
+                // Credentials belong to the org they were typed for.
+                setFieldValue('username', '');
+                setFieldValue('password', '');
                 setFieldValue('selectedOrganization', value);
               }}
               textFieldFocusRef={focusOnOrganization}
