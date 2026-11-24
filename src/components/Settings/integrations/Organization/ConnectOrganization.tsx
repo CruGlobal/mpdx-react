@@ -45,6 +45,12 @@ interface ConnectOrganizationProps {
   ContentContainer?: React.FC<{ children: ReactNode }>;
 }
 
+const NO_MINISTRY_ACCESS = 'NO_MINISTRY_ACCESS';
+const ACCESS_CHECK_FAILED = 'ACCESS_CHECK_FAILED';
+const CRU_USA_API_CLASS = 'Siebel';
+
+type CruUsaCheck = 'noAccess' | 'checkFailed' | null;
+
 const StyledForm = styled('form')({ width: '100%' });
 
 const WarningBox = styled(Box)({
@@ -73,6 +79,8 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
   const [organizationType, setOrganizationType] =
     useState<OrganizationTypesEnum>();
   const [selectedOrg, setSelectedOrg] = useState('');
+  const [isCruUsa, setIsCruUsa] = useState(false);
+  const [cruUsaCheck, setCruUsaCheck] = useState<CruUsaCheck>(null);
 
   const [createOrganizationAccount] = useCreateOrganizationAccountMutation();
   const { data: organizations, loading } = useGetOrganizationsQuery();
@@ -109,6 +117,11 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
       createAccountAttributes.username = attributes.username;
     }
 
+    const cruUsa = apiClass === CRU_USA_API_CLASS;
+    if (cruUsa) {
+      setCruUsaCheck(null);
+    }
+
     await createOrganizationAccount({
       variables: {
         input: {
@@ -116,7 +129,22 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
         },
       },
       refetchQueries: ['GetUsersOrganizationsAccounts'],
-      onError: () => {
+      ...(cruUsa && {
+        context: {
+          suppressErrorCodes: [NO_MINISTRY_ACCESS, ACCESS_CHECK_FAILED],
+        },
+      }),
+      onError: (error) => {
+        if (cruUsa) {
+          setCruUsaCheck(
+            error.graphQLErrors.some(
+              ({ extensions }) => extensions?.code === NO_MINISTRY_ACCESS,
+            )
+              ? 'noAccess'
+              : 'checkFailed',
+          );
+          return;
+        }
         enqueueSnackbar(t('Invalid username or password.'), {
           variant: 'error',
         });
@@ -187,6 +215,8 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
                   getOrganizationType(org?.apiClass, org?.oauth),
                 );
                 setSelectedOrg(org?.name ?? '');
+                setIsCruUsa(org?.apiClass === CRU_USA_API_CLASS);
+                setCruUsaCheck(null);
                 setFieldValue('selectedOrganization', value);
               }}
               textFieldFocusRef={focusOnOrganization}
@@ -238,20 +268,46 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
                     </li>
                   </ol>
                 </StyledTypography>
-                <StyledTypography fontStyle="italic">
-                  {t(
-                    "If you are already logged in using your ministry account, you'll need to ",
-                  )}
-                  <Link href={donationServicesEmailLink} target="_blank">
+                {!isCruUsa ? (
+                  <StyledTypography fontStyle="italic">
                     {t(
-                      'contact your donation services team to request access.',
+                      "If you are already logged in using your ministry account, you'll need to ",
                     )}
-                  </Link>{' '}
-                  {t(
-                    "Once this is done you'll need to wait 24 hours for {{appName}} to sync your data.",
-                    { appName },
-                  )}
-                </StyledTypography>
+                    <Link href={donationServicesEmailLink} target="_blank">
+                      {t(
+                        'contact your donation services team to request access.',
+                      )}
+                    </Link>{' '}
+                    {t(
+                      "Once this is done you'll need to wait 24 hours for {{appName}} to sync your data.",
+                      { appName },
+                    )}
+                  </StyledTypography>
+                ) : cruUsaCheck === 'noAccess' ? (
+                  <StyledTypography fontStyle="italic" role="alert">
+                    {t(
+                      "We checked and you don't have access to this organization yet.",
+                    )}{' '}
+                    <Link href={donationServicesEmailLink} target="_blank">
+                      {t('Ask your donation services team for access.')}
+                    </Link>{' '}
+                    {t(
+                      "Once they've given it, come back and press Connect again.",
+                    )}
+                  </StyledTypography>
+                ) : cruUsaCheck === 'checkFailed' ? (
+                  <StyledTypography fontStyle="italic" role="alert">
+                    {t(
+                      "We couldn't finish checking your access because of a problem on our end. Please press Connect again later.",
+                    )}
+                  </StyledTypography>
+                ) : (
+                  <StyledTypography fontStyle="italic">
+                    {t(
+                      "If you are already logged in with your ministry email, press Connect and we'll check your access.",
+                    )}
+                  </StyledTypography>
+                )}
               </WarningBox>
             )}
             {organizationType === OrganizationTypesEnum.OAUTH && (
@@ -307,10 +363,11 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
               disabled={
                 !isValid ||
                 isSubmitting ||
-                organizationType === OrganizationTypesEnum.MINISTRY
+                (organizationType === OrganizationTypesEnum.MINISTRY &&
+                  !isCruUsa)
               }
             >
-              {organizationType === OrganizationTypesEnum.OAUTH
+              {organizationType === OrganizationTypesEnum.OAUTH || isCruUsa
                 ? t('Connect')
                 : t('Add Account')}
             </ConnectButton>
