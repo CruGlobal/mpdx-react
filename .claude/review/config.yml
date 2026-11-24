@@ -471,31 +471,18 @@ engine:
 # locally, so no CI workflow reviews its PRs.
 reviews_run: local
 
-# People-only approval. The bot never approves a PR that touches these paths.
+# People-only approval. The bot never approves a PR that touches these paths. Only places
+# where a person's approval adds something the bot and CI can't: the review's own rules,
+# sign-in and page access, the user's API token, and config where secrets are in reach.
 # Keep this list in step with the owned paths in .github/CODEOWNERS.
 human_approval:
   paths:
-    - 'src/components/HrTools/**'
-    - 'pages/accountLists/*/hrTools/**'
-    - 'src/components/Reports/MPGAIncomeExpensesReport/**'
-    - 'src/components/Reports/StaffExpenseReport/**'
-    - 'pages/accountLists/*/reports/mpgaIncomeExpenses/**'
-    - 'pages/accountLists/*/reports/staffExpense/**'
-    - 'pages/api/auth/**'
-    - 'pages/api/stop-impersonating.page.ts'
-    - 'pages/api/utils/cookies.ts'
-    - 'pages/api/uploads/**'
-    - 'pages/api/utils/pagePropsHelpers.ts'
-    - 'src/lib/apollo/link.ts'
-    - 'src/lib/apollo/client.ts'
-    - 'src/lib/apollo/ssrClient.ts'
-    - 'pages/api/graphql-rest.page.ts'
-    - 'pages/api/Schema/**'
-    - 'pages/api/csv-update.page.ts'
-    - 'src/lib/dataDog.ts'
-    - 'scripts/safety-nets/**'
+    # The review's own rules: what the bot and CI check
     - '.github/**'
     - '.husky/**'
+    - '.gitleaksignore'
+    - 'CLAUDE.md'
+    - 'AGENTS.md'
     # All of .claude except agent-review's outcome logs (learnings/feedback/*.jsonl and
     # learnings/feedback.jsonl), the same carve-out CODEOWNERS makes. A bare * here also
     # matches subfolders, so each level names what it skips with !( ).
@@ -506,19 +493,29 @@ human_approval:
     - '.claude/review/learnings/!(feedback|feedback.jsonl)'
     - '.claude/review/learnings/!(feedback)/**'
     - '.claude/review/learnings/feedback/**/!(*.jsonl)'
-    - '**/CLAUDE.md'
-    - '**/AGENTS.md'
-    - '.gitleaksignore'
     - '.eslintrc*'
     - '.eslintignore'
-    - 'amplify.yml'
-    - 'next.config.ts'
-    - '.yarnrc.yml'
-    - '.yarn/releases/**'
     - 'jest.config.js'
-    - 'tsconfig.json'
     - '__tests__/util/setup.ts'
     - 'scripts/jest-shards/*.js'
+    - 'tsconfig.json'
+    # Sign-in, page access, and the saved Apollo cache
+    - 'pages/api/auth/**'
+    - 'pages/api/stop-impersonating.page.ts'
+    - 'pages/api/utils/cookies.ts'
+    - 'pages/api/utils/pagePropsHelpers.ts'
+    - 'src/components/CacheRestoreGate/**'
+    - 'src/lib/apollo/persistence/**'
+    # Code that puts the user's API token on outgoing calls
+    - 'src/lib/apollo/link.ts'
+    - 'pages/api/graphql-rest.page.ts'
+    - 'pages/api/uploads/**'
+    - 'pages/api/csv-update.page.ts'
+    # Build and deploy config, where secrets are in reach
+    - 'next.config.ts'
+    - 'amplify.yml'
+    - '.yarnrc.yml'
+    - '.yarn/releases/**'
 
 # Reports approve by default (`advisory`). Set `shadow` to post advice only. This repo is
 # local-only, so there is no CI caller and this key is the only place the mode lives.
