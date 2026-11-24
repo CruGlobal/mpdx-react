@@ -70,11 +70,16 @@ const BEFORE_PRESS_TEXT =
 const DONATION_SERVICES_LINK = /ask your donation services team for access/i;
 const RAW_API_TEXT = 'API message the user should not see';
 
-const accessError = (code: string) => () => {
-  throw new GraphQLError(RAW_API_TEXT, { extensions: { code } });
-};
+const throwing = (error: GraphQLError) => ({
+  createOrganizationAccount: (() => {
+    throw error;
+  }) as never,
+});
 
-type CreateMock = (() => never) | undefined;
+const accessError = (code: string) =>
+  throwing(new GraphQLError(RAW_API_TEXT, { extensions: { code } }));
+
+type CreateMock = ReturnType<typeof throwing> | undefined;
 
 interface RenderOptions {
   create?: CreateMock;
@@ -316,9 +321,7 @@ describe('MPDX-10396 Connect Cru USA from Add Organization', () => {
 
     it('AC7, AC8: any other failure shows the check-failed message', async () => {
       const utils = renderSettings({
-        create: () => {
-          throw new GraphQLError('Something else broke');
-        },
+        create: throwing(new GraphQLError('Something else broke')),
       });
       await pick(utils, CRU_USA);
       await pressConnect(utils);
