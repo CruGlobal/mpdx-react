@@ -29,50 +29,36 @@ jest.mock('notistack', () => ({
   useSnackbar: () => ({ enqueueSnackbar: mockEnqueue }),
 }));
 
+const DONATION_SERVICES_EMAIL = 'donation-services@example.org';
+process.env.DONATION_SERVICES_EMAIL = DONATION_SERVICES_EMAIL;
+
 const CRU_USA = 'Cru USA';
 const NETSUITE = 'Cru International Org';
 
+const organization = (
+  id: string,
+  name: string,
+  apiClass: string,
+  oauth = false,
+) => ({
+  id,
+  name,
+  apiClass,
+  oauth,
+  giftAidPercentage: 0,
+  disableNewUsers: false,
+});
+
 const organizations = [
-  {
-    id: 'cru-usa-id',
-    name: CRU_USA,
-    apiClass: 'Siebel',
-    oauth: false,
-    giftAidPercentage: 0,
-    disableNewUsers: false,
-  },
-  {
-    id: 'netsuite-id',
-    name: NETSUITE,
-    apiClass: 'Remote::Import::OrganizationAccountService',
-    oauth: false,
-    giftAidPercentage: 0,
-    disableNewUsers: false,
-  },
-  {
-    id: 'offline-id',
-    name: 'Offline Org',
-    apiClass: 'OfflineOrg',
-    oauth: false,
-    giftAidPercentage: 0,
-    disableNewUsers: false,
-  },
-  {
-    id: 'login-id',
-    name: 'Login Org',
-    apiClass: 'DataServer',
-    oauth: false,
-    giftAidPercentage: 0,
-    disableNewUsers: false,
-  },
-  {
-    id: 'oauth-id',
-    name: 'OAuth Org',
-    apiClass: 'DataServer',
-    oauth: true,
-    giftAidPercentage: 0,
-    disableNewUsers: false,
-  },
+  organization('cru-usa-id', CRU_USA, 'Siebel'),
+  organization(
+    'netsuite-id',
+    NETSUITE,
+    'Remote::Import::OrganizationAccountService',
+  ),
+  organization('offline-id', 'Offline Org', 'OfflineOrg'),
+  organization('login-id', 'Login Org', 'DataServer'),
+  organization('oauth-id', 'OAuth Org', 'DataServer', true),
 ];
 
 const NO_ACCESS_TEXT =
@@ -82,14 +68,18 @@ const CHECK_FAILED_TEXT =
 const BEFORE_PRESS_TEXT =
   "If you are already logged in with your ministry email, press Connect and we'll check your access.";
 const DONATION_SERVICES_LINK = /ask your donation services team for access/i;
+const RAW_API_TEXT = 'API message the user should not see';
 
 const accessError = (code: string) => () => {
-  throw new GraphQLError('API message the user should not see', {
-    extensions: { code },
-  });
+  throw new GraphQLError(RAW_API_TEXT, { extensions: { code } });
 };
 
 type CreateMock = (() => never) | undefined;
+
+interface RenderOptions {
+  create?: CreateMock;
+  orgs?: ReturnType<typeof organization>[];
+}
 
 const Wrapper = ({ children }: PropsWithChildren) => (
   <SnackbarProvider>
@@ -102,15 +92,13 @@ const Wrapper = ({ children }: PropsWithChildren) => (
 const onDone = jest.fn();
 const mutationSpy = jest.fn();
 
-const renderSettings = (createOrganizationAccount?: CreateMock) =>
+const renderSettings = ({ create, orgs = organizations }: RenderOptions = {}) =>
   render(
     <Wrapper>
       <GqlMockedProvider<{ GetOrganizations: GetOrganizationsQuery }>
         mocks={{
-          GetOrganizations: { organizations },
-          ...(createOrganizationAccount
-            ? { CreateOrganizationAccount: createOrganizationAccount }
-            : {}),
+          GetOrganizations: { organizations: orgs },
+          ...(create ? { CreateOrganizationAccount: create } : {}),
         }}
         onCall={mutationSpy}
       >
@@ -119,7 +107,7 @@ const renderSettings = (createOrganizationAccount?: CreateMock) =>
     </Wrapper>,
   );
 
-const renderSetup = (createOrganizationAccount?: CreateMock) =>
+const renderSetup = ({ create }: RenderOptions = {}) =>
   render(
     <Wrapper>
       <GqlMockedProvider<{
@@ -129,9 +117,7 @@ const renderSetup = (createOrganizationAccount?: CreateMock) =>
         mocks={{
           GetUsersOrganizationsAccounts: { userOrganizationAccounts: [] },
           GetOrganizations: { organizations },
-          ...(createOrganizationAccount
-            ? { CreateOrganizationAccount: createOrganizationAccount }
-            : {}),
+          ...(create ? { CreateOrganizationAccount: create } : {}),
         }}
         onCall={mutationSpy}
       >
@@ -171,6 +157,17 @@ const createCalls = () =>
       operation.operationName === 'CreateOrganizationAccount',
   );
 
+const expectNoRawApiText = ({ queryByText }: Rendered) => {
+  expect(queryByText(RAW_API_TEXT, { exact: false })).not.toBeInTheDocument();
+  expect(mockEnqueue).not.toHaveBeenCalledWith(RAW_API_TEXT, expect.anything());
+};
+
+const expectNoInvalidCredentialsToast = () =>
+  expect(mockEnqueue).not.toHaveBeenCalledWith(
+    'Invalid username or password.',
+    expect.anything(),
+  );
+
 beforeEach(() => {
   mockEnqueue.mockClear();
   mutationSpy.mockClear();
@@ -185,6 +182,11 @@ describe('MPDX-10396 Connect Cru USA from Add Organization', () => {
 
       expect(
         utils.getByText('You must log into MPDX with your ministry email'),
+      ).toBeInTheDocument();
+      expect(
+        utils.getByText(
+          /This organization requires you to log into MPDX with your ministry email/,
+        ),
       ).toBeInTheDocument();
       expect(
         utils.getByText('Click here to log out of MPDX'),
@@ -212,18 +214,32 @@ describe('MPDX-10396 Connect Cru USA from Add Organization', () => {
   });
 
   describe('pressing Connect', () => {
-    it('AC3: sends CreateOrganizationAccount once with the Cru USA id and no credentials', async () => {
+    it('AC3: sends CreateOrganizationAccount once with only the Cru USA id', async () => {
       const utils = renderSettings();
       await pick(utils, CRU_USA);
       await pressConnect(utils);
 
-      await waitFor(() =>
-        expect(mutationSpy).toHaveGraphqlOperation(
-          'CreateOrganizationAccount',
-          { input: { attributes: { organizationId: 'cru-usa-id' } } },
-        ),
-      );
-      expect(createCalls()).toHaveLength(1);
+      await waitFor(() => expect(createCalls()).toHaveLength(1));
+      expect(createCalls()[0][0].operation.variables).toEqual({
+        input: { attributes: { organizationId: 'cru-usa-id' } },
+      });
+    });
+
+    it('AC2, AC3: Cru USA is the Siebel org, whatever its name or id', async () => {
+      const utils = renderSettings({
+        orgs: [
+          organization('another-siebel-id', 'US Staff Giving', 'Siebel'),
+          organization('offline-id', 'Offline Org', 'OfflineOrg'),
+        ],
+      });
+      await pick(utils, 'US Staff Giving');
+      expect(utils.getByText(BEFORE_PRESS_TEXT)).toBeInTheDocument();
+      await pressConnect(utils);
+
+      await waitFor(() => expect(createCalls()).toHaveLength(1));
+      expect(createCalls()[0][0].operation.variables).toEqual({
+        input: { attributes: { organizationId: 'another-siebel-id' } },
+      });
     });
 
     it('AC4: on success shows the added message and calls onDone', async () => {
@@ -242,7 +258,9 @@ describe('MPDX-10396 Connect Cru USA from Add Organization', () => {
     });
 
     it('AC5, AC8, AC9: NO_MINISTRY_ACCESS shows the approved message with the Donation Services mailto link', async () => {
-      const utils = renderSettings(accessError('NO_MINISTRY_ACCESS'));
+      const utils = renderSettings({
+        create: accessError('NO_MINISTRY_ACCESS'),
+      });
       await pick(utils, CRU_USA);
       await pressConnect(utils);
 
@@ -251,23 +269,23 @@ describe('MPDX-10396 Connect Cru USA from Add Organization', () => {
 
       const link = utils.getByRole('link', { name: DONATION_SERVICES_LINK });
       const href = link.getAttribute('href') ?? '';
-      expect(href.startsWith('mailto:')).toBe(true);
+      expect(href.startsWith(`mailto:${DONATION_SERVICES_EMAIL}?`)).toBe(true);
       expect(href).toContain('subject=Request+access+to+ministry+organization');
       expect(href).toContain(
         encodeURIComponent(`Organization name: ${CRU_USA}`),
       );
 
       expect(onDone).not.toHaveBeenCalled();
-      expect(mockEnqueue).not.toHaveBeenCalledWith(
-        'Invalid username or password.',
-        expect.anything(),
-      );
+      expectNoInvalidCredentialsToast();
+      expectNoRawApiText(utils);
       expect(utils.queryByText(CHECK_FAILED_TEXT)).not.toBeInTheDocument();
       expect(utils.getByRole('button', { name: 'Connect' })).toBeEnabled();
     });
 
     it('AC5: after NO_MINISTRY_ACCESS the user can press Connect again', async () => {
-      const utils = renderSettings(accessError('NO_MINISTRY_ACCESS'));
+      const utils = renderSettings({
+        create: accessError('NO_MINISTRY_ACCESS'),
+      });
       await pick(utils, CRU_USA);
       await pressConnect(utils);
       await utils.findByRole('alert');
@@ -277,7 +295,9 @@ describe('MPDX-10396 Connect Cru USA from Add Organization', () => {
     });
 
     it('AC6, AC8, AC9: ACCESS_CHECK_FAILED shows the check-failed message and never the no-access message', async () => {
-      const utils = renderSettings(accessError('ACCESS_CHECK_FAILED'));
+      const utils = renderSettings({
+        create: accessError('ACCESS_CHECK_FAILED'),
+      });
       await pick(utils, CRU_USA);
       await pressConnect(utils);
 
@@ -289,16 +309,16 @@ describe('MPDX-10396 Connect Cru USA from Add Organization', () => {
       ).not.toBeInTheDocument();
 
       expect(onDone).not.toHaveBeenCalled();
-      expect(mockEnqueue).not.toHaveBeenCalledWith(
-        'Invalid username or password.',
-        expect.anything(),
-      );
+      expectNoInvalidCredentialsToast();
+      expectNoRawApiText(utils);
       expect(utils.getByRole('button', { name: 'Connect' })).toBeEnabled();
     });
 
     it('AC7, AC8: any other failure shows the check-failed message', async () => {
-      const utils = renderSettings(() => {
-        throw new GraphQLError('Something else broke');
+      const utils = renderSettings({
+        create: () => {
+          throw new GraphQLError('Something else broke');
+        },
       });
       await pick(utils, CRU_USA);
       await pressConnect(utils);
@@ -307,24 +327,25 @@ describe('MPDX-10396 Connect Cru USA from Add Organization', () => {
       expect(alert).toHaveTextContent(CHECK_FAILED_TEXT);
       expect(utils.queryByText(/don't have access/i)).not.toBeInTheDocument();
       expect(onDone).not.toHaveBeenCalled();
-      expect(mockEnqueue).not.toHaveBeenCalledWith(
-        'Invalid username or password.',
-        expect.anything(),
-      );
+      expectNoInvalidCredentialsToast();
     });
 
-    it('AC10: picking another organization removes the message', async () => {
-      const utils = renderSettings(accessError('NO_MINISTRY_ACCESS'));
-      await pick(utils, CRU_USA);
-      await pressConnect(utils);
-      await utils.findByRole('alert');
+    it.each(['NO_MINISTRY_ACCESS', 'ACCESS_CHECK_FAILED'])(
+      'AC10: picking another organization removes the message after %s',
+      async (code) => {
+        const utils = renderSettings({ create: accessError(code) });
+        await pick(utils, CRU_USA);
+        await pressConnect(utils);
+        await utils.findByRole('alert');
 
-      await pick(utils, 'Offline Org');
-      await waitFor(() =>
-        expect(utils.queryByRole('alert')).not.toBeInTheDocument(),
-      );
-      expect(utils.queryByText(/don't have access/i)).not.toBeInTheDocument();
-    });
+        await pick(utils, 'Offline Org');
+        await waitFor(() =>
+          expect(utils.queryByRole('alert')).not.toBeInTheDocument(),
+        );
+        expect(utils.queryByText(NO_ACCESS_TEXT)).not.toBeInTheDocument();
+        expect(utils.queryByText(CHECK_FAILED_TEXT)).not.toBeInTheDocument();
+      },
+    );
   });
 
   describe('other organizations', () => {
@@ -346,6 +367,7 @@ describe('MPDX-10396 Connect Cru USA from Add Organization', () => {
       expect(
         utils.queryByRole('button', { name: 'Connect' }),
       ).not.toBeInTheDocument();
+      expect(utils.queryByRole('alert')).not.toBeInTheDocument();
     });
 
     it('AC12: an offline org still adds with Add Account', async () => {
@@ -353,12 +375,11 @@ describe('MPDX-10396 Connect Cru USA from Add Organization', () => {
       await pick(utils, 'Offline Org');
 
       await press(utils, 'Add Account');
-      await waitFor(() =>
-        expect(mutationSpy).toHaveGraphqlOperation(
-          'CreateOrganizationAccount',
-          { input: { attributes: { organizationId: 'offline-id' } } },
-        ),
-      );
+      await waitFor(() => expect(createCalls()).toHaveLength(1));
+      expect(createCalls()[0][0].operation.variables).toEqual({
+        input: { attributes: { organizationId: 'offline-id' } },
+      });
+      expect(utils.queryByText(BEFORE_PRESS_TEXT)).not.toBeInTheDocument();
     });
 
     it('AC12: a login org still asks for a username and password', async () => {
@@ -372,6 +393,26 @@ describe('MPDX-10396 Connect Cru USA from Add Organization', () => {
       ).toBeInTheDocument();
     });
 
+    it('AC12: a login org failure still says invalid username or password, even with a Cru USA code', async () => {
+      const utils = renderSettings({
+        create: accessError('NO_MINISTRY_ACCESS'),
+      });
+      await pick(utils, 'Login Org');
+      userEvent.type(utils.getByLabelText(/username/i), 'user');
+      userEvent.type(utils.getByLabelText(/password/i), 'secret');
+
+      await press(utils, 'Add Account');
+      await waitFor(() =>
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Invalid username or password.',
+          { variant: 'error' },
+        ),
+      );
+      expect(utils.queryByRole('alert')).not.toBeInTheDocument();
+      expect(utils.queryByText(/don't have access/i)).not.toBeInTheDocument();
+      expect(onDone).not.toHaveBeenCalled();
+    });
+
     it('AC12: an OAuth org still shows Connect and its own notice', async () => {
       const utils = renderSettings();
       await pick(utils, 'OAuth Org');
@@ -381,21 +422,31 @@ describe('MPDX-10396 Connect Cru USA from Add Organization', () => {
           /to grant MPDX permission to access your donation data/,
         ),
       ).toBeInTheDocument();
+      expect(
+        utils.getByRole('button', { name: 'Connect' }),
+      ).toBeInTheDocument();
       expect(utils.queryByText(BEFORE_PRESS_TEXT)).not.toBeInTheDocument();
+      expect(utils.queryByRole('alert')).not.toBeInTheDocument();
     });
   });
 
   describe('AC13: the Setup flow Connect step', () => {
-    it('connects Cru USA and reloads the organization list', async () => {
+    it('shows the Cru USA panel, connects, and reloads the organization list', async () => {
       const utils = renderSetup();
       await pick(utils, CRU_USA);
+      expect(utils.getByText(BEFORE_PRESS_TEXT)).toBeInTheDocument();
+      expect(utils.queryByText(/24 hours/)).not.toBeInTheDocument();
       mutationSpy.mockClear();
       await pressConnect(utils);
 
+      await waitFor(() => expect(createCalls()).toHaveLength(1));
+      expect(createCalls()[0][0].operation.variables).toEqual({
+        input: { attributes: { organizationId: 'cru-usa-id' } },
+      });
       await waitFor(() =>
-        expect(mutationSpy).toHaveGraphqlOperation(
-          'CreateOrganizationAccount',
-          { input: { attributes: { organizationId: 'cru-usa-id' } } },
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'MPDX added your organization account',
+          { variant: 'success' },
         ),
       );
       await waitFor(() =>
@@ -406,21 +457,23 @@ describe('MPDX-10396 Connect Cru USA from Add Organization', () => {
     });
 
     it('shows the no-access message', async () => {
-      const utils = renderSetup(accessError('NO_MINISTRY_ACCESS'));
+      const utils = renderSetup({ create: accessError('NO_MINISTRY_ACCESS') });
       await pick(utils, CRU_USA);
       await pressConnect(utils);
 
       expect(await utils.findByRole('alert')).toHaveTextContent(NO_ACCESS_TEXT);
+      expectNoRawApiText(utils);
     });
 
     it('shows the check-failed message', async () => {
-      const utils = renderSetup(accessError('ACCESS_CHECK_FAILED'));
+      const utils = renderSetup({ create: accessError('ACCESS_CHECK_FAILED') });
       await pick(utils, CRU_USA);
       await pressConnect(utils);
 
       expect(await utils.findByRole('alert')).toHaveTextContent(
         CHECK_FAILED_TEXT,
       );
+      expectNoRawApiText(utils);
     });
   });
 });
