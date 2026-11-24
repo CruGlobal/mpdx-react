@@ -506,6 +506,7 @@ human_approval:
     - 'src/lib/clearSessionData.ts'
     - 'src/sw/**'
     - 'src/lib/serviceWorker/**'
+    - 'serwist.config.mjs'
     # Code that puts the user's API token on outgoing calls
     - 'src/lib/apollo/link.ts'
     - 'pages/api/graphql-rest.page.ts'
