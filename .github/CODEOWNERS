@@ -15,13 +15,16 @@
 /scripts/jest-shards/*.js                 @jbirdjavi @jeff-clay @EJTison
 /tsconfig.json                            @jbirdjavi @jeff-clay @EJTison
 
-# Sign-in, page access, and the saved Apollo cache
+# Sign-in, page access, and clearing one user's data before the next
 /pages/api/auth/                          @jbirdjavi @jeff-clay @EJTison
 /pages/api/stop-impersonating.page.ts     @jbirdjavi @jeff-clay @EJTison
 /pages/api/utils/cookies.ts               @jbirdjavi @jeff-clay @EJTison
 /pages/api/utils/pagePropsHelpers.ts      @jbirdjavi @jeff-clay @EJTison
 /src/components/CacheRestoreGate/         @jbirdjavi @jeff-clay @EJTison
 /src/lib/apollo/persistence/              @jbirdjavi @jeff-clay @EJTison
+/src/lib/clearSessionData.ts              @jbirdjavi @jeff-clay @EJTison
+/src/sw/                                  @jbirdjavi @jeff-clay @EJTison
+/src/lib/serviceWorker/                   @jbirdjavi @jeff-clay @EJTison
 
 # Code that puts the user's API token on outgoing calls
 /src/lib/apollo/link.ts                   @jbirdjavi @jeff-clay @EJTison

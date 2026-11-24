@@ -499,13 +499,16 @@ human_approval:
     - '__tests__/util/setup.ts'
     - 'scripts/jest-shards/*.js'
     - 'tsconfig.json'
-    # Sign-in, page access, and the saved Apollo cache
+    # Sign-in, page access, and clearing one user's data before the next
     - 'pages/api/auth/**'
     - 'pages/api/stop-impersonating.page.ts'
     - 'pages/api/utils/cookies.ts'
     - 'pages/api/utils/pagePropsHelpers.ts'
     - 'src/components/CacheRestoreGate/**'
     - 'src/lib/apollo/persistence/**'
+    - 'src/lib/clearSessionData.ts'
+    - 'src/sw/**'
+    - 'src/lib/serviceWorker/**'
     # Code that puts the user's API token on outgoing calls
     - 'src/lib/apollo/link.ts'
     - 'pages/api/graphql-rest.page.ts'
