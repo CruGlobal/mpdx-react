@@ -1,52 +1,39 @@
-# Only one-way-door paths need a code owner; there is no * line, so the rest can merge on the agent-review approval.
-# pr-guard also labels PRs one-way-door from these paths. This file is the one list; CLAUDE.md only says what it covers.
+# Only these paths need a code owner; there is no * line, so the rest can merge on the agent-review approval.
+# pr-guard labels PRs one-way-door from these paths. human_approval in .claude/review/config.yml mirrors them; change both together.
 
-# HR tools and their pages: goal, NS and PDS calculators, salary, ASR, MHA, savings fund, HCM data
-/src/components/HrTools/                                @CruGlobal/mpdx-developers
-/pages/accountLists/*/hrTools/                          @CruGlobal/mpdx-developers
+# The review's own rules: what the bot and CI check
+/.github/                                 @jbirdjavi @jeff-clay @EJTison
+/.husky/                                  @jbirdjavi @jeff-clay @EJTison
+/.gitleaksignore                          @jbirdjavi @jeff-clay @EJTison
+/CLAUDE.md                                @jbirdjavi @jeff-clay @EJTison
+/AGENTS.md                                @jbirdjavi @jeff-clay @EJTison
+/.claude/                                 @jbirdjavi @jeff-clay @EJTison
+/.eslintrc*                               @jbirdjavi @jeff-clay @EJTison
+/.eslintignore                            @jbirdjavi @jeff-clay @EJTison
+/jest.config.js                           @jbirdjavi @jeff-clay @EJTison
+/__tests__/util/setup.ts                  @jbirdjavi @jeff-clay @EJTison
+/scripts/jest-shards/*.js                 @jbirdjavi @jeff-clay @EJTison
+/tsconfig.json                            @jbirdjavi @jeff-clay @EJTison
 
-# Reports that read HCM data, and their pages
-/src/components/Reports/MPGAIncomeExpensesReport/       @CruGlobal/mpdx-developers
-/src/components/Reports/StaffExpenseReport/             @CruGlobal/mpdx-developers
-/pages/accountLists/*/reports/mpgaIncomeExpenses/       @CruGlobal/mpdx-developers
-/pages/accountLists/*/reports/staffExpense/             @CruGlobal/mpdx-developers
+# Sign-in, page access, and the saved Apollo cache
+/pages/api/auth/                          @jbirdjavi @jeff-clay @EJTison
+/pages/api/stop-impersonating.page.ts     @jbirdjavi @jeff-clay @EJTison
+/pages/api/utils/cookies.ts               @jbirdjavi @jeff-clay @EJTison
+/pages/api/utils/pagePropsHelpers.ts      @jbirdjavi @jeff-clay @EJTison
+/src/components/CacheRestoreGate/         @jbirdjavi @jeff-clay @EJTison
+/src/lib/apollo/persistence/              @jbirdjavi @jeff-clay @EJTison
 
-# Sign-in, impersonation, page access gates, auth cookies, file uploads and the Apollo clients
-/pages/api/auth/                                        @CruGlobal/mpdx-developers
-/pages/api/stop-impersonating.page.ts                   @CruGlobal/mpdx-developers
-/pages/api/utils/cookies.ts                             @CruGlobal/mpdx-developers
-/pages/api/uploads/                                     @CruGlobal/mpdx-developers
-/src/lib/apollo/link.ts                                 @CruGlobal/mpdx-developers
-/src/lib/apollo/client.ts                               @CruGlobal/mpdx-developers
-/src/lib/apollo/ssrClient.ts                            @CruGlobal/mpdx-developers
-/pages/api/utils/pagePropsHelpers.ts                    @CruGlobal/mpdx-developers
+# Code that puts the user's API token on outgoing calls
+/src/lib/apollo/link.ts                   @jbirdjavi @jeff-clay @EJTison
+/pages/api/graphql-rest.page.ts           @jbirdjavi @jeff-clay @EJTison
+/pages/api/uploads/                       @jbirdjavi @jeff-clay @EJTison
+/pages/api/csv-update.page.ts             @jbirdjavi @jeff-clay @EJTison
 
-# REST proxy and CSV import
-/pages/api/graphql-rest.page.ts                         @CruGlobal/mpdx-developers
-/pages/api/Schema/                                      @CruGlobal/mpdx-developers
-/pages/api/csv-update.page.ts                           @CruGlobal/mpdx-developers
-
-# Monitoring and safety nets
-/src/lib/dataDog.ts                                     @CruGlobal/mpdx-developers
-/scripts/safety-nets/                                   @CruGlobal/mpdx-developers
-
-# Guardrail files and build config
-/.github/                                               @CruGlobal/mpdx-developers
-/.husky/                                                @CruGlobal/mpdx-developers
-/.claude/                                               @CruGlobal/mpdx-developers
-**/CLAUDE.md                                            @CruGlobal/mpdx-developers
-**/AGENTS.md                                            @CruGlobal/mpdx-developers
-/.gitleaksignore                                        @CruGlobal/mpdx-developers
-/.eslintrc*                                             @CruGlobal/mpdx-developers
-/amplify.yml                                            @CruGlobal/mpdx-developers
-/next.config.ts                                         @CruGlobal/mpdx-developers
-/.yarnrc.yml                                            @CruGlobal/mpdx-developers
-/jest.config.js                                         @CruGlobal/mpdx-developers
-/tsconfig.json                                          @CruGlobal/mpdx-developers
-/.eslintignore                                          @CruGlobal/mpdx-developers
-/__tests__/util/setup.ts                                @CruGlobal/mpdx-developers
-/scripts/jest-shards/*.js                               @CruGlobal/mpdx-developers
-/.yarn/releases/                                        @CruGlobal/mpdx-developers
+# Build and deploy config, where secrets are in reach
+/next.config.ts                           @jbirdjavi @jeff-clay @EJTison
+/amplify.yml                              @jbirdjavi @jeff-clay @EJTison
+/.yarnrc.yml                              @jbirdjavi @jeff-clay @EJTison
+/.yarn/releases/                          @jbirdjavi @jeff-clay @EJTison
 
 # agent-review's address step commits these outcome logs on PR branches; no owner, so they never make a PR one-way-door
 /.claude/review/learnings/feedback/*.jsonl
