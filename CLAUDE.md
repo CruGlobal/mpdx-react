@@ -193,15 +193,16 @@ Critical environment setup:
 
 ## One-way-door paths
 
-A mistake here gets money math or HR data wrong, breaks sign-in, leaks a secret, or switches off a guardrail. Work that touches these uses the stricter setup in `.claude/skills/implement/SKILL.md`, and a person from the code owners must approve the PR.
+These are the places where a person's approval adds something the bot and CI can't. A mistake here could switch off a guardrail, show one person's data to someone else, or leak a token or secret, and none of that can be taken back. Work that touches these uses the stricter setup in `.claude/skills/implement/SKILL.md`, and a code owner must approve the PR.
 
-`.github/CODEOWNERS` is the one list of exact paths. A path is a one-way door when CODEOWNERS gives it an owner; the few lines with no owner at the end are carve-outs. pr-guard reads it to set the one-way-door label, so add or remove paths there, not here. It covers:
+`.github/CODEOWNERS` holds the exact paths. A path is a one-way door when CODEOWNERS gives it an owner; the two lines with no owner at the end are carve-outs. pr-guard reads it to set the one-way-door label. `human_approval` in `.claude/review/config.yml` lists the same paths so the agent-review bot never approves these PRs. Add or remove a path in both files together, not here. The list covers:
 
-- HR tools, the reports that read HCM data, and their pages
-- Sign-in, impersonation, page access gates, auth cookies, file uploads and the Apollo clients
-- The REST proxy and CSV import
-- Monitoring and safety nets
-- Guardrail files and build config: CI, hooks, Claude config, CLAUDE.md, AGENTS.md, the gitleaks ignore list, lint, test, TypeScript, Yarn and Next.js config, and Amplify
+- The review's own rules: CI, hooks, Claude config, the root CLAUDE.md and AGENTS.md, the gitleaks ignore list, and lint, test and TypeScript config
+- Sign-in, page access, and clearing one user's data before the next: the saved Apollo cache, the sign-out wipe and the service worker's cache rules
+- The code that puts the user's API token on outgoing calls
+- Build and deploy config where secrets are in reach: Next.js, Amplify and Yarn
+
+HR tools and the HCM reports are not on the list. Tests, the AI review and a check on staging cover their math, not a person's approval.
 
 Tests follow their folder: a test inside an owned folder is a one-way door too. A test next to a single owned file is not, unless CODEOWNERS lists it.
 
