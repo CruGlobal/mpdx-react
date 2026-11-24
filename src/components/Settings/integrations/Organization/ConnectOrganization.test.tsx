@@ -73,6 +73,14 @@ const GetOrganizationsMock: Pick<
     disableNewUsers: false,
   },
   {
+    id: 'secondLoginId',
+    name: 'secondLoginName',
+    apiClass: 'DataServer',
+    oauth: false,
+    giftAidPercentage: 70,
+    disableNewUsers: false,
+  },
+  {
     id: 'oAuthId',
     name: 'oAuthName',
     apiClass: 'DataServer',
@@ -731,7 +739,7 @@ describe('Connect Organization', () => {
       await waitFor(() => expect(onDone).toHaveBeenCalledTimes(1));
     });
 
-    it('clears typed credentials when a different organization is picked', async () => {
+    it('clears typed credentials and keeps Add Account off when switching straight to another login organization', async () => {
       const utils = renderWithCreateMock();
 
       await pickMinistry(utils, 'loginName');
@@ -740,21 +748,18 @@ describe('Connect Organization', () => {
         'MyUsername',
       );
       userEvent.type(utils.getByTestId('passwordInput'), 'MyPassword');
+      const addAccount = utils.getByRole('button', { name: 'Add Account' });
+      await waitFor(() => expect(addAccount).toBeEnabled());
 
-      const field = utils.getByRole('combobox');
-      userEvent.clear(field);
-      userEvent.type(field, '{arrowdown}');
-      userEvent.click(
-        await utils.findByRole('option', { name: 'organizationName' }),
-      );
-      userEvent.clear(field);
-      userEvent.type(field, '{arrowdown}');
-      userEvent.click(await utils.findByRole('option', { name: 'loginName' }));
+      await pickMinistry(utils, 'secondLoginName');
 
-      expect(
-        await utils.findByRole('textbox', { name: /username/i }),
-      ).toHaveValue('');
+      expect(utils.getByRole('textbox', { name: /username/i })).toHaveValue('');
       expect(utils.getByTestId('passwordInput')).toHaveValue('');
+      await waitFor(() =>
+        expect(
+          utils.getByRole('button', { name: 'Add Account' }),
+        ).toBeDisabled(),
+      );
     });
   });
 });

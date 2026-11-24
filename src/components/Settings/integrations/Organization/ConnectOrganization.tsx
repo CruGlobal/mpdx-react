@@ -196,6 +196,7 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
         handleChange,
         handleSubmit,
         setFieldValue,
+        validateForm,
         isSubmitting,
         isValid,
       }): ReactElement => (
@@ -220,10 +221,16 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
                 setSelectedOrg(org?.name ?? '');
                 setIsCruUsa(org?.apiClass === CRU_USA_API_CLASS);
                 setCruUsaCheck(null);
-                // Credentials belong to the org they were typed for.
-                setFieldValue('username', '');
-                setFieldValue('password', '');
-                setFieldValue('selectedOrganization', value);
+                // Credentials belong to the org they were typed for. Validate once with the new
+                // values: each validating setFieldValue would check the last render's values.
+                setFieldValue('username', '', false);
+                setFieldValue('password', '', false);
+                setFieldValue('selectedOrganization', value, false);
+                validateForm({
+                  selectedOrganization: value,
+                  username: '',
+                  password: '',
+                });
               }}
               textFieldFocusRef={focusOnOrganization}
             />
