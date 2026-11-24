@@ -1375,7 +1375,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.14.5, @babel/runtime@npm:^7.17.2, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.18.9, @babel/runtime@npm:^7.20.13, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.27.4, @babel/runtime@npm:^7.27.6, @babel/runtime@npm:^7.28.2, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
+"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.14.5, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.18.9, @babel/runtime@npm:^7.20.13, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.27.4, @babel/runtime@npm:^7.27.6, @babel/runtime@npm:^7.28.2, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
   version: 7.28.2
   resolution: "@babel/runtime@npm:7.28.2"
   checksum: 10/a0965fbdd6aaa40709290923bbe05e1c4314021f0cef608eb1d69f04f717c41829e50a53d79c4a0f461512b4be9b3c0190dc19387b219bcdaacdd793b2fe1b8a
@@ -12109,21 +12109,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:^21.9.2":
-  version: 21.9.2
-  resolution: "i18next@npm:21.9.2"
-  dependencies:
-    "@babel/runtime": "npm:^7.17.2"
-  checksum: 10/6afb971a70ddbeaf6c8104bda8ac5ab967d0b58431b19e19f7ef2763879acb99993ebd33a91434a84d6950ae2c4f6f39475a17dbf51d11d17c78e691efa778f9
-  languageName: node
-  linkType: hard
-
 "i18next@npm:^23.5.1":
   version: 23.16.5
   resolution: "i18next@npm:23.16.5"
   dependencies:
     "@babel/runtime": "npm:^7.23.2"
   checksum: 10/842b6d35d6e0822f1c8c3c2ca8af0fec9d8d9e37a54f63cdf42c0fcc7908d980082daff6ab77ad248324d2c45a0f1fe1e40efe23ba84d950722ece36b61d647c
+  languageName: node
+  linkType: hard
+
+"i18next@npm:^26.3.4":
+  version: 26.3.4
+  resolution: "i18next@npm:26.3.4"
+  peerDependencies:
+    typescript: ^5 || ^6
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 10/133ba9a5f76c1d57337f0dcc1b0ab0ff987714a1863813dcc95024531074c6d92603a19b0bac9c16a6b04c734742d8d098da0c222bef5a9562bdde231ea4b221
   languageName: node
   linkType: hard
 
@@ -14966,7 +14969,7 @@ __metadata:
     graphql-ergonomock: "npm:@cruglobal/graphql-ergonomock@^1.2.2"
     graphql-tag: "npm:^2.12.6"
     husky: "npm:^8.0.1"
-    i18next: "npm:^21.9.2"
+    i18next: "npm:^26.3.4"
     i18next-browser-languagedetector: "npm:^6.1.5"
     i18next-http-backend: "npm:^1.4.4"
     i18next-parser: "npm:^9.0.2"
