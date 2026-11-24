@@ -25,6 +25,7 @@
 /src/lib/clearSessionData.ts              @jbirdjavi @jeff-clay @EJTison
 /src/sw/                                  @jbirdjavi @jeff-clay @EJTison
 /src/lib/serviceWorker/                   @jbirdjavi @jeff-clay @EJTison
+/serwist.config.mjs                       @jbirdjavi @jeff-clay @EJTison
 
 # Code that puts the user's API token on outgoing calls
 /src/lib/apollo/link.ts                   @jbirdjavi @jeff-clay @EJTison
