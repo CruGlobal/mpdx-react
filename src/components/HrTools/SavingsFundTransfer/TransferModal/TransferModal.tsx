@@ -16,7 +16,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Formik } from 'formik';
+import { Formik, FormikHelpers } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { TFunction, useTranslation } from 'react-i18next';
@@ -233,6 +233,11 @@ export const TransferModal: React.FC<TransferModalProps> = ({
   const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
   const [submitting, setSubmitting] = useState(false);
+  // Set when a submit attempt fails so the button can stay disabled until the
+  // user changes something, instead of inviting an identical doomed retry —
+  // the repeated-click pattern that tripped the frustration-by-page safety
+  // net (monitor 312883915) on this page.
+  const [submitFailed, setSubmitFailed] = useState(false);
 
   const [createRecurringTransfer] = useCreateRecurringTransferMutation({
     refetchQueries: ['ReportsSavingsFundTransfer', 'FundBalances'],
@@ -255,7 +260,10 @@ export const TransferModal: React.FC<TransferModalProps> = ({
       ? t('New Fund Transfer')
       : t('Edit Fund Transfer');
 
-  const handleSubmit = async (values: TransferFormValues) => {
+  const handleSubmit = async (
+    values: TransferFormValues,
+    { resetForm }: FormikHelpers<TransferFormValues>,
+  ) => {
     setSubmitting(true);
 
     const {
@@ -325,6 +333,13 @@ export const TransferModal: React.FC<TransferModalProps> = ({
       enqueueSnackbar(errorMessage, {
         variant: 'error',
       });
+      // The mutation error already surfaced the server's specific reason via
+      // the global GraphQL error link's toast. Re-baseline Formik on the
+      // values that just failed so `dirty` goes false, and keep Submit
+      // disabled until the user actually changes something — re-clicking
+      // Submit on the exact same input would only repeat the same failure.
+      setSubmitFailed(true);
+      resetForm({ values });
     } finally {
       setSubmitting(false);
     }
@@ -361,6 +376,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
           },
           isSubmitting,
           isValid,
+          dirty,
           touched,
           errors,
           handleChange,
@@ -708,6 +724,14 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                     )}
                   </Alert>
                 )}
+
+                {submitFailed && !dirty && (
+                  <FormHelperText error={true}>
+                    {t(
+                      'That submission failed — change something above before trying again.',
+                    )}
+                  </FormHelperText>
+                )}
               </DialogContent>
               <DialogActions>
                 <CancelButton
@@ -718,7 +742,12 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                 <SubmitButton
                   size="large"
                   variant="contained"
-                  disabled={submitting || isSubmitting || !isValid}
+                  disabled={
+                    submitting ||
+                    isSubmitting ||
+                    !isValid ||
+                    (submitFailed && !dirty)
+                  }
                   type="submit"
                 >
                   {submitting || isSubmitting

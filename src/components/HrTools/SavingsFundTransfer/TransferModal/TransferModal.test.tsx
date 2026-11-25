@@ -4,6 +4,8 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { RenderResult, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { GraphQLError } from 'graphql';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
@@ -11,11 +13,6 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { StaffSavingFundProvider } from '../../StaffSavingFund/StaffSavingFundContext';
 import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
-import {
-  CreateRecurringTransferMutation,
-  CreateTransferMutation,
-  UpdateRecurringTransferMutation,
-} from '../TransferMutations.generated';
 import {
   FundTypeEnum,
   ScheduleEnum,
@@ -69,24 +66,20 @@ interface ComponentsProps {
   transfer?: TransferModalData['transfer'];
   type?: TransferTypeEnum;
   funds?: FundFieldsFragment[];
+  mocks?: ApolloErgonoMockMap;
 }
 
 const Components = ({
   transfer = transferDefaultData,
   type,
   funds = fundsMock,
+  mocks,
 }: ComponentsProps) => (
   <SnackbarProvider>
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <TestRouter router={router}>
-          <GqlMockedProvider<{
-            createRecurringTransfer: CreateRecurringTransferMutation;
-            createTransfer: CreateTransferMutation;
-            updateRecurringTransfer: UpdateRecurringTransferMutation;
-          }>
-            onCall={mutationSpy}
-          >
+          <GqlMockedProvider mocks={mocks} onCall={mutationSpy}>
             <StaffSavingFundProvider>
               <TransferModal
                 data={{
@@ -1094,6 +1087,61 @@ describe('TransferModal', () => {
           }),
         );
       });
+    });
+
+    it('should disable resubmission after a failed create until something changes', async () => {
+      // Reproduces the incident behind monitor 312883915: a one-time transfer
+      // submitted with the default "today" date was rejected by SAA as
+      // already in the past, and the user clicked SUBMIT four more times on
+      // the exact same input before ever touching the date field. The retry
+      // must now be blocked until the user changes something.
+      const { getByRole, findByText, queryByText } = render(
+        <Components
+          mocks={{
+            CreateTransfer: {
+              createTransfer: () => {
+                throw new GraphQLError(
+                  'SAA Error: transacted_at cannot be in the past',
+                );
+              },
+            },
+          }}
+        />,
+      );
+
+      const amountField = getByRole('spinbutton', { name: /amount/i });
+      const noteField = getByRole('textbox', { name: /note/i });
+      const submitButton = getByRole('button', { name: /submit/i });
+
+      userEvent.click(getByRole('combobox', { name: /to account/i }));
+      userEvent.click(getByRole('option', { name: /staff savings/i }));
+
+      userEvent.clear(amountField);
+      userEvent.type(amountField, '100');
+
+      userEvent.clear(noteField);
+      userEvent.type(noteField, 'Test note');
+
+      userEvent.click(submitButton);
+
+      expect(
+        await findByText(
+          'That submission failed — change something above before trying again.',
+        ),
+      ).toBeInTheDocument();
+      // user-event refuses to click a disabled button, so asserting it is
+      // disabled is what guarantees the identical request can't fire again.
+      await waitFor(() => expect(submitButton).toBeDisabled());
+
+      userEvent.clear(amountField);
+      userEvent.type(amountField, '150');
+
+      await waitFor(() => expect(submitButton).not.toBeDisabled());
+      expect(
+        queryByText(
+          'That submission failed — change something above before trying again.',
+        ),
+      ).not.toBeInTheDocument();
     });
 
     it('should create a future-dated one-time transfer', async () => {
