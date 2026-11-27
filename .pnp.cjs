@@ -110,7 +110,7 @@ const RAW_RUNTIME_STATE =
           ]],\
           ["graphql-tag", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.12.6"],\
           ["husky", "npm:8.0.1"],\
-          ["i18next", "npm:21.9.2"],\
+          ["i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:26.3.4"],\
           ["i18next-browser-languagedetector", "npm:6.1.5"],\
           ["i18next-http-backend", "npm:1.4.4"],\
           ["i18next-parser", "npm:9.0.2"],\
@@ -15628,19 +15628,31 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["i18next", [\
-      ["npm:21.9.2", {\
-        "packageLocation": "./.yarn/cache/i18next-npm-21.9.2-2e8a124cb7-6afb971a70.zip/node_modules/i18next/",\
-        "packageDependencies": [\
-          ["@babel/runtime", "npm:7.28.2"],\
-          ["i18next", "npm:21.9.2"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
       ["npm:23.16.5", {\
         "packageLocation": "./.yarn/cache/i18next-npm-23.16.5-65447bf557-842b6d35d6.zip/node_modules/i18next/",\
         "packageDependencies": [\
           ["@babel/runtime", "npm:7.28.2"],\
           ["i18next", "npm:23.16.5"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:26.3.4", {\
+        "packageLocation": "./.yarn/cache/i18next-npm-26.3.4-e782c5df4d-133ba9a5f7.zip/node_modules/i18next/",\
+        "packageDependencies": [\
+          ["i18next", "npm:26.3.4"]\
+        ],\
+        "linkType": "SOFT"\
+      }],\
+      ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:26.3.4", {\
+        "packageLocation": "./.yarn/__virtual__/i18next-virtual-e39a1a7513/0/cache/i18next-npm-26.3.4-e782c5df4d-133ba9a5f7.zip/node_modules/i18next/",\
+        "packageDependencies": [\
+          ["@types/typescript", null],\
+          ["i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:26.3.4"],\
+          ["typescript", "patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"]\
+        ],\
+        "packagePeers": [\
+          "@types/typescript",\
+          "typescript"\
         ],\
         "linkType": "HARD"\
       }]\
@@ -18869,7 +18881,7 @@ const RAW_RUNTIME_STATE =
           ]],\
           ["graphql-tag", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.12.6"],\
           ["husky", "npm:8.0.1"],\
-          ["i18next", "npm:21.9.2"],\
+          ["i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:26.3.4"],\
           ["i18next-browser-languagedetector", "npm:6.1.5"],\
           ["i18next-http-backend", "npm:1.4.4"],\
           ["i18next-parser", "npm:9.0.2"],\
@@ -20997,7 +21009,7 @@ const RAW_RUNTIME_STATE =
           ["@types/react-dom", null],\
           ["@types/react-native", null],\
           ["html-parse-stringify", "npm:3.0.1"],\
-          ["i18next", "npm:21.9.2"],\
+          ["i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:26.3.4"],\
           ["react", "npm:18.2.0"],\
           ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:18.2.0"],\
           ["react-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.18.6"],\
